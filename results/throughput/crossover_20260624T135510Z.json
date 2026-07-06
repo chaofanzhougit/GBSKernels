@@ -1,0 +1,414 @@
+{
+  "kind": "crossover_batch_sweep",
+  "created_utc": "2026-06-24T13:55:10.020085+00:00",
+  "commit": "1722fbe",
+  "container_digest": null,
+  "hostname": "4f754d7c86be",
+  "captured_utc": "2026-06-24T13:55:10.020205+00:00",
+  "gpu_backend": "gpu",
+  "metric": "per-eval evals/sec (public path) vs batch; GPU rises, CPU & same-instance Walrus are ~flat baselines on the same workload; crossover = smallest batch where GPU median > baseline; each series tagged with achieved FP64 error",
+  "params": {
+    "batches": [
+      256,
+      1024,
+      4096,
+      16384
+    ],
+    "repeats": 7,
+    "warmup": 2,
+    "regime": "physical",
+    "error_n": 2,
+    "error_dps": 30
+  },
+  "walrus": {
+    "library_version": "0.22.0",
+    "batch": 128
+  },
+  "series": [
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 283788.29172766523,
+          "cpu": 2174.994929468855,
+          "walrus": 3.6999023596852743
+        },
+        {
+          "batch": 1024,
+          "gpu": 1067511.6322109369,
+          "cpu": 2189.078926711627,
+          "walrus": 3.6999023596852743
+        },
+        {
+          "batch": 4096,
+          "gpu": 2450725.3042674516,
+          "cpu": 2184.3716873092144,
+          "walrus": 3.6999023596852743
+        },
+        {
+          "batch": 16384,
+          "gpu": 4043241.6918383497,
+          "cpu": 2181.4938443140636,
+          "walrus": 3.6999023596852743
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 1.6815887214707817e-15,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 25711.709373906036,
+          "cpu": 398.92894562333424,
+          "walrus": 3.4321818028550077
+        },
+        {
+          "batch": 1024,
+          "gpu": 97024.18224081355,
+          "cpu": 400.2474391143737,
+          "walrus": 3.4321818028550077
+        },
+        {
+          "batch": 4096,
+          "gpu": 350101.36442595406,
+          "cpu": 399.9543563514655,
+          "walrus": 3.4321818028550077
+        },
+        {
+          "batch": 16384,
+          "gpu": 399403.2545394179,
+          "cpu": 400.0424709906658,
+          "walrus": 3.4321818028550077
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 6.870289942904235e-14,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 1884.3212810893785,
+          "cpu": 77.15104090063318,
+          "walrus": 3.2486554440206747
+        },
+        {
+          "batch": 1024,
+          "gpu": 7102.109784718306,
+          "cpu": 77.53045493251317,
+          "walrus": 3.2486554440206747
+        },
+        {
+          "batch": 4096,
+          "gpu": 25140.794131432427,
+          "cpu": 76.99472222873855,
+          "walrus": 3.2486554440206747
+        },
+        {
+          "batch": 16384,
+          "gpu": 36942.13521932363,
+          "cpu": 77.38056916458893,
+          "walrus": 3.2486554440206747
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 6.55241523775168e-14,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 226459.8789788137,
+          "cpu": 1276.6404707952254,
+          "walrus": 3.6676429319761854
+        },
+        {
+          "batch": 1024,
+          "gpu": 806460.437300106,
+          "cpu": 1291.0532876415286,
+          "walrus": 3.6676429319761854
+        },
+        {
+          "batch": 4096,
+          "gpu": 2379808.3733976167,
+          "cpu": 1284.2626199975962,
+          "walrus": 3.6676429319761854
+        },
+        {
+          "batch": 16384,
+          "gpu": 3252528.377633927,
+          "cpu": 1289.488950377556,
+          "walrus": 3.6676429319761854
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 3.4709452411848882e-15,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 20122.36736564632,
+          "cpu": 222.34762351729105,
+          "walrus": 3.5220505002599816
+        },
+        {
+          "batch": 1024,
+          "gpu": 76941.36486386745,
+          "cpu": 224.4765037442538,
+          "walrus": 3.5220505002599816
+        },
+        {
+          "batch": 4096,
+          "gpu": 252210.44583511082,
+          "cpu": 224.7043765461383,
+          "walrus": 3.5220505002599816
+        },
+        {
+          "batch": 16384,
+          "gpu": 300223.42780340754,
+          "cpu": 224.4633401799964,
+          "walrus": 3.5220505002599816
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 1.5777403442687208e-13,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 354707.2583970692,
+          "cpu": 1915.3096478863,
+          "walrus": 91131.15717492587
+        },
+        {
+          "batch": 1024,
+          "gpu": 1313340.9335205078,
+          "cpu": 1886.73048593485,
+          "walrus": 91131.15717492587
+        },
+        {
+          "batch": 4096,
+          "gpu": 3012905.423380666,
+          "cpu": 1903.2609894823743,
+          "walrus": 91131.15717492587
+        },
+        {
+          "batch": 16384,
+          "gpu": 5604116.919531823,
+          "cpu": 1887.6433409191586,
+          "walrus": 91131.15717492587
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 2.4682479588275257e-15,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 284847.94093671103,
+          "cpu": 119.51848341897254,
+          "walrus": 1350.5032246998308
+        },
+        {
+          "batch": 1024,
+          "gpu": 610667.279702373,
+          "cpu": 117.51839314051135,
+          "walrus": 1350.5032246998308
+        },
+        {
+          "batch": 4096,
+          "gpu": 1568804.6288535718,
+          "cpu": 118.58262440322976,
+          "walrus": 1350.5032246998308
+        },
+        {
+          "batch": 16384,
+          "gpu": 1048431.9416691343,
+          "cpu": 118.4672793490363,
+          "walrus": 1350.5032246998308
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 6.065621603561338e-15,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 32471.2673012067,
+          "cpu": 7.426963728507233,
+          "walrus": 704.0009833140995
+        },
+        {
+          "batch": 1024,
+          "gpu": 120457.74970223449,
+          "cpu": 7.39597668192051,
+          "walrus": 704.0009833140995
+        },
+        {
+          "batch": 4096,
+          "gpu": 153293.90626844237,
+          "cpu": 7.447854162489905,
+          "walrus": 704.0009833140995
+        },
+        {
+          "batch": 16384,
+          "gpu": 50256.381774097405,
+          "cpu": 7.385075147070612,
+          "walrus": 704.0009833140995
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 1.5310222228451463e-13,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 330526.90384669724,
+          "cpu": 4237.082068301857,
+          "walrus": 70298.99857280796
+        },
+        {
+          "batch": 1024,
+          "gpu": 1135365.622613931,
+          "cpu": 4270.568404336294,
+          "walrus": 70298.99857280796
+        },
+        {
+          "batch": 4096,
+          "gpu": 2849525.836337355,
+          "cpu": 4281.746833980584,
+          "walrus": 70298.99857280796
+        },
+        {
+          "batch": 16384,
+          "gpu": 6353827.766719615,
+          "cpu": 4264.373878227494,
+          "walrus": 70298.99857280796
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 2.1839816145411314e-12,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 81141.24846656101,
+          "cpu": 993.3422414901858,
+          "walrus": 24472.80259651575
+        },
+        {
+          "batch": 1024,
+          "gpu": 279991.8709698038,
+          "cpu": 1013.3392669773517,
+          "walrus": 24472.80259651575
+        },
+        {
+          "batch": 4096,
+          "gpu": 1024388.542203494,
+          "cpu": 1013.709911180479,
+          "walrus": 24472.80259651575
+        },
+        {
+          "batch": 16384,
+          "gpu": 1886986.2550740375,
+          "cpu": 1010.0735093281502,
+          "walrus": 24472.80259651575
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 1.2627600654914508e-11,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "points": [
+        {
+          "batch": 256,
+          "gpu": 12816.075258461779,
+          "cpu": 239.31547898893587,
+          "walrus": 5361.053284610204
+        },
+        {
+          "batch": 1024,
+          "gpu": 49014.584471987226,
+          "cpu": 241.7880751195987,
+          "walrus": 5361.053284610204
+        },
+        {
+          "batch": 4096,
+          "gpu": 178006.7304533157,
+          "cpu": 241.03024404819845,
+          "walrus": 5361.053284610204
+        },
+        {
+          "batch": 16384,
+          "gpu": 325318.4545309625,
+          "cpu": 241.3962159450794,
+          "walrus": 5361.053284610204
+        }
+      ],
+      "precision_tier": "fp64",
+      "achieved_rel_err_fp64": 3.616180389020817e-10,
+      "crossover_batch_vs_cpu": 256,
+      "crossover_batch_vs_walrus": 256,
+      "crossover_batch_vs_best": 256
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "kind": "throughput",
+  "tier": "gpu",
+  "created_utc": "2026-06-20T10:15:19.223759+00:00",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4090",
+    "driver_version": "580.159.04",
+    "memory_total": "24564 MiB",
+    "clock_sm_max": "3105 MHz",
+    "clock_mem_max": "10501 MHz"
+  },
+  "host": {
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35"
+  },
+  "params": {
+    "batch": 4096,
+    "repeats": 7,
+    "precision": "fp64",
+    "metric": "evals_per_sec_best (best of repeats); honesty checksum per row"
+  },
+  "rows": [
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 17271190.0,
+      "checksum": 128734.6414182
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 761914.1,
+      "checksum": 6197318.322294
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 38925.48,
+      "checksum": 559861685.9818
+    },
+    {
+      "func": "perm_dd",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 1697355.0,
+      "checksum": 128734.6414182
+    },
+    {
+      "func": "perm_dd",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 70660.87,
+      "checksum": 6197318.322294
+    },
+    {
+      "func": "perm_dd",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 3289.573,
+      "checksum": 559861685.9818
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 6046560.0,
+      "checksum": 15849.7321413
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 311539.5,
+      "checksum": 104755.5918732
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 25160.67,
+      "checksum": 956449.3893204
+    },
+    {
+      "func": "haf_dd",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 1043450.0,
+      "checksum": 15849.7321413
+    },
+    {
+      "func": "haf_dd",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 53805.99,
+      "checksum": 104755.5918732
+    },
+    {
+      "func": "haf_dd",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 4390.072,
+      "checksum": 956449.3893204
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 4868314.0,
+      "checksum": 32651.30503468
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 281690.6,
+      "checksum": 267278.9988755
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 23791.8,
+      "checksum": 3006948.332837
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 14796240.0,
+      "checksum": 5690.990095844
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 1608916.0,
+      "checksum": 8607.753848219
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_best": 210718.1,
+      "checksum": 12285.04864935
+    }
+  ]
+}

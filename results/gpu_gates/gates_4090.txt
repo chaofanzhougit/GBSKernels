@@ -1,0 +1,14 @@
+# GPU differential gates (RTX 4090, driver 580.159.04, CUDA 12.4, sm_89)
+# 2026-06-19T14:25:36Z
+## check_permanent
+max relative error (n=1..12, complex): 3.189e-14  [tol 1.0e-08]
+PASS
+## check_hafnian
+max relative error (N=2..12, complex symmetric): 4.699e-13  [tol 1.0e-08]
+PASS
+## check_loop_hafnian
+max relative error (N=2..10, complex symmetric): 8.953e-14  [tol 1.0e-08]
+PASS
+## check_torontonian
+max relative error (n=1..5, real O): 2.812e-11  [tol 1.0e-08]
+PASS

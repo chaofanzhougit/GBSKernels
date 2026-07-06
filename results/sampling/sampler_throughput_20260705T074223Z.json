@@ -1,0 +1,142 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-07-05T07:42:23.226178+00:00",
+  "commit": "4816d96",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "63ede34102a0",
+  "captured_utc": "2026-07-05T07:42:23.226349+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.159.04",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 80
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler); median + IQR over raw repeats; warm-up discarded; the 'gpu-resident' row is the v3 FULLY on-device chain (before/after vs the hybrid 'gpu' row, where in-cap)",
+  "params": {
+    "modes": 6,
+    "num_samples": 300,
+    "cutoff": 4,
+    "repeats": 3,
+    "seed": 0,
+    "warmup": "1 untimed draw/backend"
+  },
+  "env": {
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 33.38630432620356,
+      "samples_per_sec_iqr": 6.293593752909878,
+      "seconds_median": 8.985720523865893,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        28.612130395164034,
+        33.38630432620356,
+        41.19931790098378
+      ]
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 474.58740888005684,
+      "samples_per_sec_iqr": 306.7735109173444,
+      "seconds_median": 0.6321280219126493,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        165.94737432260553,
+        474.58740888005684,
+        779.4943961572943
+      ]
+    },
+    {
+      "backend": "cpu+nosieve",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 33.67327384015445,
+      "samples_per_sec_iqr": 6.4604362343227315,
+      "seconds_median": 8.90914264600724,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        28.65541415971311,
+        33.67327384015445,
+        41.576286628358574
+      ]
+    },
+    {
+      "backend": "cpu+sieve",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 7.404107089529745,
+      "samples_per_sec_iqr": 3.615174062092109,
+      "seconds_median": 40.51805253117345,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        6.7938290038158025,
+        7.404107089529745,
+        14.024177128000021
+      ]
+    },
+    {
+      "backend": "gpu+nosieve",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 44.61285170665585,
+      "samples_per_sec_iqr": 16.272820141654677,
+      "seconds_median": 6.724519696086645,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        36.473919418283,
+        44.61285170665585,
+        69.01955970159234
+      ]
+    },
+    {
+      "backend": "gpu+sieve",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 474.81500122399467,
+      "samples_per_sec_iqr": 309.7413824865132,
+      "seconds_median": 0.6318250249605626,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        166.15791686364713,
+        474.81500122399467,
+        785.6406818366735
+      ]
+    }
+  ]
+}

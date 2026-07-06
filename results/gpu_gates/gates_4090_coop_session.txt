@@ -1,0 +1,20 @@
+=== 1/4  CPU pre-flight (host shim -- must already be green) ===
+=== 2/4  nvcc build of core/ ===
+=== 3/5  GPU-vs-CPU differential gates (incl. double-double + host_api) ===
+[check_permanent] max relative error (n=1..12, complex): 3.189e-14  [tol 1.0e-08] PASS 
+[check_hafnian] max relative error (N=2..12, complex symmetric): 4.699e-13  [tol 1.0e-08] PASS 
+[check_loop_hafnian] max relative error (N=2..10, complex symmetric): 8.953e-14  [tol 1.0e-08] PASS 
+[check_torontonian] max relative error (n=1..5 modes, real O): 2.812e-11  [tol 1.0e-08] PASS 
+[check_permanent_dd] (1) DD == FP64 on well-conditioned (n=2..10): max rel diff 5.555e-14  [tol 1e-11] (2) cancellation:  delta     relerr_FP64    relerr_DD     DD held?                    1e-02    8.278e-15    5.585e-17    yes                    1e-04    1.331e-12    5.165e-17    yes                    1e-06    5.961e-11    5.304e-17    yes                    1e-08    1.139e-08    4.739e-17    yes                    1e-10    6.992e-07    1.739e-17    yes PASS 
+[check_hafnian_dd] (1) DD == FP64 on well-conditioned (N=2..10): max rel diff 3.341e-14  [tol 1e-11] (2) cancellation:  delta     relerr_FP64    relerr_DD     DD held?                    1e-02    1.164e-13    5.384e-17    yes                    1e-04    2.784e-12    3.049e-17    yes                    1e-06    8.457e-10    2.247e-17    yes                    1e-08    2.014e-07    6.807e-17    yes                    1e-10    1.505e-05    3.303e-17    yes PASS 
+[check_loop_hafnian_dd] (1) DD == FP64 on well-conditioned (N=2..10): max rel diff 5.484e-14  [tol 1e-11] (2) cancellation:  delta     relerr_FP64    relerr_DD     DD held?                    1e-02    6.010e-12    1.879e-18    yes                    1e-04    3.461e-12    6.770e-17    yes                    1e-06    6.557e-10    8.971e-17    yes                    1e-08    2.186e-07    9.432e-18    yes                    1e-10    2.703e-05    3.414e-17    yes PASS 
+[check_torontonian_dd] (1) DD ~= FP64 on well-conditioned (n=1..4): max rel diff 3.974e-10  [tol 1e-7] (2) cancellation:  a         relerr_FP64    relerr_DD     DD held?                    1e-02    6.418e-15    6.398e-17    yes                    1e-04    8.289e-13    1.522e-17    yes                    1e-06    5.634e-12    5.097e-17    yes                    1e-08    6.127e-09    6.866e-17    yes                    1e-10    8.264e-08    6.147e-17    yes PASS 
+[check_permanent_coop] max relative error (n=1..12, groups{1,8,32}, complex): 5.962e-14  [tol 1.0e-08] PASS 
+[check_host_api] host_api smoke test (plumbing + batching):   perm[0]    got 10.000000  want 10.000000  ok   perm[1]    got 10.000000  want 10.000000  ok   perm_dd    got 10.000000  want 10.000000  ok   haf        got 3.000000  want 3.000000  ok   lhaf       got 2.000000  want 2.000000  ok   tor        got 0.000000  want 0.000000  ok PASS 
+[check_session] device-resident session gate (reuse + correctness):   perm    d4 b32  diff 0.00e+00  reallocs 1 (want 1)  ok   haf     d8 b64  diff 0.00e+00  reallocs 2 (want 2)  ok   perm    d4 b32  diff 0.00e+00  reallocs 2 (want 2)  ok   tor     d6 b16  diff 0.00e+00  reallocs 2 (want 2)  ok   perm_dd d4 b8   diff 0.00e+00  reallocs 2 (want 2)  ok PASS 
+=== 4/6  build + smoke the nanobind GPU extension ===
+=== 5/6  kernel-only throughput (bench_kernels) -> results/throughput/ ===
+=== 6/6  GPU-vs-mpmath accuracy (physical + adversarial) + end-to-end throughput ===
+
+RUNNING?
+RUNNING

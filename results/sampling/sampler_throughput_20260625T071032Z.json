@@ -1,0 +1,86 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-06-25T07:10:32.019493+00:00",
+  "commit": "97408a0",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "913501c97346",
+  "captured_utc": "2026-06-25T07:10:32.019995+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "compute_cap": "8.0",
+      "driver": "580.105.08",
+      "memory_total": "40960 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 64
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.4.0-216-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler); median + IQR over raw repeats; warm-up discarded",
+  "params": {
+    "modes": 6,
+    "num_samples": 2000,
+    "cutoff": 5,
+    "repeats": 7,
+    "seed": 0,
+    "warmup": "1 untimed draw/backend"
+  },
+  "env": {
+    "platform": "Linux-5.4.0-216-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "repeats": 7,
+      "samples_per_sec_median": 29.459939017430727,
+      "samples_per_sec_iqr": 2.2928550886222396,
+      "seconds_median": 67.88880312402034,
+      "mean_photons": 1.276,
+      "raw_samples_per_sec": [
+        28.746834555226865,
+        28.947787836620847,
+        29.225276417981167,
+        29.459939017430727,
+        30.342076782857472,
+        32.41669764898902,
+        35.87831451358042
+      ]
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "repeats": 7,
+      "samples_per_sec_median": 37.485462331550536,
+      "samples_per_sec_iqr": 5.475529589155187,
+      "seconds_median": 53.35401714697946,
+      "mean_photons": 1.276,
+      "raw_samples_per_sec": [
+        36.18368651901471,
+        36.78657804627176,
+        36.98840354631571,
+        37.485462331550536,
+        40.36229549039789,
+        44.363745280499955,
+        48.42843313945228
+      ]
+    }
+  ]
+}

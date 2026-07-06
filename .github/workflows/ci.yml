@@ -1,0 +1,59 @@
+# CPU verification on every commit (docs/DESIGN.md §8 CI policy).
+# Layers 1, 3, and the CPU parts of Layer 2 need no GPU and run on free runners.
+# GPU correctness and all timing run only in scripted, manual rented-GPU
+# sessions — never here. No published number ever comes from a shared runner.
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  # Fast gate: everything except the slow tier (statistical/distributional/oracle
+  # tests, marked `slow`). Quick feedback on the bulk of correctness on every push.
+  cpu-verification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Sync environment
+        run: uv sync
+      - name: Run CPU verification suite (fast tier; Layers 1, 2-CPU, 3, 5-CPU)
+        run: uv run pytest -ra -m "not slow"
+
+  # Slow tier (parallel, also required): the mpmath/Walrus-heavy statistical and
+  # distributional Layer-4/5 validation (GBS probabilities, samplers, threshold).
+  cpu-verification-slow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Sync environment
+        run: uv sync
+      - name: Run CPU verification suite (slow tier; statistical / oracle)
+        run: uv run pytest -ra -m "slow"
+
+  packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheel
+        run: uv build --wheel -o dist
+      - name: Install wheel in a clean venv and run the end-to-end example
+        # The example exercises the wheel-only surface (kernels, precision tiers,
+        # GBS distribution, the conditional sampler) from a neutral cwd, so it is
+        # the packaging smoke-test: it must run on exactly what `pip install` ships.
+        run: |
+          uv venv /tmp/fresh --python 3.12
+          uv pip install --python /tmp/fresh/bin/python dist/*.whl
+          cp examples/gbs_demo.py /tmp/
+          cd /tmp && ./fresh/bin/python gbs_demo.py

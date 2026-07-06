@@ -1,0 +1,219 @@
+{
+  "kind": "accuracy_all_functions",
+  "created_utc": "2026-06-21T01:50:48.587240+00:00",
+  "dd_measured": true,
+  "dd_backend": "gpu",
+  "note": "Work-precision study for all four functions on PHYSICAL (well-conditioned, realistic) and ADVERSARIAL (tunable cancellation) inputs, vs an independent mpmath reference. DD is an INTERNAL precision tier: kernels collapse the double-double result to complex128 on output, recovering a correct FP64 answer under cancellation (not exposing 31-digit results).",
+  "env": {
+    "python": "3.10.12",
+    "numpy": "2.2.6",
+    "mpmath": "1.4.1",
+    "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35"
+  },
+  "params": {
+    "dps": 80,
+    "dtype": "complex128",
+    "sections": "physical (size sweep) + adversarial (cancellation sweep)"
+  },
+  "sweeps": {
+    "perm": {
+      "adversarial": [
+        {
+          "delta": 0.1,
+          "rel_err_fp64": 5.04377146754579e-16,
+          "rel_err_dd": 2.908288576530849e-17
+        },
+        {
+          "delta": 0.01,
+          "rel_err_fp64": 2.6780770401701057e-15,
+          "rel_err_dd": 4.1708965373895194e-17
+        },
+        {
+          "delta": 0.0001,
+          "rel_err_fp64": 4.4952162811394153e-13,
+          "rel_err_dd": 5.136786553397156e-17
+        },
+        {
+          "delta": 1e-06,
+          "rel_err_fp64": 3.990079942932121e-11,
+          "rel_err_dd": 4.291575771943664e-17
+        },
+        {
+          "delta": 1e-08,
+          "rel_err_fp64": 4.047247302584507e-09,
+          "rel_err_dd": 1.531057635761446e-17
+        },
+        {
+          "delta": 1e-10,
+          "rel_err_fp64": 1.9388179378037032e-07,
+          "rel_err_dd": 4.366758660475155e-17
+        },
+        {
+          "delta": 1e-12,
+          "rel_err_fp64": 3.6780134775656744e-05,
+          "rel_err_dd": 2.920075741781042e-17
+        },
+        {
+          "delta": 1e-14,
+          "rel_err_fp64": 0.0019877949701269616,
+          "rel_err_dd": 4.936880777224254e-17
+        }
+      ],
+      "physical": [
+        {
+          "n": 4,
+          "rel_err_fp64": 3.826530480589262e-16,
+          "rel_err_dd": 4.2501210969851147e-17
+        },
+        {
+          "n": 8,
+          "rel_err_fp64": 1.8923148726429965e-15,
+          "rel_err_dd": 7.695691054887435e-18
+        },
+        {
+          "n": 12,
+          "rel_err_fp64": 3.2163672132236703e-14,
+          "rel_err_dd": 3.288345400731765e-18
+        }
+      ]
+    },
+    "haf": {
+      "adversarial": [
+        {
+          "delta": 0.01,
+          "rel_err_fp64": 4.949932770570161e-13,
+          "rel_err_dd": 2.338800176887632e-17
+        },
+        {
+          "delta": 0.0001,
+          "rel_err_fp64": 5.4814202384428304e-11,
+          "rel_err_dd": 7.057056830615979e-17
+        },
+        {
+          "delta": 1e-06,
+          "rel_err_fp64": 1.7144359775699438e-09,
+          "rel_err_dd": 3.216709039804181e-17
+        },
+        {
+          "delta": 1e-08,
+          "rel_err_fp64": 4.386663859638931e-08,
+          "rel_err_dd": 7.038872890827469e-17
+        },
+        {
+          "delta": 1e-10,
+          "rel_err_fp64": 0.0001401789193140087,
+          "rel_err_dd": 3.614022075263245e-17
+        }
+      ],
+      "physical": [
+        {
+          "n": 4,
+          "rel_err_fp64": 1.9554467953093864e-16,
+          "rel_err_dd": 1.0307007169329477e-16
+        },
+        {
+          "n": 8,
+          "rel_err_fp64": 8.738495185702958e-15,
+          "rel_err_dd": 2.1054509379393582e-15
+        },
+        {
+          "n": 12,
+          "rel_err_fp64": 4.334375484373603e-15,
+          "rel_err_dd": 6.105136262188799e-17
+        }
+      ]
+    },
+    "lhaf": {
+      "adversarial": [
+        {
+          "delta": 0.01,
+          "rel_err_fp64": 5.109423850494407e-13,
+          "rel_err_dd": 1.2980930412787391e-17
+        },
+        {
+          "delta": 0.0001,
+          "rel_err_fp64": 4.126175346806182e-11,
+          "rel_err_dd": 6.137683926599437e-17
+        },
+        {
+          "delta": 1e-06,
+          "rel_err_fp64": 6.826640272975526e-09,
+          "rel_err_dd": 6.118363663891766e-17
+        },
+        {
+          "delta": 1e-08,
+          "rel_err_fp64": 3.636662051858582e-07,
+          "rel_err_dd": 4.3627828394914505e-17
+        },
+        {
+          "delta": 1e-10,
+          "rel_err_fp64": 4.1199855104478616e-05,
+          "rel_err_dd": 7.423169524479483e-17
+        }
+      ],
+      "physical": [
+        {
+          "n": 4,
+          "rel_err_fp64": 4.035031242957468e-17,
+          "rel_err_dd": 7.146408998858043e-17
+        },
+        {
+          "n": 8,
+          "rel_err_fp64": 7.79508905039688e-15,
+          "rel_err_dd": 4.528296231535876e-16
+        },
+        {
+          "n": 10,
+          "rel_err_fp64": 1.0863193917497178e-14,
+          "rel_err_dd": 8.628099955274147e-17
+        }
+      ]
+    },
+    "tor": {
+      "adversarial": [
+        {
+          "delta": 0.01,
+          "rel_err_fp64": 6.418266591601947e-15,
+          "rel_err_dd": 6.397449909890224e-17
+        },
+        {
+          "delta": 0.0001,
+          "rel_err_fp64": 8.289404367138186e-13,
+          "rel_err_dd": 1.525138570344508e-17
+        },
+        {
+          "delta": 1e-06,
+          "rel_err_fp64": 5.633983012696245e-12,
+          "rel_err_dd": 5.100192608461614e-17
+        },
+        {
+          "delta": 1e-08,
+          "rel_err_fp64": 6.126989339388525e-09,
+          "rel_err_dd": 6.862383315918208e-17
+        },
+        {
+          "delta": 1e-10,
+          "rel_err_fp64": 8.264037095438414e-08,
+          "rel_err_dd": 6.144003759616352e-17
+        }
+      ],
+      "physical": [
+        {
+          "n": 2,
+          "rel_err_fp64": 2.2546463298500945e-14,
+          "rel_err_dd": 5.390944782844468e-17
+        },
+        {
+          "n": 4,
+          "rel_err_fp64": 5.6049432577396366e-12,
+          "rel_err_dd": 9.826955228180342e-18
+        },
+        {
+          "n": 6,
+          "rel_err_fp64": 1.7218015574224533e-11,
+          "rel_err_dd": 9.897572504703748e-17
+        }
+      ]
+    }
+  }
+}

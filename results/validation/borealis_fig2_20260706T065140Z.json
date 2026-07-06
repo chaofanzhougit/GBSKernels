@@ -1,0 +1,70 @@
+{
+ "kind": "borealis_fig2_certified_validation",
+ "provenance": {
+  "commit": "e9b4afb",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "0134fc870cfb",
+  "captured_utc": "2026-07-06T06:51:40.321950+00:00",
+  "environment": {
+   "gpu": {
+    "name": "NVIDIA GeForce RTX 4090",
+    "compute_cap": "8.9",
+    "driver": "580.159.04",
+    "memory_total": "24564 MiB"
+   },
+   "cuda": "12.4",
+   "cpu": {
+    "processor": "x86_64",
+    "machine": "x86_64",
+    "logical_cores": 80
+   },
+   "blas_threads": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "GOTO_NUM_THREADS": "1"
+   },
+   "platform": "Linux-5.15.0-185-generic-x86_64-with-glibc2.35",
+   "python": "3.10.12"
+  }
+ },
+ "data_source": "https://qca-data.s3.amazonaws.com/fig2/",
+ "params": {
+  "events_used": 2000,
+  "events_refused_over_cap": 0,
+  "total_shots_on_disk": 84096000,
+  "seed": 0
+ },
+ "clicks": {
+  "min": 0,
+  "max": 12,
+  "mean": 4.2585
+ },
+ "log_ratios": [
+  {
+   "alternative": "thermal",
+   "log_ratio_lo": 125.58176735182947,
+   "log_ratio_hi": 125.58235906662117,
+   "per_event_lo": 0.06279088367591473,
+   "per_event_hi": 0.06279117953331058,
+   "certified_bar": 0.0002958573958480315,
+   "statistical_se_total": 19.526620797710684,
+   "ideal_wins_with_proof": true
+  },
+  {
+   "alternative": "product",
+   "log_ratio_lo": 122.9181397982961,
+   "log_ratio_hi": 122.9189522741978,
+   "per_event_lo": 0.061459069899148046,
+   "per_event_hi": 0.0614594761370989,
+   "certified_bar": 0.0004062379508553704,
+   "statistical_se_total": 18.886838484479636,
+   "ideal_wins_with_proof": true
+  }
+ ],
+ "precision_necessity": {
+  "rtol<=1e-6": 0.9935,
+  "rtol<=1e-9": 0.734,
+  "rtol<=1e-12": 0.197
+ }
+}

@@ -1,0 +1,110 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-07-04T13:59:27.486181+00:00",
+  "commit": "f4d0de8",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "c50d578e0d06",
+  "captured_utc": "2026-07-04T13:59:27.486469+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.159.04",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 80
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler); median + IQR over raw repeats; warm-up discarded; the 'gpu-resident' row is the v3 FULLY on-device chain (before/after vs the hybrid 'gpu' row, where in-cap)",
+  "params": {
+    "modes": 6,
+    "num_samples": 300,
+    "cutoff": 4,
+    "repeats": 3,
+    "seed": 0,
+    "warmup": "1 untimed draw/backend"
+  },
+  "env": {
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 30.434508334644555,
+      "samples_per_sec_iqr": 5.887249955616365,
+      "seconds_median": 9.857231689151376,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        25.906966721657227,
+        30.434508334644555,
+        37.68146663288996
+      ]
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 43.64470701811671,
+      "samples_per_sec_iqr": 16.79366225572265,
+      "seconds_median": 6.873685734113678,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        36.02080880956983,
+        43.64470701811671,
+        69.60813332101513
+      ]
+    },
+    {
+      "backend": "cpu+sieve",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 6.2584740291317535,
+      "samples_per_sec_iqr": 3.0383367403971064,
+      "seconds_median": 47.93500757589936,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        5.785865060614121,
+        6.2584740291317535,
+        11.862538541408336
+      ]
+    },
+    {
+      "backend": "gpu+sieve",
+      "num_samples": 300,
+      "modes": 6,
+      "cutoff": 4,
+      "repeats": 3,
+      "samples_per_sec_median": 476.4252040808784,
+      "samples_per_sec_iqr": 304.0324589702037,
+      "seconds_median": 0.6296896080020815,
+      "mean_photons": 1.3466666666666667,
+      "raw_samples_per_sec": [
+        167.22847071542728,
+        476.4252040808784,
+        775.2933886558347
+      ]
+    }
+  ]
+}

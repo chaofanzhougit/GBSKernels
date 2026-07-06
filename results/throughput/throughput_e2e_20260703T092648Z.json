@@ -1,0 +1,1755 @@
+{
+  "kind": "throughput_end_to_end",
+  "created_utc": "2026-07-03T09:26:48.901320+00:00",
+  "commit": "6b3f2e8",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "0a67b3db8963",
+  "captured_utc": "2026-07-03T09:26:48.901605+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.159.04",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 80
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "path": "public gbskernels.*_batched(backend=...) incl. H2D/launch/sync/D2H",
+  "gpu_backend": "gpu",
+  "env": {
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "params": {
+    "batch": 4096,
+    "repeats": 7,
+    "warmup": 2,
+    "precision": "fp64",
+    "regime": "physical",
+    "seed": 0,
+    "metric": "evals/sec median + IQR; randomized cell order; warm-up discarded; checksum guard"
+  },
+  "all_backends_agree": true,
+  "summary": [
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "gpu": {
+        "evals_per_sec_median": 1057256.0124138524,
+        "evals_per_sec_iqr": 664871.93186309
+      },
+      "cpu": {
+        "evals_per_sec_median": 741.8969834511017,
+        "evals_per_sec_iqr": 5.373041871257783
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.08874598179510285,
+      "checksum_cpu": 0.08874598179510286
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "gpu": {
+        "evals_per_sec_median": 227685.33608975666,
+        "evals_per_sec_iqr": 19007.214415142196
+      },
+      "cpu": {
+        "evals_per_sec_median": 133.36195171419985,
+        "evals_per_sec_iqr": 13.252728931868319
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.002607104079633214,
+      "checksum_cpu": 0.0026071040796332174
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "gpu": {
+        "evals_per_sec_median": 23945.27757836771,
+        "evals_per_sec_iqr": 169.08512494471506
+      },
+      "cpu": {
+        "evals_per_sec_median": 25.307938214243716,
+        "evals_per_sec_iqr": 0.28764829602648945
+      },
+      "backends_agree": true,
+      "checksum_gpu": 7.043521448849336e-05,
+      "checksum_cpu": 7.043521448849348e-05
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "gpu": {
+        "evals_per_sec_median": 1131086.1812984927,
+        "evals_per_sec_iqr": 453520.3618853898
+      },
+      "cpu": {
+        "evals_per_sec_median": 475.5845410607625,
+        "evals_per_sec_iqr": 27.221799741768848
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.1560674663845587,
+      "checksum_cpu": 0.1560674663845587
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "gpu": {
+        "evals_per_sec_median": 198495.48562284827,
+        "evals_per_sec_iqr": 9053.1191405211
+      },
+      "cpu": {
+        "evals_per_sec_median": 80.19954604963624,
+        "evals_per_sec_iqr": 2.5599184141421176
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.006646433125258274,
+      "checksum_cpu": 0.006646433125258242
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "gpu": {
+        "evals_per_sec_median": 1571445.0624807167,
+        "evals_per_sec_iqr": 490443.799731256
+      },
+      "cpu": {
+        "evals_per_sec_median": 923.1805249501429,
+        "evals_per_sec_iqr": 275.14519019857835
+      },
+      "backends_agree": true,
+      "checksum_gpu": 1.4910890476347278,
+      "checksum_cpu": 1.4910890476347278
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "gpu": {
+        "evals_per_sec_median": 639389.093458056,
+        "evals_per_sec_iqr": 76014.10959307454
+      },
+      "cpu": {
+        "evals_per_sec_median": 67.57624417936917,
+        "evals_per_sec_iqr": 4.457401227575502
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.10025832199741128,
+      "checksum_cpu": 0.10025832199741133
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "gpu": {
+        "evals_per_sec_median": 138267.763935755,
+        "evals_per_sec_iqr": 2714.7842149551143
+      },
+      "cpu": {
+        "evals_per_sec_median": 4.133011786446157,
+        "evals_per_sec_iqr": 0.10472691218802321
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.006163151573860402,
+      "checksum_cpu": 0.006163151573860187
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "gpu": {
+        "evals_per_sec_median": 1468370.2801739722,
+        "evals_per_sec_iqr": 590089.9780605888
+      },
+      "cpu": {
+        "evals_per_sec_median": 2165.0849172690123,
+        "evals_per_sec_iqr": 588.9655762547832
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.06848415301962074,
+      "checksum_cpu": 0.06848415301962052
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "gpu": {
+        "evals_per_sec_median": 533933.3173876163,
+        "evals_per_sec_iqr": 69680.96849384496
+      },
+      "cpu": {
+        "evals_per_sec_median": 462.77214834046555,
+        "evals_per_sec_iqr": 15.228085482724055
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.008364509869262515,
+      "checksum_cpu": 0.008364509869320691
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "gpu": {
+        "evals_per_sec_median": 135186.98335570135,
+        "evals_per_sec_iqr": 5571.278994322376
+      },
+      "cpu": {
+        "evals_per_sec_median": 103.45266654434184,
+        "evals_per_sec_iqr": 4.664774375642125
+      },
+      "backends_agree": true,
+      "checksum_gpu": 0.001679911677782031,
+      "checksum_cpu": 0.001679911677602508
+    }
+  ],
+  "raw": [
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.004910012939944863,
+      "evals_per_sec": 834213.6874380611,
+      "checksum": 0.08874598179510285
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 1.922589338151738,
+      "evals_per_sec": 66.57688017923344,
+      "checksum": 0.10025832199741133
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 0.2668657209724188,
+      "evals_per_sec": 479.6419695028164,
+      "checksum": 0.008364509869320691
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.03029877506196499,
+      "evals_per_sec": 135186.98335570135,
+      "checksum": 0.001679911677782031
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 5.019906339002773,
+      "evals_per_sec": 25.498483707850966,
+      "checksum": 7.043521448849348e-05
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 0.9926867301110178,
+      "evals_per_sec": 128.94299492215941,
+      "checksum": 0.0026071040796332174
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.021188374143093824,
+      "evals_per_sec": 193313.5582908827,
+      "checksum": 0.006646433125258274
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.006988222012296319,
+      "evals_per_sec": 586129.0601232717,
+      "checksum": 0.10025832199741128
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.003017321927472949,
+      "evals_per_sec": 1357495.1889308211,
+      "checksum": 0.08874598179510285
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.02975430409424007,
+      "evals_per_sec": 137660.75613890484,
+      "checksum": 0.006163151573860402
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 5.262860728893429,
+      "evals_per_sec": 24.3213732214634,
+      "checksum": 7.043521448849348e-05
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.008947847876697779,
+      "evals_per_sec": 457763.70546787133,
+      "checksum": 0.008364509869262515
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 5.094459017040208,
+      "evals_per_sec": 25.12533707148473,
+      "checksum": 7.043521448849348e-05
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 31.342243660008535,
+      "evals_per_sec": 4.0839450228422205,
+      "checksum": 0.006163151573860187
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 0.059120082994922996,
+      "evals_per_sec": 2165.0849172690123,
+      "checksum": 0.06848415301962052
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.026290194131433964,
+      "evals_per_sec": 155799.53421122147,
+      "checksum": 0.06848415301962074
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.004806220065802336,
+      "evals_per_sec": 852228.974936924,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.01902902009896934,
+      "evals_per_sec": 215250.17991976632,
+      "checksum": 0.002607104079633214
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 1.2379001721274108,
+      "evals_per_sec": 103.4009065367717,
+      "checksum": 0.001679911677602508
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 0.046180469915270805,
+      "evals_per_sec": 2771.7344633964713,
+      "checksum": 0.06848415301962052
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.017688846914097667,
+      "evals_per_sec": 231558.33842032787,
+      "checksum": 0.002607104079633214
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 0.9597939918749034,
+      "evals_per_sec": 133.36195171419985,
+      "checksum": 0.0026071040796332174
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 0.17253069207072258,
+      "evals_per_sec": 741.8969834511017,
+      "checksum": 0.08874598179510286
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 5.041400762973353,
+      "evals_per_sec": 25.389768839664168,
+      "checksum": 7.043521448849348e-05
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.003095389809459448,
+      "evals_per_sec": 1323258.2169401436,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 0.17103858082555234,
+      "evals_per_sec": 748.3691654957734,
+      "checksum": 0.08874598179510286
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.0029962779954075813,
+      "evals_per_sec": 1367029.363189254,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 1.894156764028594,
+      "evals_per_sec": 67.57624417936917,
+      "checksum": 0.10025832199741133
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.007671369938179851,
+      "evals_per_sec": 533933.3173876163,
+      "checksum": 0.008364509869262515
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.002429670188575983,
+      "evals_per_sec": 1685825.516260972,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.029623680049553514,
+      "evals_per_sec": 138267.763935755,
+      "checksum": 0.006163151573860402
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.03160551795735955,
+      "evals_per_sec": 129597.62296970107,
+      "checksum": 0.006163151573860402
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 0.1386511051096022,
+      "evals_per_sec": 923.1805249501429,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.0062320909928530455,
+      "evals_per_sec": 657243.2919701089,
+      "checksum": 0.08874598179510285
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 1.227274029981345,
+      "evals_per_sec": 104.29618558941205,
+      "checksum": 0.001679911677602508
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 0.27908685780130327,
+      "evals_per_sec": 458.63857943153306,
+      "checksum": 0.008364509869320691
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.002559737069532275,
+      "evals_per_sec": 1600164.3484220966,
+      "checksum": 0.06848415301962074
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.030344638973474503,
+      "evals_per_sec": 134982.65718634787,
+      "checksum": 0.001679911677782031
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 0.11804874404333532,
+      "evals_per_sec": 1084.2978554097247,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 1.2534927588421851,
+      "evals_per_sec": 102.11467046545198,
+      "checksum": 0.001679911677602508
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 0.284483052091673,
+      "evals_per_sec": 449.93892978465635,
+      "checksum": 0.008364509869320691
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.003212754847481847,
+      "evals_per_sec": 1274918.316039719,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.028688156977295876,
+      "evals_per_sec": 142776.68667393376,
+      "checksum": 0.006163151573860402
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 0.27137335389852524,
+      "evals_per_sec": 471.6749016112433,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 0.2765940008684993,
+      "evals_per_sec": 462.77214834046555,
+      "checksum": 0.008364509869320691
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.020174283999949694,
+      "evals_per_sec": 203030.74944370834,
+      "checksum": 0.006646433125258274
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.017150650033727288,
+      "evals_per_sec": 238824.76710475044,
+      "checksum": 0.002607104079633214
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.003621297888457775,
+      "evals_per_sec": 1131086.1812984927,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.02019337913952768,
+      "evals_per_sec": 202838.7607491732,
+      "checksum": 0.006646433125258274
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.0024456020910292864,
+      "evals_per_sec": 1674843.1868882263,
+      "checksum": 0.06848415301962074
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.006481656106188893,
+      "evals_per_sec": 631937.2599988771,
+      "checksum": 0.10025832199741128
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 31.862745504127815,
+      "evals_per_sec": 4.017230718031427,
+      "checksum": 0.006163151573860187
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.03039471199735999,
+      "evals_per_sec": 134760.28331361615,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.0036118400748819113,
+      "evals_per_sec": 1134047.9963343665,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.003849935019388795,
+      "evals_per_sec": 1063914.0607236195,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.002147977938875556,
+      "evals_per_sec": 1906909.7153503418,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 5.05770161584951,
+      "evals_per_sec": 25.307938214243716,
+      "checksum": 7.043521448849348e-05
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.029965383000671864,
+      "evals_per_sec": 136691.06114572813,
+      "checksum": 0.006163151573860402
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.03273343411274254,
+      "evals_per_sec": 125131.99763557652,
+      "checksum": 0.001679911677782031
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.1713869150262326,
+      "evals_per_sec": 23899.140721291726,
+      "checksum": 7.043521448849336e-05
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.0026065181009471416,
+      "evals_per_sec": 1571445.0624807167,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.02935054898262024,
+      "evals_per_sec": 139554.45952392314,
+      "checksum": 0.001679911677782031
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.021064572036266327,
+      "evals_per_sec": 194449.7136209567,
+      "checksum": 0.006646433125258274
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 30.821859797928482,
+      "evals_per_sec": 4.152896705104174,
+      "checksum": 0.006163151573860187
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.028164911083877087,
+      "evals_per_sec": 145429.18270900354,
+      "checksum": 0.08874598179510285
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 0.16947425506077707,
+      "evals_per_sec": 755.2769590525504,
+      "checksum": 0.08874598179510286
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 30.78600869886577,
+      "evals_per_sec": 4.157732860145519,
+      "checksum": 0.006163151573860187
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 1.5913458911236376,
+      "evals_per_sec": 80.43505859660728,
+      "checksum": 0.006646433125258242
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.03826975612901151,
+      "evals_per_sec": 107029.68647597174,
+      "checksum": 0.006646433125258274
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 1.911048899171874,
+      "evals_per_sec": 66.9789245348285,
+      "checksum": 0.10025832199741133
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 0.26914247404783964,
+      "evals_per_sec": 475.5845410607625,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.17041709320619702,
+      "evals_per_sec": 24035.147665874243,
+      "checksum": 7.043521448849336e-05
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.029236444039270282,
+      "evals_per_sec": 140099.1172010614,
+      "checksum": 0.001679911677782031
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 0.28104511788114905,
+      "evals_per_sec": 455.4428874801868,
+      "checksum": 0.008364509869320691
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 1.8677283290307969,
+      "evals_per_sec": 68.53245089794288,
+      "checksum": 0.10025832199741133
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 0.17321114102378488,
+      "evals_per_sec": 738.9824883286427,
+      "checksum": 0.08874598179510286
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 0.0501240361481905,
+      "evals_per_sec": 2553.6650644327824,
+      "checksum": 0.06848415301962052
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.029023958137258887,
+      "evals_per_sec": 141124.7901002809,
+      "checksum": 0.006163151573860402
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 0.07763219997286797,
+      "evals_per_sec": 1648.8003694953293,
+      "checksum": 0.06848415301962052
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 5.081861869897693,
+      "evals_per_sec": 25.187618883977432,
+      "checksum": 7.043521448849348e-05
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.17105669318698347,
+      "evals_per_sec": 23945.27757836771,
+      "checksum": 7.043521448849336e-05
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.006406114902347326,
+      "evals_per_sec": 639389.093458056,
+      "checksum": 0.10025832199741128
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.0038234449457377195,
+      "evals_per_sec": 1071285.204345918,
+      "checksum": 0.06848415301962074
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.007278913166373968,
+      "evals_per_sec": 562721.3714984384,
+      "checksum": 0.008364509869262515
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 1.5854170911479741,
+      "evals_per_sec": 80.73585223388586,
+      "checksum": 0.006646433125258242
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 1.2372808190993965,
+      "evals_per_sec": 103.45266654434184,
+      "checksum": 0.001679911677602508
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 1.5960190088953823,
+      "evals_per_sec": 80.19954604963624,
+      "checksum": 0.006646433125258242
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.0027894871309399605,
+      "evals_per_sec": 1468370.2801739722,
+      "checksum": 0.06848415301962074
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.006954825017601252,
+      "evals_per_sec": 588943.645545913,
+      "checksum": 0.008364509869262515
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 1.608984619146213,
+      "evals_per_sec": 79.55327756204504,
+      "checksum": 0.006646433125258242
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.017989740008488297,
+      "evals_per_sec": 227685.33608975666,
+      "checksum": 0.002607104079633214
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.01924485620111227,
+      "evals_per_sec": 212836.09278219854,
+      "checksum": 0.002607104079633214
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 0.27533059287816286,
+      "evals_per_sec": 464.89566837435154,
+      "checksum": 0.008364509869320691
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 0.05516138602979481,
+      "evals_per_sec": 2320.463810152671,
+      "checksum": 0.06848415301962052
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.006154026137664914,
+      "evals_per_sec": 665580.5335195062,
+      "checksum": 0.10025832199741128
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 0.9887658779043704,
+      "evals_per_sec": 129.45430547349417,
+      "checksum": 0.0026071040796332174
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.16998577793128788,
+      "evals_per_sec": 24096.13351097935,
+      "checksum": 7.043521448849336e-05
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 30.97015121509321,
+      "evals_per_sec": 4.133011786446157,
+      "checksum": 0.006163151573860187
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.0358243880327791,
+      "evals_per_sec": 114335.51903949301,
+      "checksum": 0.002607104079633214
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.006304481066763401,
+      "evals_per_sec": 649696.6136663818,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.00753660686314106,
+      "evals_per_sec": 543480.6504279957,
+      "checksum": 0.008364509869262515
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 0.2701733889989555,
+      "evals_per_sec": 473.7698278659667,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.0034409400541335344,
+      "evals_per_sec": 1190372.379512847,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 0.15405004005879164,
+      "evals_per_sec": 830.8988426822226,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 1.9769309379626065,
+      "evals_per_sec": 64.74682425270493,
+      "checksum": 0.10025832199741133
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 0.17255523800849915,
+      "evals_per_sec": 741.791448797952,
+      "checksum": 0.08874598179510286
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 0.9995517048519105,
+      "evals_per_sec": 128.05740751446567,
+      "checksum": 0.0026071040796332174
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 1.6732508118730038,
+      "evals_per_sec": 76.49779644016388,
+      "checksum": 0.006646433125258242
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.020635230001062155,
+      "evals_per_sec": 198495.48562284827,
+      "checksum": 0.006646433125258274
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 1.2395623160991818,
+      "evals_per_sec": 103.26225502143957,
+      "checksum": 0.001679911677602508
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 30.725253669079393,
+      "evals_per_sec": 4.165954214035142,
+      "checksum": 0.006163151573860187
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.020749331917613745,
+      "evals_per_sec": 197403.9461252715,
+      "checksum": 0.10025832199741128
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.002264619106426835,
+      "evals_per_sec": 1808692.6796545302,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 0.24906846601516008,
+      "evals_per_sec": 513.9149168414158,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 1.1459622429683805,
+      "evals_per_sec": 111.69652472008346,
+      "checksum": 0.001679911677602508
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.005813936935737729,
+      "evals_per_sec": 704514.0057887917,
+      "checksum": 0.10025832199741128
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.017463796073570848,
+      "evals_per_sec": 234542.36311192135,
+      "checksum": 0.002607104079633214
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 1.143944038078189,
+      "evals_per_sec": 111.89358547209909,
+      "checksum": 0.001679911677602508
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 0.8679944698233157,
+      "evals_per_sec": 147.46637732156864,
+      "checksum": 0.0026071040796332174
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.004115690011531115,
+      "evals_per_sec": 995215.8662396953,
+      "checksum": 0.06848415301962074
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.0024876759853214025,
+      "evals_per_sec": 1646516.6782846944,
+      "checksum": 0.06848415301962074
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.03067513112910092,
+      "evals_per_sec": 133528.36154999194,
+      "checksum": 0.001679911677782031
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.003874179907143116,
+      "evals_per_sec": 1057256.0124138524,
+      "checksum": 0.08874598179510285
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 4.632653037086129,
+      "evals_per_sec": 27.629956091101985,
+      "checksum": 7.043521448849348e-05
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 0.10460975510068238,
+      "evals_per_sec": 1223.5952553067877,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 0.15364582813344896,
+      "evals_per_sec": 833.0847739570625,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch_timed": 4096,
+      "seconds": 0.17142400215379894,
+      "evals_per_sec": 23893.970205672438,
+      "checksum": 7.043521448849336e-05
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 0.8664594991132617,
+      "evals_per_sec": 147.72762042657013,
+      "checksum": 0.0026071040796332174
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 128,
+      "seconds": 1.731176519067958,
+      "evals_per_sec": 73.93815627127006,
+      "checksum": 0.10025832199741133
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 0.06944825104437768,
+      "evals_per_sec": 1843.0989704579822,
+      "checksum": 0.06848415301962052
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 0.24749485100619495,
+      "evals_per_sec": 517.1824766439124,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 1.675660721026361,
+      "evals_per_sec": 76.38777850064932,
+      "checksum": 0.10025832199741133
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.029540607007220387,
+      "evals_per_sec": 138656.59561426227,
+      "checksum": 0.006163151573860402
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch_timed": 4096,
+      "seconds": 0.0027863539289683104,
+      "evals_per_sec": 1470021.4346124385,
+      "checksum": 0.08874598179510285
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 0.15513606602326035,
+      "evals_per_sec": 825.0821571097999,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.17146019893698394,
+      "evals_per_sec": 23888.9259746245,
+      "checksum": 7.043521448849336e-05
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 0.069073491031304,
+      "evals_per_sec": 1853.098751617905,
+      "checksum": 0.06848415301962052
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 4096,
+      "seconds": 0.008045943919569254,
+      "evals_per_sec": 509076.3794708729,
+      "checksum": 0.008364509869262515
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.002798376837745309,
+      "evals_per_sec": 1463705.654203529,
+      "checksum": 0.08874598179510285
+    },
+    {
+      "backend": "cpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch_timed": 128,
+      "seconds": 0.25309738190844655,
+      "evals_per_sec": 505.7341922497709,
+      "checksum": 0.008364509869320691
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch_timed": 4096,
+      "seconds": 0.027719846926629543,
+      "evals_per_sec": 147764.16373587935,
+      "checksum": 0.001679911677782031
+    },
+    {
+      "backend": "gpu",
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch_timed": 4096,
+      "seconds": 0.15941411606036127,
+      "evals_per_sec": 25694.085951893197,
+      "checksum": 7.043521448849336e-05
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 1.4425438030157238,
+      "evals_per_sec": 88.73214091135976,
+      "checksum": 0.006646433125258242
+    },
+    {
+      "backend": "gpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch_timed": 4096,
+      "seconds": 0.019191552884876728,
+      "evals_per_sec": 213427.23147889288,
+      "checksum": 0.006646433125258274
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 35.804212455870584,
+      "evals_per_sec": 3.5749983373538123,
+      "checksum": 0.006163151573860187
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch_timed": 128,
+      "seconds": 0.28333101398311555,
+      "evals_per_sec": 451.76840403228096,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "cpu",
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 0.11327672796323895,
+      "evals_per_sec": 1129.976141626717,
+      "checksum": 1.4910890476347278
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 0.2012572109233588,
+      "evals_per_sec": 636.0020563374694,
+      "checksum": 0.08874598179510286
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch_timed": 128,
+      "seconds": 0.2633888949640095,
+      "evals_per_sec": 485.97341211933184,
+      "checksum": 0.1560674663845587
+    },
+    {
+      "backend": "cpu",
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch_timed": 128,
+      "seconds": 1.7650536748114973,
+      "evals_per_sec": 72.51904110716069,
+      "checksum": 0.006646433125258242
+    },
+    {
+      "backend": "gpu",
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.024290812900289893,
+      "evals_per_sec": 168623.4222301847,
+      "checksum": 0.008364509869262515
+    },
+    {
+      "backend": "gpu",
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch_timed": 4096,
+      "seconds": 0.005150805925950408,
+      "evals_per_sec": 795215.3621948435,
+      "checksum": 0.10025832199741128
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch_timed": 128,
+      "seconds": 0.9313400071114302,
+      "evals_per_sec": 137.4363809378216,
+      "checksum": 0.0026071040796332174
+    },
+    {
+      "backend": "cpu",
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch_timed": 128,
+      "seconds": 0.17223959183320403,
+      "evals_per_sec": 743.150855373337,
+      "checksum": 0.08874598179510286
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "kind": "throughput",
+  "tier": "gpu",
+  "created_utc": "2026-06-21T01:50:47.009746+00:00",
+  "commit": null,
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4090",
+    "driver_version": "590.48.01",
+    "memory_total": "24564 MiB",
+    "memory_used": "0 MiB",
+    "temperature_c": "34",
+    "clock_sm": "2685 MHz",
+    "clock_mem": "10501 MHz",
+    "clock_sm_max": "3105 MHz",
+    "power_draw": "116.68 W"
+  },
+  "host": {
+    "platform": "Linux-6.8.0-101-generic-x86_64-with-glibc2.35"
+  },
+  "params": {
+    "batch": 4096,
+    "repeats": 7,
+    "precision": "fp64+dd",
+    "metric": "evals_per_sec median + IQR over repeats; post-sync checksum/row"
+  },
+  "methodology_caveats": "Does NOT yet meet the full anchor \u00a79 bar: single batch size and sizes {8,12,16}; no randomized order across cells, no 1 Hz thermals logging, no pinned-container digest, and no on-the-same-instance The Walrus comparison. The accuracy-normalized, randomized, vs-Walrus harness is the CPU one (bench.throughput).",
+  "rows": [
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 17211820.0,
+      "evals_per_sec_iqr": 199497.4,
+      "evals_per_sec_best": 17413780.0,
+      "checksum": 128734.6414182
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 766016.4,
+      "evals_per_sec_iqr": 3101.55,
+      "evals_per_sec_best": 767188.7,
+      "checksum": 6197318.322294
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 37713.03,
+      "evals_per_sec_iqr": 968.2492,
+      "evals_per_sec_best": 37849.85,
+      "checksum": 559861685.9818
+    },
+    {
+      "func": "perm_dd",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 1667823.0,
+      "evals_per_sec_iqr": 1211.35,
+      "evals_per_sec_best": 1668244.0,
+      "checksum": 128734.6414182
+    },
+    {
+      "func": "perm_dd",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 69405.64,
+      "evals_per_sec_iqr": 15.80933,
+      "evals_per_sec_best": 69409.2,
+      "checksum": 6197318.322294
+    },
+    {
+      "func": "perm_dd",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 3232.857,
+      "evals_per_sec_iqr": 0.2575034,
+      "evals_per_sec_best": 3233.22,
+      "checksum": 559861685.9818
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 5899068.0,
+      "evals_per_sec_iqr": 33781.68,
+      "evals_per_sec_best": 5954994.0,
+      "checksum": 15849.7321413
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 306632.5,
+      "evals_per_sec_iqr": 921.518,
+      "evals_per_sec_best": 308087.2,
+      "checksum": 104755.5918732
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 24872.85,
+      "evals_per_sec_iqr": 18.08467,
+      "evals_per_sec_best": 24897.68,
+      "checksum": 956449.3893204
+    },
+    {
+      "func": "haf_dd",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 1029399.0,
+      "evals_per_sec_iqr": 971.3144,
+      "evals_per_sec_best": 1030069.0,
+      "checksum": 15849.7321413
+    },
+    {
+      "func": "haf_dd",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 53100.16,
+      "evals_per_sec_iqr": 66.10689,
+      "evals_per_sec_best": 53196.04,
+      "checksum": 104755.5918732
+    },
+    {
+      "func": "haf_dd",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 4327.161,
+      "evals_per_sec_iqr": 1.6046,
+      "evals_per_sec_best": 4328.196,
+      "checksum": 956449.3893204
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 4771279.0,
+      "evals_per_sec_iqr": 17712.16,
+      "evals_per_sec_best": 4785779.0,
+      "checksum": 32651.30503468
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 277194.8,
+      "evals_per_sec_iqr": 300.3335,
+      "evals_per_sec_best": 277498.4,
+      "checksum": 267278.9988755
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 23551.23,
+      "evals_per_sec_iqr": 211.9306,
+      "evals_per_sec_best": 23589.52,
+      "checksum": 3006948.332837
+    },
+    {
+      "func": "lhaf_dd",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 802684.3,
+      "evals_per_sec_iqr": 3168.863,
+      "evals_per_sec_best": 806993.7,
+      "checksum": 32651.30503468
+    },
+    {
+      "func": "lhaf_dd",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 45351.04,
+      "evals_per_sec_iqr": 76.46204,
+      "evals_per_sec_best": 45424.94,
+      "checksum": 267278.9988755
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 14665970.0,
+      "evals_per_sec_iqr": 36864.12,
+      "evals_per_sec_best": 14720200.0,
+      "checksum": 0.08378583363209
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 1605155.0,
+      "evals_per_sec_iqr": 6816.108,
+      "evals_per_sec_best": 1610709.0,
+      "checksum": 0.001414956414027
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 213707.7,
+      "evals_per_sec_iqr": 749.1017,
+      "evals_per_sec_best": 214460.8,
+      "checksum": 3.419660650592e-05
+    },
+    {
+      "func": "tor_dd",
+      "matrix_dim": 8,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 8734388.0,
+      "evals_per_sec_iqr": 95462.64,
+      "evals_per_sec_best": 8764666.0,
+      "checksum": 0.0385168828783
+    },
+    {
+      "func": "tor_dd",
+      "matrix_dim": 12,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 901022.6,
+      "evals_per_sec_iqr": 2045.625,
+      "evals_per_sec_best": 902649.0,
+      "checksum": 0.0003695703208753
+    },
+    {
+      "func": "tor_dd",
+      "matrix_dim": 16,
+      "batch": 4096,
+      "repeats": 7,
+      "evals_per_sec_median": 116157.7,
+      "evals_per_sec_iqr": 279.7278,
+      "evals_per_sec_best": 116310.9,
+      "checksum": 5.453135796301e-06
+    }
+  ]
+}

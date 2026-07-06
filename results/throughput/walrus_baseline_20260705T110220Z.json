@@ -1,0 +1,808 @@
+{
+  "kind": "walrus_baseline",
+  "created_utc": "2026-07-05T11:02:20.475540+00:00",
+  "commit": "4816d96",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "63ede34102a0",
+  "captured_utc": "2026-07-05T11:02:20.475832+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.159.04",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 80
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "library": "thewalrus",
+  "library_version": "0.22.0",
+  "metric": "per-eval evals/sec (The Walrus, one-at-a-time, looped over a batch); median + IQR; randomized cell order; warm-up discarded",
+  "params": {
+    "batch": 64,
+    "repeats": 7,
+    "warmup": 2,
+    "precision": "fp64",
+    "regime": "physical",
+    "seed": 0
+  },
+  "env": {
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "evals_per_sec_median": 34081.12939533432,
+      "evals_per_sec_iqr": 4619.1415952715615
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "evals_per_sec_median": 695.7583084692805,
+      "evals_per_sec_iqr": 2444.2240556503366
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "evals_per_sec_median": 189.6678245078053,
+      "evals_per_sec_iqr": 29.145200586707176
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "evals_per_sec_median": 2.297797498896354,
+      "evals_per_sec_iqr": 0.04578497674521742
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "evals_per_sec_median": 2.272752570253716,
+      "evals_per_sec_iqr": 0.03528868777586025
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "evals_per_sec_median": 2.2291051817550986,
+      "evals_per_sec_iqr": 0.030074247742652105
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "evals_per_sec_median": 2.276447949131158,
+      "evals_per_sec_iqr": 0.025604976816494762
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "evals_per_sec_median": 2.261487029439068,
+      "evals_per_sec_iqr": 0.011027940357639654
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "evals_per_sec_median": 23866.676484771593,
+      "evals_per_sec_iqr": 8875.166726642088
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "evals_per_sec_median": 7215.83696494462,
+      "evals_per_sec_iqr": 2144.480672995991
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "evals_per_sec_median": 1586.2107547708501,
+      "evals_per_sec_iqr": 1051.742115151982
+    }
+  ],
+  "raw": [
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 0.11173258419148624,
+      "evals_per_sec": 572.7962032124614,
+      "checksum": 0.0006864334397752581
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 0.038644165033474565,
+      "evals_per_sec": 1656.1361836789995,
+      "checksum": 0.0006864334397752581
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 28.159686557017267,
+      "evals_per_sec": 2.272752570253716,
+      "checksum": 0.0014103630966277466
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 0.09198596584610641,
+      "evals_per_sec": 695.7583084692805,
+      "checksum": 0.050868463906721714
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 0.01366452919319272,
+      "evals_per_sec": 4683.65935592446,
+      "checksum": 0.005281005214515022
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 0.03990739886648953,
+      "evals_per_sec": 1603.7126402077076,
+      "checksum": 0.0006864334397752581
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 28.338338592089713,
+      "evals_per_sec": 2.2584245647295917,
+      "checksum": 3.5185835735224205e-05
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 0.0019305520690977573,
+      "evals_per_sec": 33151.13900549203,
+      "checksum": 0.7081386003885705
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 0.30824914993718266,
+      "evals_per_sec": 207.6242546428511,
+      "checksum": 0.003062310562357852
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 0.040347727946937084,
+      "evals_per_sec": 1586.2107547708501,
+      "checksum": 0.0006864334397752581
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 0.0018836180679500103,
+      "evals_per_sec": 33977.163995699426,
+      "checksum": 0.0320051573642377
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 28.853439864935353,
+      "evals_per_sec": 2.2181064129472174,
+      "checksum": 3.5185835735224205e-05
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 28.398156309034675,
+      "evals_per_sec": 2.253667431911375,
+      "checksum": 0.0014103630966277466
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 28.299960256088525,
+      "evals_per_sec": 2.2614872749240305,
+      "checksum": 0.0037213887697879946
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 0.3606499880552292,
+      "evals_per_sec": 177.45737451736494,
+      "checksum": 0.003062310562357852
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 27.943178253946826,
+      "evals_per_sec": 2.290362227888674,
+      "checksum": 0.0801704387964323
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 0.11144293216057122,
+      "evals_per_sec": 574.2849614526148,
+      "checksum": 0.005281005214515022
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 27.3963339489419,
+      "evals_per_sec": 2.3360789848479637,
+      "checksum": 0.04872788623357001
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 0.09227384394034743,
+      "evals_per_sec": 693.587665442596,
+      "checksum": 0.050868463906721714
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 0.0206455800216645,
+      "evals_per_sec": 3099.937126147166,
+      "checksum": 0.050868463906721714
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 0.30505477800033987,
+      "evals_per_sec": 209.79838578345002,
+      "checksum": 0.003062310562357852
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 28.373847508104518,
+      "evals_per_sec": 2.255598222332007,
+      "checksum": 0.0037213887697879946
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 28.397375095868483,
+      "evals_per_sec": 2.253729430411733,
+      "checksum": 0.0014103630966277466
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 28.91078832303174,
+      "evals_per_sec": 2.2137064989339805,
+      "checksum": 3.5185835735224205e-05
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 0.12024229695089161,
+      "evals_per_sec": 532.2586279779599,
+      "checksum": 0.0006864334397752581
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 27.087625325191766,
+      "evals_per_sec": 2.362702497235125,
+      "checksum": 0.04872788623357001
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 27.876202698098496,
+      "evals_per_sec": 2.295865067890527,
+      "checksum": 0.0801704387964323
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 0.01977951591834426,
+      "evals_per_sec": 3235.670694076189,
+      "checksum": 0.050868463906721714
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 28.08803328499198,
+      "evals_per_sec": 2.278550418629578,
+      "checksum": 0.04872788623357001
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 27.607864170800894,
+      "evals_per_sec": 2.3181800520334632,
+      "checksum": 0.04872788623357001
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 0.0019100930076092482,
+      "evals_per_sec": 33506.22181487647,
+      "checksum": 0.7081386003885705
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 0.0015439700800925493,
+      "evals_per_sec": 41451.580458193646,
+      "checksum": 0.7081386003885705
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 0.0015708880964666605,
+      "evals_per_sec": 40741.28522837037,
+      "checksum": 0.7081386003885705
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 0.0038965020794421434,
+      "evals_per_sec": 16424.988026482148,
+      "checksum": 0.0320051573642377
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 0.11517496895976365,
+      "evals_per_sec": 555.6762947542742,
+      "checksum": 0.0006864334397752581
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 28.067717481870204,
+      "evals_per_sec": 2.280199665018702,
+      "checksum": 0.0014103630966277466
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 28.498034555930644,
+      "evals_per_sec": 2.245768909936322,
+      "checksum": 0.0037213887697879946
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 28.113974679028615,
+      "evals_per_sec": 2.276447949131158,
+      "checksum": 0.0801704387964323
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 0.09294140292331576,
+      "evals_per_sec": 688.6059171368998,
+      "checksum": 0.050868463906721714
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 0.0039040851406753063,
+      "evals_per_sec": 16393.08511313092,
+      "checksum": 0.0320051573642377
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 0.3374320350121707,
+      "evals_per_sec": 189.6678245078053,
+      "checksum": 0.003062310562357852
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 0.008869379991665483,
+      "evals_per_sec": 7215.83696494462,
+      "checksum": 0.005281005214515022
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 27.8527590141166,
+      "evals_per_sec": 2.297797498896354,
+      "checksum": 0.04872788623357001
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 28.299963328056037,
+      "evals_per_sec": 2.261487029439068,
+      "checksum": 0.0037213887697879946
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 28.584461956983432,
+      "evals_per_sec": 2.2389786484808836,
+      "checksum": 3.5185835735224205e-05
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 27.500097742071375,
+      "evals_per_sec": 2.327264455576417,
+      "checksum": 0.0014103630966277466
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 28.019314670935273,
+      "evals_per_sec": 2.2841386647614144,
+      "checksum": 0.04872788623357001
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 28.295978117967024,
+      "evals_per_sec": 2.2618055376344133,
+      "checksum": 0.0801704387964323
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 0.0018778720404952765,
+      "evals_per_sec": 34081.12939533432,
+      "checksum": 0.7081386003885705
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 28.38223971403204,
+      "evals_per_sec": 2.2549312755032056,
+      "checksum": 0.0801704387964323
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 0.0026649991050362587,
+      "evals_per_sec": 24015.01744561721,
+      "checksum": 0.0320051573642377
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 0.310126667143777,
+      "evals_per_sec": 206.36729046692759,
+      "checksum": 0.003062310562357852
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 0.020184788154438138,
+      "evals_per_sec": 3170.704567733002,
+      "checksum": 0.050868463906721714
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 0.00854294397868216,
+      "evals_per_sec": 7491.562646284926,
+      "checksum": 0.005281005214515022
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 0.0018500378355383873,
+      "evals_per_sec": 34593.88709278753,
+      "checksum": 0.0320051573642377
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 0.008277029963210225,
+      "evals_per_sec": 7732.242155032354,
+      "checksum": 0.005281005214515022
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 27.8530369149521,
+      "evals_per_sec": 2.297774572856127,
+      "checksum": 0.0014103630966277466
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 0.3590588339138776,
+      "evals_per_sec": 178.2437694189994,
+      "checksum": 0.003062310562357852
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 16,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 0.03930614609271288,
+      "evals_per_sec": 1628.2440880629915,
+      "checksum": 0.0006864334397752581
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 28.90697853686288,
+      "evals_per_sec": 2.2139982536876226,
+      "checksum": 3.5185835735224205e-05
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 0.0019245671574026346,
+      "evals_per_sec": 33254.23057014721,
+      "checksum": 0.7081386003885705
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 28.503706224029884,
+      "evals_per_sec": 2.2453220467886092,
+      "checksum": 0.0801704387964323
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 0.0929887481033802,
+      "evals_per_sec": 688.2553137380452,
+      "checksum": 0.050868463906721714
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 28.711072283098474,
+      "evals_per_sec": 2.2291051817550986,
+      "checksum": 3.5185835735224205e-05
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 0.3872096489649266,
+      "evals_per_sec": 165.28513731794197,
+      "checksum": 0.003062310562357852
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 1,
+      "batch": 64,
+      "seconds": 0.008796773152425885,
+      "evals_per_sec": 7275.395067150359,
+      "checksum": 0.005281005214515022
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 28.287928881822154,
+      "evals_per_sec": 2.262449126882755,
+      "checksum": 0.04872788623357001
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 8,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 28.09994487906806,
+      "evals_per_sec": 2.2775845388819342,
+      "checksum": 0.0801704387964323
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 0.0026815631426870823,
+      "evals_per_sec": 23866.676484771593,
+      "checksum": 0.0320051573642377
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 16,
+      "repeat": 3,
+      "batch": 64,
+      "seconds": 28.403108282014728,
+      "evals_per_sec": 2.253274513639261,
+      "checksum": 3.5185835735224205e-05
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 28.098197243874893,
+      "evals_per_sec": 2.277726198749328,
+      "checksum": 0.0037213887697879946
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 8,
+      "repeat": 6,
+      "batch": 64,
+      "seconds": 0.002687172032892704,
+      "evals_per_sec": 23816.85996155031,
+      "checksum": 0.0320051573642377
+    },
+    {
+      "func": "tor",
+      "matrix_dim": 12,
+      "repeat": 2,
+      "batch": 64,
+      "seconds": 0.011045267106965184,
+      "evals_per_sec": 5794.337011518841,
+      "checksum": 0.005281005214515022
+    },
+    {
+      "func": "haf",
+      "matrix_dim": 12,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 28.482228053966537,
+      "evals_per_sec": 2.2470152222198476,
+      "checksum": 0.0014103630966277466
+    },
+    {
+      "func": "perm",
+      "matrix_dim": 8,
+      "repeat": 5,
+      "batch": 64,
+      "seconds": 0.0018152191769331694,
+      "evals_per_sec": 35257.450347196434,
+      "checksum": 0.7081386003885705
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 4,
+      "batch": 64,
+      "seconds": 28.294349358882755,
+      "evals_per_sec": 2.2619357380595777,
+      "checksum": 0.0037213887697879946
+    },
+    {
+      "func": "lhaf",
+      "matrix_dim": 12,
+      "repeat": 0,
+      "batch": 64,
+      "seconds": 28.50374067388475,
+      "evals_per_sec": 2.2453193330739594,
+      "checksum": 0.0037213887697879946
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-06-23T23:46:15.502506+00:00",
+  "commit": "9c8477c",
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler)",
+  "params": {
+    "modes": 6,
+    "num_samples": 2000,
+    "cutoff": 5,
+    "repeats": 3
+  },
+  "env": {
+    "platform": "Linux-6.8.0-90-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "seconds": 85.71952232904732,
+      "samples_per_sec": 23.331907897511353,
+      "mean_photons": 1.324
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "seconds": 63.42387058585882,
+      "samples_per_sec": 31.53386858174383,
+      "mean_photons": 1.324
+    }
+  ]
+}

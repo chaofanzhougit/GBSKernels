@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gbskernels"
+version = "0.1.0"
+description = "GPU-native, batched library of photonic sampling matrix functions (hafnian, loop hafnian, permanent, torontonian)."
+readme = "README.md"
+authors = [{ name = "Chaofan Zhou", email = "chaofanzhou97@gmail.com" }]
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+keywords = [
+    "quantum", "photonics", "gaussian-boson-sampling", "hafnian", "permanent",
+    "torontonian", "loop-hafnian", "gpu", "cuda", "numerical-methods",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "numpy>=1.26",
+    "mpmath>=1.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/chaofanzhougit/GBSKernels"
+Documentation = "https://github.com/chaofanzhougit/GBSKernels#readme"
+Issues = "https://github.com/chaofanzhougit/GBSKernels/issues"
+
+# Dev/test toolchain. Layer 2 (The Walrus differential oracle) needs `thewalrus`;
+# Layers 1 & 3 do not, and degrade gracefully (skip) if it is unavailable.
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "hypothesis>=6.100",
+    "scipy>=1.11",
+    "thewalrus>=0.21",
+    # GPU-binding host-shim build + validation (tests/test_gpu_bindings.py)
+    "nanobind>=2.0",
+    "cmake>=3.18",
+    # crossover figures (bench.plot_crossover); optional -- the script emits CSV without it
+    "matplotlib>=3.7",
+]
+
+# Packaging. The public API surface is `gbskernels`; the reference/support
+# packages (`cpu_ref` independent FP64 + DD reference, `highprec_ref` mpmath
+# ground truth, `sampling`, `bench`) ship alongside it so a plain `pip install`
+# reproduces the validated CPU library on any platform.
+#
+# This wheel is the CPU library. The CUDA kernels (`core/`) and the nanobind GPU
+# extension are a separate build (`bindings/CMakeLists.txt`, requires nvcc);
+# `gbskernels` loads the extension lazily when present (`gpu_available()`) and
+# falls back to the CPU backend otherwise.
+[tool.setuptools]
+packages = ["gbskernels", "cpu_ref", "highprec_ref", "sampling", "bench"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q -ra"
+markers = [
+    "layer1: independent combinatorial ground truth (no Walrus)",
+    "layer2: The Walrus differential oracle",
+    "layer3: mathematical invariants / property-based",
+    "layer4: statistical / end-to-end (boson sampling)",
+    "layer5: numerical-accuracy & engineering meta-tests",
+    "slow: long-running statistical / distributional / oracle tests (mpmath, The Walrus samplers). Run as a separate parallel CI job; `pytest -m 'not slow'` for the fast gate, plain `pytest` runs everything.",
+]

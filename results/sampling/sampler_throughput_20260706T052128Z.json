@@ -1,0 +1,146 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-07-06T05:21:28.458416+00:00",
+  "commit": "e9b4afb",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "0134fc870cfb",
+  "captured_utc": "2026-07-06T05:21:28.458620+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.159.04",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 80
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-185-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler); median + IQR over raw repeats; warm-up discarded; the 'gpu-resident' row is the v3 FULLY on-device chain (before/after vs the hybrid 'gpu' row, where in-cap)",
+  "params": {
+    "modes": 5,
+    "num_samples": 300,
+    "cutoff": 8,
+    "repeats": 3,
+    "seed": 0,
+    "warmup": "1 untimed draw/backend"
+  },
+  "env": {
+    "platform": "Linux-5.15.0-185-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 300,
+      "modes": 5,
+      "cutoff": 8,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": false,
+      "samples_per_sec_median": 3.066215207472157,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 97.84049053990748,
+      "mean_photons": 0.94,
+      "raw_samples_per_sec": [
+        3.066215207472157
+      ]
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 300,
+      "modes": 5,
+      "cutoff": 8,
+      "repeats_requested": 3,
+      "repeats_timed": 3,
+      "repeated_sieve_effective": true,
+      "samples_per_sec_median": 658.3309186749063,
+      "samples_per_sec_iqr": 316.1195704981567,
+      "seconds_median": 0.45569787395652384,
+      "mean_photons": 0.94,
+      "raw_samples_per_sec": [
+        531.0892757601023,
+        658.3309186749063,
+        1163.3284167564157
+      ]
+    },
+    {
+      "backend": "cpu+nosieve",
+      "num_samples": 300,
+      "modes": 5,
+      "cutoff": 8,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": false,
+      "samples_per_sec_median": 3.084364588319049,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 97.2647660189541,
+      "mean_photons": 0.94,
+      "raw_samples_per_sec": [
+        3.084364588319049
+      ]
+    },
+    {
+      "backend": "cpu+sieve",
+      "num_samples": 300,
+      "modes": 5,
+      "cutoff": 8,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": true,
+      "samples_per_sec_median": 7.437339405325255,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 40.337005433044396,
+      "mean_photons": 0.94,
+      "raw_samples_per_sec": [
+        7.437339405325255
+      ]
+    },
+    {
+      "backend": "gpu+nosieve",
+      "num_samples": 300,
+      "modes": 5,
+      "cutoff": 8,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": false,
+      "samples_per_sec_median": 3.5067739645980867,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 85.54871315590572,
+      "mean_photons": 0.94,
+      "raw_samples_per_sec": [
+        3.5067739645980867
+      ]
+    },
+    {
+      "backend": "gpu+sieve",
+      "num_samples": 300,
+      "modes": 5,
+      "cutoff": 8,
+      "repeats_requested": 3,
+      "repeats_timed": 3,
+      "repeated_sieve_effective": true,
+      "samples_per_sec_median": 659.4702284996064,
+      "samples_per_sec_iqr": 320.08306635387453,
+      "seconds_median": 0.45491060405038297,
+      "mean_photons": 0.94,
+      "raw_samples_per_sec": [
+        525.4613727136102,
+        659.4702284996064,
+        1165.6275054213593
+      ]
+    }
+  ]
+}

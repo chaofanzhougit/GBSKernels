@@ -1,0 +1,63 @@
+{
+ "kind": "borealis_fig2_pnr_certified",
+ "provenance": {
+  "commit": "ede72c6",
+  "container_digest": null,
+  "hostname": "Harolds-MacBook-Air.local",
+  "captured_utc": "2026-07-05T15:15:01.853105+00:00",
+  "environment": {
+   "gpu": null,
+   "cuda": null,
+   "cpu": {
+    "processor": "arm",
+    "machine": "arm64",
+    "logical_cores": 10
+   },
+   "blas_threads": {
+    "OPENBLAS_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "GOTO_NUM_THREADS": null
+   },
+   "platform": "macOS-26.5.1-arm64-arm-64bit",
+   "python": "3.12.13"
+  }
+ },
+ "observable": "photon-number-resolved (loop hafnian sieve)",
+ "params": {
+  "events_drawn": 120,
+  "events_usable": 103,
+  "events_refused": 17,
+  "term_budget": 200000,
+  "total_shots_on_disk": 84096000,
+  "seed": 0
+ },
+ "photons": {
+  "min": 0,
+  "max": 18,
+  "mean": 6.041666666666667
+ },
+ "log_ratios": [
+  {
+   "alternative": "thermal",
+   "log_ratio_lo": 5.835263652099159,
+   "log_ratio_hi": 5.835263763480784,
+   "arithmetic_bar": 5.569081240608398e-08,
+   "statistical_se_total": 4.673829476262918,
+   "ideal_wins_with_proof": true
+  },
+  {
+   "alternative": "product",
+   "log_ratio_lo": 4.541529237143425,
+   "log_ratio_hi": 4.541529406646793,
+   "arithmetic_bar": 8.475168433719205e-08,
+   "statistical_se_total": 4.424197071455639,
+   "ideal_wins_with_proof": true
+  }
+ ],
+ "precision_necessity": {
+  "rtol<=1e-6": 1.0,
+  "rtol<=1e-9": 0.912621359223301,
+  "rtol<=1e-12": 0.04854368932038835
+ }
+}

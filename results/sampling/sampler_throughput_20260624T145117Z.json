@@ -1,0 +1,63 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-06-24T14:51:17.087638+00:00",
+  "commit": "523da17",
+  "container_digest": null,
+  "hostname": "78e890cd60e6",
+  "captured_utc": "2026-06-24T14:51:17.087715+00:00",
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler); median + IQR over raw repeats; warm-up discarded",
+  "params": {
+    "modes": 6,
+    "num_samples": 2000,
+    "cutoff": 5,
+    "repeats": 7,
+    "warmup": "1 untimed draw/backend"
+  },
+  "env": {
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "repeats": 7,
+      "samples_per_sec_median": 23.10743813389299,
+      "samples_per_sec_iqr": 1.5655712106305728,
+      "seconds_median": 86.5522170139011,
+      "mean_photons": 1.276,
+      "raw_samples_per_sec": [
+        22.49286645037622,
+        22.71902001719882,
+        22.77332127496016,
+        23.10743813389299,
+        23.604094079248824,
+        25.019389634171308,
+        28.003760292415606
+      ]
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "repeats": 7,
+      "samples_per_sec_median": 29.304227263641184,
+      "samples_per_sec_iqr": 4.757909513229077,
+      "seconds_median": 68.24953894899227,
+      "mean_photons": 1.276,
+      "raw_samples_per_sec": [
+        28.31563553491287,
+        28.333454898567908,
+        28.420541110365555,
+        29.304227263641184,
+        31.73164435260879,
+        34.538170682782834,
+        36.83683230712813
+      ]
+    }
+  ]
+}

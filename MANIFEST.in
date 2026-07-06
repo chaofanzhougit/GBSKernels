@@ -1,0 +1,15 @@
+# Source distribution contents: the CPU library packages are declared in
+# pyproject; this adds the CUDA sources, bindings, examples, docs, and the
+# session tooling so the sdist is a complete, buildable source release.
+graft core
+graft bindings
+graft examples
+graft docs
+graft scripts
+graft envs
+include LICENSE README.md pyproject.toml
+prune core/build
+prune core/build_prof
+prune bindings/build
+prune bindings/build_host
+global-exclude __pycache__ *.pyc *.so *.o

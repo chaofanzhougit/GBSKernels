@@ -1,0 +1,86 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-07-03T10:21:29.047805+00:00",
+  "commit": "6b3f2e8",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "0a67b3db8963",
+  "captured_utc": "2026-07-03T10:21:29.048607+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.159.04",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 80
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler); median + IQR over raw repeats; warm-up discarded; the 'gpu-resident' row is the v3 FULLY on-device chain (before/after vs the hybrid 'gpu' row, where in-cap)",
+  "params": {
+    "modes": 6,
+    "num_samples": 2000,
+    "cutoff": 5,
+    "repeats": 7,
+    "seed": 0,
+    "warmup": "1 untimed draw/backend"
+  },
+  "env": {
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "numpy": "2.2.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "repeats": 7,
+      "samples_per_sec_median": 9.605118311486,
+      "samples_per_sec_iqr": 0.6605615939740481,
+      "seconds_median": 208.22231805394404,
+      "mean_photons": 1.276,
+      "raw_samples_per_sec": [
+        9.337318753268793,
+        9.516719392535116,
+        9.578239106265377,
+        9.605118311486,
+        9.946482545094632,
+        10.46959914165396,
+        11.727582754951841
+      ]
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 2000,
+      "modes": 6,
+      "cutoff": 5,
+      "repeats": 7,
+      "samples_per_sec_median": 12.860345867356541,
+      "samples_per_sec_iqr": 2.067364154656346,
+      "seconds_median": 155.51681273803115,
+      "mean_photons": 1.276,
+      "raw_samples_per_sec": [
+        12.382190617823731,
+        12.39766071651555,
+        12.528165376493423,
+        12.860345867356541,
+        13.463192977941791,
+        15.597361424379875,
+        17.116188054775705
+      ]
+    }
+  ]
+}

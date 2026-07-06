@@ -1,0 +1,45 @@
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+dist/
+build/
+
+# CUDA / CMake build artifacts
+core/build/
+bindings/build*/
+*.o
+*.obj
+*.so
+*.dylib
+*.cubin
+*.ptx
+*.fatbin
+CMakeCache.txt
+CMakeFiles/
+
+# Rented-GPU session scratch (results/ is committed; transient logs are not)
+results/_scratch/
+results/gpu_gates/*_PASS.txt
+*.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local, per-machine files (untracked by convention)
+private/
+
+# transient: host commit captured for rented-GPU artifact provenance
+COMMIT_SHA
+CONTAINER_DIGEST
+results/throughput/_sweep_tmp/
+
+# Downloaded public datasets (Borealis/Jiuzhang) -- never committed; re-fetched on demand
+data/
+
+# dev-agent instructions -- local only, not part of the public release

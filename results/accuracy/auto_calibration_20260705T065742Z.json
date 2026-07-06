@@ -1,0 +1,1153 @@
+{
+  "kind": "auto_calibration",
+  "created_utc": "2026-07-05T06:57:42.851016+00:00",
+  "commit": "4816d96",
+  "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+  "hostname": "63ede34102a0",
+  "captured_utc": "2026-07-05T06:57:42.851068+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.159.04",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "12.4",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 80
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12"
+  },
+  "indicator": "kappa = sum|terms| / |result| (a-posteriori; a HEURISTIC indicator, NOT a rigorous error certificate)",
+  "model": "rel_err_fp64 ~ kappa * eps",
+  "backend": "gpu",
+  "gpu_backend": "gpu",
+  "params": {
+    "dps": 60,
+    "seeds": 5,
+    "backend": "gpu"
+  },
+  "env": {
+    "platform": "Linux-5.15.0-181-generic-x86_64-with-glibc2.35"
+  },
+  "summary": {
+    "threshold": 100000000.0,
+    "eps": 2.220446049250313e-16,
+    "n_total": 120,
+    "n_trusted": 104,
+    "max_rel_err_when_trusted": 1.1478359571958735e-08,
+    "false_trust_count": 0,
+    "log_kappa_vs_log_relerr_corr": 0.9849751518054711,
+    "per_regime": {
+      "physical": {
+        "n": 40,
+        "n_trusted": 40,
+        "max_kappa": 84271.36950891427,
+        "max_rel_err_when_trusted": 2.0614915543032803e-12
+      },
+      "loss": {
+        "n": 40,
+        "n_trusted": 40,
+        "max_kappa": 135854.1642647085,
+        "max_rel_err_when_trusted": 4.299977733339668e-12
+      },
+      "adversarial": {
+        "n": 40,
+        "n_trusted": 24,
+        "max_kappa": 38436996702.20813,
+        "max_rel_err_when_trusted": 1.1478359571958735e-08
+      }
+    }
+  },
+  "rows": [
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 7.579931260147405,
+      "rel_err_fp64": 2.9952836842746293e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 8.567529875170338,
+      "rel_err_fp64": 5.957116883888679e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 9.808865417665102,
+      "rel_err_fp64": 1.2614055294823788e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 3.5685385475120173,
+      "rel_err_fp64": 1.2945112164324234e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 44.576752444199435,
+      "rel_err_fp64": 1.3363513654139248e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 22.879890351883464,
+      "rel_err_fp64": 5.705222701870548e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 25.609853276432037,
+      "rel_err_fp64": 2.313649586713121e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 16.83192013388259,
+      "rel_err_fp64": 1.7455250880710825e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 13.46389013463802,
+      "rel_err_fp64": 3.1003044390630414e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 15.315736805105994,
+      "rel_err_fp64": 2.1901876994398332e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 13.79662378046853,
+      "rel_err_fp64": 1.9748870929898102e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 4.119553028095568,
+      "rel_err_fp64": 4.77329974895435e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 4.2737440221579694,
+      "rel_err_fp64": 4.0343289202328554e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 14.219143672566986,
+      "rel_err_fp64": 5.93829763734609e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 13.857390780603241,
+      "rel_err_fp64": 9.028232614443565e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 20.693435994946146,
+      "rel_err_fp64": 1.1061983554726093e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 7.478285234518901,
+      "rel_err_fp64": 9.34874765426472e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 12.018497479242273,
+      "rel_err_fp64": 4.811174217307789e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 23.63781261049774,
+      "rel_err_fp64": 1.8886047561089604e-15,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 9.185008820415264,
+      "rel_err_fp64": 8.296979199531511e-16,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 1412131.8250608623,
+      "rel_err_fp64": 5.933486416893722e-11,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 5997610.776399876,
+      "rel_err_fp64": 5.0097326387104346e-11,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 6683468.608322778,
+      "rel_err_fp64": 2.597972783864376e-11,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 1947470.594935466,
+      "rel_err_fp64": 8.9765111375586e-11,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 2826776.9444369604,
+      "rel_err_fp64": 8.621739325061965e-11,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 6284021.265895333,
+      "rel_err_fp64": 1.679864691227092e-10,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 14065827.041683054,
+      "rel_err_fp64": 1.702148991897288e-10,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 3998955.9720525634,
+      "rel_err_fp64": 9.451778575115905e-11,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 2693423.445329389,
+      "rel_err_fp64": 5.131539397538565e-11,
+      "trusted": true
+    },
+    {
+      "func": "perm",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 3099238.2665602574,
+      "rel_err_fp64": 5.1281138842726846e-11,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 10.739014531206593,
+      "rel_err_fp64": 1.0045209511060883e-15,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 3.8872129471418058,
+      "rel_err_fp64": 7.530280582077032e-17,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 5.097673718925908,
+      "rel_err_fp64": 4.702215029131823e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 4.660810523492391,
+      "rel_err_fp64": 8.336386497758452e-17,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 9.991147849238434,
+      "rel_err_fp64": 4.487128365005441e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 60.52288161962016,
+      "rel_err_fp64": 9.137159828496351e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 21.16495168517419,
+      "rel_err_fp64": 8.91261358582617e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 44.7524031996179,
+      "rel_err_fp64": 1.146830222679028e-15,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 12.315777242712894,
+      "rel_err_fp64": 3.086445036514556e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 62.01440144274044,
+      "rel_err_fp64": 2.430547505841681e-15,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 8.494610212735303,
+      "rel_err_fp64": 4.710355292448998e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 28.939115500550617,
+      "rel_err_fp64": 1.92939091392168e-15,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 12.963334303712347,
+      "rel_err_fp64": 4.982119336196027e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 20.963454153559653,
+      "rel_err_fp64": 1.1157291844504312e-15,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 8.122748695523736,
+      "rel_err_fp64": 4.1956373518552527e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 29.652043815626886,
+      "rel_err_fp64": 1.009477301364133e-15,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 17.54755726950621,
+      "rel_err_fp64": 8.945992001574948e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 21.93056152109718,
+      "rel_err_fp64": 7.596927885915645e-16,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 164.95371228005723,
+      "rel_err_fp64": 7.497452889617583e-15,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 245.99670807584138,
+      "rel_err_fp64": 1.2907390218177667e-14,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 4555585.629709863,
+      "rel_err_fp64": 5.262502961532421e-13,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 4662664.435746944,
+      "rel_err_fp64": 3.192113376168884e-10,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 19025190.6059655,
+      "rel_err_fp64": 2.5156345674318708e-09,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 28352214.674384195,
+      "rel_err_fp64": 1.4864105829858382e-09,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 18444684.74056861,
+      "rel_err_fp64": 1.680915088147169e-09,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 66900818.51236015,
+      "rel_err_fp64": 5.1246910285908604e-09,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 157161726.47940776,
+      "rel_err_fp64": 1.1464826933364193e-08,
+      "trusted": false
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 32256730.699008696,
+      "rel_err_fp64": 2.3000103409348833e-09,
+      "trusted": true
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 177007153.4899069,
+      "rel_err_fp64": 5.541229697440342e-09,
+      "trusted": false
+    },
+    {
+      "func": "haf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 134400668.25142956,
+      "rel_err_fp64": 5.968829575146147e-09,
+      "trusted": false
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 4.846249288347782,
+      "rel_err_fp64": 2.20602629295325e-16,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 10.767594968097587,
+      "rel_err_fp64": 5.875630822315268e-16,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 4.50271252267803,
+      "rel_err_fp64": 1.5097872264527058e-16,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 5.124044664855178,
+      "rel_err_fp64": 1.1659092614088885e-16,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 14.587050476864302,
+      "rel_err_fp64": 6.096545774673777e-16,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 36.595021470242706,
+      "rel_err_fp64": 2.49032003629201e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 60.464738259437645,
+      "rel_err_fp64": 1.870468421701876e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 233.08731272696886,
+      "rel_err_fp64": 2.26131830793621e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 36.72333184469776,
+      "rel_err_fp64": 1.1181249058257749e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 67.03195399575743,
+      "rel_err_fp64": 2.293905044680667e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 37.85226973363309,
+      "rel_err_fp64": 4.0716876895847833e-16,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 35.63207725371599,
+      "rel_err_fp64": 1.910883241926615e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 16.252786069551803,
+      "rel_err_fp64": 5.038100222206267e-16,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 36.56884298413257,
+      "rel_err_fp64": 3.3656069995421448e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 20.801659314687946,
+      "rel_err_fp64": 1.7816462015077005e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 144.8963899941443,
+      "rel_err_fp64": 2.929528157662025e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 127.37805374081286,
+      "rel_err_fp64": 2.6268445002015018e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 62.90555865894504,
+      "rel_err_fp64": 1.2507894019032096e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 80.10660849812216,
+      "rel_err_fp64": 2.6808294301666294e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 223.85577232745666,
+      "rel_err_fp64": 4.639814659834549e-15,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 2879896629.755779,
+      "rel_err_fp64": 1.0023896856726792e-07,
+      "trusted": false
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 33192766.26962972,
+      "rel_err_fp64": 6.073995709218834e-11,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 14329204.950795727,
+      "rel_err_fp64": 4.3561066400184375e-11,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 104077379.60296932,
+      "rel_err_fp64": 1.767605239498021e-09,
+      "trusted": false
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 8230035.561917252,
+      "rel_err_fp64": 1.95097913909512e-09,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 74857902.652747,
+      "rel_err_fp64": 1.4284659791008204e-09,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 3664288929.363305,
+      "rel_err_fp64": 1.1937848885970316e-08,
+      "trusted": false
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 98598201.64297357,
+      "rel_err_fp64": 2.3051701720371179e-10,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 86606647.4022944,
+      "rel_err_fp64": 1.1478359571958735e-08,
+      "trusted": true
+    },
+    {
+      "func": "lhaf",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 22940841.057737276,
+      "rel_err_fp64": 1.3657661934744515e-10,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 15755.543419104992,
+      "rel_err_fp64": 2.8470039719656956e-13,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 2914.6958668746797,
+      "rel_err_fp64": 2.2010235236454238e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 19218.52461714389,
+      "rel_err_fp64": 2.683005239983928e-13,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 3717.569833698976,
+      "rel_err_fp64": 5.241586597123366e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 5637.295563797372,
+      "rel_err_fp64": 1.2298633676186896e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 42639.840173663186,
+      "rel_err_fp64": 2.0614915543032803e-12,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 64346.76609702954,
+      "rel_err_fp64": 1.7226514301924564e-12,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 84271.36950891427,
+      "rel_err_fp64": 1.5769384533519863e-12,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 8143.813395067155,
+      "rel_err_fp64": 3.7104167929366506e-13,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "physical",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 25784.775219836556,
+      "rel_err_fp64": 1.8225298481387946e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 3059.4831965097806,
+      "rel_err_fp64": 3.960988446525326e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 17805.46153818134,
+      "rel_err_fp64": 2.5674254742255855e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 13963.942438072216,
+      "rel_err_fp64": 7.285035962128779e-13,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 88056.3615004647,
+      "rel_err_fp64": 5.72414352646737e-13,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 1132.3762571106124,
+      "rel_err_fp64": 2.8268740401486178e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 29366.58159543502,
+      "rel_err_fp64": 2.455644411568171e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 101618.93122331382,
+      "rel_err_fp64": 1.6252602247108733e-12,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 46591.8322573175,
+      "rel_err_fp64": 1.1145358010428458e-12,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 12705.91224219719,
+      "rel_err_fp64": 3.1203574028383685e-14,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "loss",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 135854.1642647085,
+      "rel_err_fp64": 4.299977733339668e-12,
+      "trusted": true
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 0,
+      "kappa": 410592022.2354849,
+      "rel_err_fp64": 8.86063054151212e-09,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 1,
+      "kappa": 410101936.2741534,
+      "rel_err_fp64": 7.298710057112205e-09,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 2,
+      "kappa": 399830452.72993624,
+      "rel_err_fp64": 7.903679222561812e-09,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 3,
+      "kappa": 606655995.2258848,
+      "rel_err_fp64": 1.4587265164908436e-09,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 6,
+      "seed": 4,
+      "kappa": 2512939276.331655,
+      "rel_err_fp64": 3.656750433386866e-08,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 0,
+      "kappa": 38436996702.20813,
+      "rel_err_fp64": 3.5554304972046427e-07,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 1,
+      "kappa": 7435136755.831144,
+      "rel_err_fp64": 2.0014004111281378e-07,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 2,
+      "kappa": 11274580849.061756,
+      "rel_err_fp64": 2.6059445223360447e-07,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 3,
+      "kappa": 3186230683.710722,
+      "rel_err_fp64": 7.530571687382839e-08,
+      "trusted": false
+    },
+    {
+      "func": "tor",
+      "regime": "adversarial",
+      "dim": 8,
+      "seed": 4,
+      "kappa": 4598310551.278963,
+      "rel_err_fp64": 3.417130045751231e-08,
+      "trusted": false
+    }
+  ]
+}

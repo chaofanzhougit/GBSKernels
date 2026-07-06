@@ -1,0 +1,17 @@
+[check_permanent] max relative error (n=1..12, complex): 3.189e-14 [tol 1.0e-08]
+[check_hafnian] max relative error (N=2..12, complex symmetric): 4.699e-13 [tol 
+[check_loop_hafnian] max relative error (N=2..10, complex symmetric): 8.953e-14 
+[check_torontonian] max relative error (n=1..5 modes, real O): 2.812e-11 [tol 1.
+[check_permanent_dd] (1) DD == FP64 on well-conditioned (n=2..10): max rel diff 
+[check_hafnian_dd] (1) DD == FP64 on well-conditioned (N=2..10): max rel diff 3.
+[check_loop_hafnian_dd] (1) DD == FP64 on well-conditioned (N=2..10): max rel di
+[check_torontonian_dd] (1) DD ~= FP64 on well-conditioned (n=1..4): max rel diff
+[check_permanent_coop] max relative error (n=1..12, groups{1,8,32}, complex): 5.
+[check_haf_coop] max relative error (N=2..12 even, groups{1,8,32}): 6.149e-14 [t
+[check_lhaf_coop] max relative error (N=2..12 even, groups{1,8,32}): 4.094e-14 [
+[check_tor_coop] max relative error (n=1..6 modes, real O, groups{1,8,32}): 3.95
+[check_permanent_warp] max relative error (n=1..14, complex, warp-shuffle): 8.44
+[check_host_api] host_api smoke test (plumbing + batching): perm[0] 
+[check_session] device-resident session gate (reuse + correctness): perm d4 b32 
+RUNNING?
+IDLE

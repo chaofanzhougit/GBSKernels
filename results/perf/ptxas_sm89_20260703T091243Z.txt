@@ -1,0 +1,16 @@
+# ptxas -v register/spill | arch sm_89 | commit 6b3f2e8 | digest nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5
+NVIDIA GeForce RTX 4090, 580.159.04
+ptxas info    : 218048 bytes gmem, 72 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z27sampler_extract_real_kernelPK7double2iPd' for 'sm_89'
+ptxas info    : Function properties for _Z27sampler_extract_real_kernelPK7double2iPd
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, 376 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z26sampler_scatter_col_kernelPKiiPiii' for 'sm_89'
+ptxas info    : Function properties for _Z26sampler_scatter_col_kernelPKiiPiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, 384 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z29sampler_compact_prefix_kernelPKiiiiPi' for 'sm_89'
+ptxas info    : Function properties for _Z29sampler_compact_prefix_kernelPKiiiiPi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 384 bytes cmem[0]
+ptxas info    : 218048 bytes gmem, 72 bytes cmem[3]
