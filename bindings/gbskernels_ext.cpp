@@ -45,6 +45,7 @@ int gbs_perm_dd_certified_host(const cuDoubleComplex*, int, int, cuDoubleComplex
 int gbs_haf_dd_certified_host(const cuDoubleComplex*, int, int, cuDoubleComplex*, double*);
 int gbs_tor_recursive_single_host(const double*, int, int, double*);
 int gbs_tor_single_certified_host(const double*, int, int, double*, double*);
+int gbs_tor_single_ddcertified_host(const double*, int, int, double*, double*);
 int gbs_lhaf_repeated_host(const cuDoubleComplex*, const cuDoubleComplex*, int, const int*, int, cuDoubleComplex*);
 int gbs_lhaf_repeated_cert_host(const cuDoubleComplex*, const cuDoubleComplex*, int, const int*, int, cuDoubleComplex*, double*);
 
@@ -279,6 +280,19 @@ NB_MODULE(gbskernels_ext, m) {
         },
         "CERTIFIED single-large torontonian -> (value, rigorous |value-exact| bound);\n"
         "NaN/inf = off-domain or uncertifiable, never a finite overclaim.");
+  m.def("tor_single_ddcertified",
+        [](nb::ndarray<nb::numpy, const double, nb::ndim<2>> O, int g) {
+          const size_t dim = O.shape(0);
+          if (O.shape(1) != dim || dim % 2 != 0 || dim > 64)
+            throw std::invalid_argument("tor_single_ddcertified: O must be (2n, 2n) real, 2n <= 64");
+          double out = 0.0, bound = 0.0;
+          int rc = gbs::gbs_tor_single_ddcertified_host(O.data(), (int)(dim / 2), g, &out, &bound);
+          if (rc != 0)
+            throw std::runtime_error("gbskernels: CUDA error " + std::to_string(rc) + " in tor_single_ddcertified");
+          return nb::make_tuple(out, bound);
+        },
+        "CERTIFIED double-double single-large torontonian -> (value, rigorous bound);\n"
+        "tight past the fp64 precision wall; NaN/inf = uncertifiable, never overclaims.");
   m.def("lhaf_repeated",
         [](nb::ndarray<nb::numpy, const Cd, nb::ndim<2>> A,
            nb::ndarray<nb::numpy, const Cd, nb::ndim<1>> gamma,

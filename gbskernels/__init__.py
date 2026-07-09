@@ -580,7 +580,8 @@ def lhaf_repeated(A: Any, gamma: Any, reps: Any, backend: str = "cpu",
     return complex(out[0]) if single else out
 
 
-def tor_single(O: Any, groups: int | None = None, certified: bool = False):
+def tor_single(O: Any, groups: int | None = None, certified: bool = False,
+               dd: bool = False):
     """SINGLE-LARGE torontonian of a real ``(2n, 2n)`` matrix, ``2n <= 64``.
 
     One evaluation split into ``2**groups`` prefix-Cholesky subtrees across the
@@ -589,6 +590,11 @@ def tor_single(O: Any, groups: int | None = None, certified: bool = False):
     ceiling is 26 clicks = dim 52). Real,
     physical-domain (SPD ``I - O_S``) inputs; off-domain raises. ``groups``
     defaults to ``min(n, 14)``.
+
+    With ``certified=True``, also returns a rigorous a-posteriori error bound.
+    ``dd=True`` (implies certified) carries the value in double-double, giving a
+    TIGHT certificate past the fp64 precision wall (where the fp64 certified
+    bound exceeds the value); the returned tier is ``"certified-dd"``.
     """
     M = np.ascontiguousarray(O, dtype=np.float64)
     if M.ndim != 2 or M.shape[0] != M.shape[1] or M.shape[0] % 2 != 0:
@@ -605,17 +611,18 @@ def tor_single(O: Any, groups: int | None = None, certified: bool = False):
     if ext is None or not hasattr(ext, "tor_single"):
         raise RuntimeError("tor_single needs the compiled extension with the single-large "
                            "kernel (rebuild bindings/)")
-    if certified:
-        if not hasattr(ext, "tor_single_certified"):
-            raise RuntimeError("tor_single(certified=True) needs a rebuilt extension")
-        v, e = ext.tor_single_certified(M, g)
+    if certified or dd:
+        tier = "certified-dd" if dd else "certified-fp64"
+        fn = "tor_single_ddcertified" if dd else "tor_single_certified"
+        if not hasattr(ext, fn):
+            raise RuntimeError(f"tor_single({tier}) needs a rebuilt extension")
+        v, e = getattr(ext, fn)(M, g)
         v, e = float(v), float(e)
         if v != v or e != e or e == float("inf"):
             raise ValueError("tor_single: off the physical domain or uncertifiable "
                              "(the bound refuses rather than overclaims)")
         rel = e / abs(v) if v != 0 else float("inf")
-        return v, {"tier": "certified-fp64", "abs_error_bound": e,
-                   "rel_error_bound": rel}
+        return v, {"tier": tier, "abs_error_bound": e, "rel_error_bound": rel}
     v = float(ext.tor_single(M, g))
     if v != v: # NaN: a non-SPD minor
         raise ValueError("tor_single: input is off the physical domain (I - O_S not SPD); "

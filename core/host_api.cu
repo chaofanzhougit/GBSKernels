@@ -46,6 +46,7 @@ void gbs_haf_dd_certified_batched(const cuDoubleComplex*, int, int, cuDoubleComp
 void gbs_tor_recursive_real_fp64_batched(const double*, int, int, double*, cudaStream_t);
 void gbs_tor_recursive_single_batched(const double*, int, int, double*, cudaStream_t);
 void gbs_tor_recursive_single_cert_batched(const double*, int, int, double*, double*, cudaStream_t);
+void gbs_tor_recursive_single_ddcert_batched(const double*, int, int, double*, double*, cudaStream_t);
 // repeated-row loop-hafnian sieve: one shared A/gamma, per-element reps.
 void gbs_lhaf_repeated_cert_batched(const cuDoubleComplex*, const cuDoubleComplex*, int,
                                     const int*, int, cuDoubleComplex*, double*, cudaStream_t);
@@ -333,6 +334,53 @@ int gbs_tor_single_certified_host(const double* h_O, int n, int g,
   for (uint64_t i = 0; i < nsub; ++i) {
     total += h_p[i]; // NaN propagates
     e_tot = nextafter(e_tot + h_b[i], INFINITY); // upward bound sum
+    e_tot = nextafter(e_tot + u * fabs(total), INFINITY);
+  }
+  free(h_p); free(h_b);
+  *out = total;
+  *bound = e_tot;
+  return 0;
+}
+
+// Certified DOUBLE-DOUBLE single-large torontonian: same host plumbing as the
+// fp64 certified path, but the device kernel carries the value in double-double.
+// The host partial-sum stays fp64 (the kernel collapses each partial to fp64),
+// so the host charges fp64 u per accumulation as before.
+int gbs_tor_single_ddcertified_host(const double* h_O, int n, int g,
+                                    double* out, double* bound) {
+  const int dim = 2 * n;
+  const uint64_t nsub = 1ull << g;
+  double *d_O = nullptr, *d_p = nullptr, *d_b = nullptr;
+  cudaError_t err = cudaMalloc(&d_O, (size_t)dim * dim * sizeof(double));
+  if (err == cudaSuccess) err = cudaMalloc(&d_p, (size_t)nsub * sizeof(double));
+  if (err == cudaSuccess) err = cudaMalloc(&d_b, (size_t)nsub * sizeof(double));
+  if (err == cudaSuccess)
+    err = cudaMemcpy(d_O, h_O, (size_t)dim * dim * sizeof(double), cudaMemcpyHostToDevice);
+  double *h_p = nullptr, *h_b = nullptr;
+  if (err == cudaSuccess) {
+    gbs_tor_recursive_single_ddcert_batched(d_O, n, g, d_p, d_b, 0);
+    err = cudaGetLastError();
+  }
+  if (err == cudaSuccess) err = cudaDeviceSynchronize();
+  if (err == cudaSuccess) {
+    h_p = (double*)malloc((size_t)nsub * sizeof(double));
+    h_b = (double*)malloc((size_t)nsub * sizeof(double));
+    if (h_p && h_b) {
+      err = cudaMemcpy(h_p, d_p, (size_t)nsub * sizeof(double), cudaMemcpyDeviceToHost);
+      if (err == cudaSuccess)
+        err = cudaMemcpy(h_b, d_b, (size_t)nsub * sizeof(double), cudaMemcpyDeviceToHost);
+    } else {
+      cudaFree(d_O); cudaFree(d_p); cudaFree(d_b); free(h_p); free(h_b);
+      return 1;
+    }
+  }
+  cudaFree(d_O); cudaFree(d_p); cudaFree(d_b);
+  if (err != cudaSuccess) { free(h_p); free(h_b); return (int)err; }
+  double total = 0.0, e_tot = 0.0;
+  const double u = 1.1102230246251565e-16;
+  for (uint64_t i = 0; i < nsub; ++i) {
+    total += h_p[i];
+    e_tot = nextafter(e_tot + h_b[i], INFINITY);
     e_tot = nextafter(e_tot + u * fabs(total), INFINITY);
   }
   free(h_p); free(h_b);

@@ -29,6 +29,7 @@
 #include <cstdint>
 
 #include "certified_rounding.cuh"
+#include "dd.cuh"
 #include "subset_engine.cuh"
 
 namespace gbs {
@@ -419,6 +420,184 @@ extern "C" void gbs_tor_recursive_single_cert_batched(const double* d_O, int n, 
   const int block = 64;
   const uint64_t grid = (nsub + block - 1) / block;
   GBS_LAUNCH_1D(tor_recursive_single_cert_kernel, (unsigned)grid, block, stream,
+                d_O, n, g, d_partials, d_pbounds);
+}
+
+
+// --------------------------------------------------------------------------
+// CERTIFIED DOUBLE-DOUBLE single-large evaluation.
+//
+// Identical machine to tor_recursive_single_cert_kernel (Theorem 3'), but the
+// VALUE path is carried in double-double (dd.cuh error-free transforms) while
+// the bound path is the same real pair-arithmetic recurrence with the unit
+// roundoff replaced by the double-word constant u_DD. Every dd operation obeys
+// the same relative-error model fl(a.b)=(a.b)(1+d), |d|<=u_DD that the fp64
+// bounds were derived from, so the derivation transfers verbatim with u->u_DD;
+// magnitudes are read from the hi component with a non-overlap headroom. u_DD =
+// 2^-100 is >~30x the proven double-word add/mul/div/sqrt constants
+// (Joldes-Muller-Popescu, ACM TOMS 2017), so the charge is conservative and the
+// enclosure is enforced as a test invariant against mpmath. Result value/bound
+// collapse to fp64 on output (one final u*|.| charge folded into the leaf term).
+//
+// This is what makes the Jiuzhang frontier (past the fp64 wall near 15 clicks)
+// return a TIGHT certified probability rather than only a proof that fp64 failed.
+// Memory: dd L (64 KB) + fp64 EL (32 KB) per thread; a single evaluation owns
+// the GPU. Off-domain / uncertifiable minors write NaN / +inf as before.
+// --------------------------------------------------------------------------
+
+constexpr double TORS_U_DD = 7.888609052210118e-31; // 2^-100 (charged), >~30x proven
+constexpr double TORS_HDR = 1.0000000000000018;      // 1 + 2^-49, |dd| <= |hi|*HDR
+
+__device__ inline double tors_gamma_dd(double kk) {
+  double ku = kk * TORS_U_DD;
+  return ru_mul(ku / (1.0 - ku), 1.0 + 4.0 * TORS_U_DD);
+}
+// upper / lower fp64 bounds on |x| for a double-double x
+__device__ inline double md_hi(dd x) { return ru_mul(fabs(x.hi), TORS_HDR); }
+__device__ inline double md_lo(dd x) { return rd_mul(fabs(x.hi), 1.0 - 2.0 * TORS_U_DD); }
+
+__global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
+                                                   int n, int g,
+                                                   double* __restrict__ partials,
+                                                   double* __restrict__ pbounds) {
+  const uint64_t t = (uint64_t)blockIdx.x * blockDim.x + threadIdx.x;
+  const uint64_t nsub = 1ull << g;
+  if (t >= nsub) return;
+  const int dim = 2 * n;
+
+  dd L[TORS_MAX_DIM * TORS_MAX_DIM];   // double-double value factor
+  double EL[TORS_MAX_DIM * TORS_MAX_DIM]; // fp64 entrywise error bound
+  int modes[TORS_MAX_MODES];
+  int state[TORS_MAX_MODES + 1];
+  dd detsave[TORS_MAX_MODES + 1];
+  double edetsave[TORS_MAX_MODES + 1];
+
+  dd detprod = dd_from(1.0);
+  double e_det = 0.0;
+  int count = 0;
+
+  auto append = [&](int j) -> bool {
+    int size = 2 * count;
+    modes[count] = j;
+    for (int tt = 0; tt < 2; ++tt) {
+      int r = size + tt;
+      int gj = (tt == 0) ? j : j + n;
+      for (int c = 0; c <= r; ++c) {
+        int mc = ((c >> 1) == count) ? j : modes[c >> 1];
+        int gc = (c & 1) ? mc + n : mc;
+        double ind = (gj == gc) ? 1.0 : 0.0;
+        double Ov = O[gj * dim + gc];
+        dd sacc = dd_add(dd_from(ind), dd_from(-Ov)); // exact (1 or 0) - O
+        double e_m = ru_mul(TORS_U_DD, md_hi(sacc));  // (charge; the fl subtract is exact in dd)
+        double sb = 0.0, sm = md_hi(sacc);
+        for (int u = 0; u < c; ++u) {
+          dd lr = L[r * TORS_MAX_DIM + u], lc = L[c * TORS_MAX_DIM + u];
+          sacc = dd_add(sacc, dd_neg(dd_mul(lr, lc)));
+          double alr = md_hi(lr), alc = md_hi(lc);
+          double elr = EL[r * TORS_MAX_DIM + u], elc = EL[c * TORS_MAX_DIM + u];
+          sb = ru_add(sb, ru_add(ru_mul(elr, alc),
+                                 ru_add(ru_mul(alr, elc), ru_mul(elr, elc))));
+          sm = ru_add(sm, ru_mul(alr, alc));
+        }
+        double e_s = ru_add(ru_add(sb, e_m), ru_mul(tors_gamma_dd((double)(c + 2)), sm));
+        if (c < r) {
+          dd pv = L[c * TORS_MAX_DIM + c];
+          double p = md_hi(pv), ep = EL[c * TORS_MAX_DIM + c];
+          if (!(ep < 0.5 * md_lo(pv))) return false;   // pivot uncertifiable
+          dd v = dd_div(sacc, pv);
+          double av = md_hi(v);
+          double p_lo = rd_mul(md_lo(pv) - ep, 1.0 - 2.0 * TORS_U_DD);
+          L[r * TORS_MAX_DIM + c] = v;
+          EL[r * TORS_MAX_DIM + c] =
+              ru_add(ru_add(ru_div(e_s, p_lo), ru_div(ru_mul(ep, av), p_lo)),
+                     ru_mul(TORS_U_DD, av));
+        } else {
+          if (!(sacc.hi > 0.0) || !(e_s < 0.5 * md_lo(sacc))) return false; // not (cert.) SPD
+          dd v = dd_sqrt(sacc);
+          double av = md_hi(v);
+          L[r * TORS_MAX_DIM + r] = v;
+          EL[r * TORS_MAX_DIM + r] =
+              ru_add(ru_mul(TORS_U_DD, av), ru_div(e_s, 2.0 * rd_sqrt(md_lo(sacc) - e_s)));
+        }
+      }
+    }
+    dd a = L[size * TORS_MAX_DIM + size], b = L[(size + 1) * TORS_MAX_DIM + size + 1];
+    double ea = EL[size * TORS_MAX_DIM + size], eb = EL[(size + 1) * TORS_MAX_DIM + size + 1];
+    double aa = md_hi(a), ab_mag = md_hi(b);
+    dd ab = dd_mul(a, b);
+    double abm = md_hi(ab);
+    double e_ab = ru_add(ru_add(ru_mul(aa, eb), ru_mul(ab_mag, ea)),
+                         ru_add(ru_mul(ea, eb), ru_mul(TORS_U_DD, abm)));
+    dd d2 = dd_mul(ab, ab);
+    double d2m = md_hi(d2);
+    double e_d2 = ru_add(ru_mul(2.0 * abm, e_ab),
+                         ru_add(ru_mul(e_ab, e_ab), ru_mul(TORS_U_DD, d2m)));
+    dd nd = dd_mul(detprod, d2);
+    double dpm = md_hi(detprod), ndm = md_hi(nd);
+    e_det = ru_add(ru_add(ru_mul(dpm, e_d2), ru_mul(d2m, e_det)),
+                   ru_add(ru_mul(e_det, e_d2), ru_mul(TORS_U_DD, ndm)));
+    detprod = nd;
+    ++count;
+    return true;
+  };
+
+  for (int j = 0; j < g; ++j) {
+    if (!((t >> j) & 1ull)) continue;
+    if (!append(j)) { partials[t] = NAN; pbounds[t] = INFINITY; return; }
+  }
+
+  dd total = dd_from(0.0);
+  double e_tot = 0.0;
+  int lvl = 0;
+  const int rem = n - g;
+  state[0] = 0;
+  for (;;) {
+    if (lvl == rem) {
+      if (!(e_det < 0.5 * md_lo(detprod))) { partials[t] = NAN; pbounds[t] = INFINITY; return; }
+      dd sroot = dd_sqrt(detprod);
+      double srm = md_hi(sroot), srlo = md_lo(sroot);
+      double tS = ru_add(ru_mul(TORS_U_DD, srm),
+                         ru_div(e_det, 2.0 * rd_sqrt(md_lo(detprod) - e_det)));
+      dd c = dd_div(dd_from(1.0), sroot);
+      double cm = md_hi(c);
+      double s_lo = rd_mul(srlo - tS, 1.0 - 2.0 * TORS_U_DD);
+      double e_c = ru_add(ru_div(tS, rd_mul(srlo, s_lo)), ru_mul(TORS_U_DD, cm));
+      total = dd_add(total, ((n - count) & 1) ? dd_neg(c) : c);
+      e_tot = ru_add(e_tot, ru_add(e_c, ru_mul(TORS_U_DD, md_hi(total))));
+      if (lvl == 0) break;
+      --lvl;
+      continue;
+    }
+    if (state[lvl] == 0) { state[lvl] = 1; state[lvl + 1] = 0; ++lvl; continue; }
+    if (state[lvl] == 1) {
+      state[lvl] = 2;
+      detsave[lvl] = detprod;
+      edetsave[lvl] = e_det;
+      if (!append(g + lvl)) { partials[t] = NAN; pbounds[t] = INFINITY; return; }
+      state[lvl + 1] = 0;
+      ++lvl;
+      continue;
+    }
+    detprod = detsave[lvl];
+    e_det = edetsave[lvl];
+    --count;
+    if (lvl == 0) break;
+    --lvl;
+  }
+  // collapse dd value to fp64 output with one final rounding charge
+  double val = total.hi + total.lo;
+  partials[t] = val;
+  pbounds[t] = ru_add(e_tot, ru_mul(TORS_U_DD, fabs(val)));
+}
+
+extern "C" void gbs_tor_recursive_single_ddcert_batched(const double* d_O, int n, int g,
+                                                        double* d_partials,
+                                                        double* d_pbounds,
+                                                        cudaStream_t stream) {
+  const uint64_t nsub = 1ull << g;
+  const int block = 64;
+  const uint64_t grid = (nsub + block - 1) / block;
+  GBS_LAUNCH_1D(tor_recursive_single_ddcert_kernel, (unsigned)grid, block, stream,
                 d_O, n, g, d_partials, d_pbounds);
 }
 

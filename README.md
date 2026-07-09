@@ -27,15 +27,13 @@ one of several independent test oracles.
 
 ## Installation
 
-```bash
-pip install gbskernels          # once published — pulls only numpy + mpmath
-```
-
-Or from source (CPU backend; the CUDA extension is a separate, optional build —
-see [`bindings/README.md`](bindings/README.md)):
+Not yet on PyPI; install from source. The CPU backend needs only `numpy` +
+`mpmath`; the CUDA extension is a separate, optional build (see
+[`bindings/README.md`](bindings/README.md)):
 
 ```bash
-uv build                        # -> dist/gbskernels-*.whl
+uv build                        # -> dist/gbskernels-*.whl, then pip install it
+# pip install gbskernels        # planned once published to PyPI
 ```
 
 ## Quick start
@@ -77,7 +75,7 @@ implicit:
 | `"dd"` | Double-double arithmetic carried internally through the cancelling sum (a GPU tier); recovers a correct double-precision result where plain double precision cancels. |
 | `"ref"` | Arbitrary-precision reference (`mpmath`); the accuracy ground truth. |
 | `"auto"` | Double precision plus a per-evaluation cancellation indicator; evaluations flagged as risky are recomputed in a higher tier (`mpmath` on CPU, double-double on GPU). The indicator is a calibrated heuristic, not a certificate. |
-| `"certified"` | The double-precision value together with a **rigorous a-posteriori error bound**: `\|value − exact\| ≤ abs_error_bound`, a running error bound in the standard model of floating-point arithmetic (on the GPU, the bound arithmetic uses per-instruction directed rounding). With `rtol=`, a bound-driven ladder escalates certified-fp64 → certified-double-double → arbitrary precision, each step justified by the bound rather than a heuristic. Available for all four functions on CPU and GPU. |
+| `"certified"` | The double-precision value together with a **rigorous a-posteriori error bound**: `\|value − exact\| ≤ abs_error_bound`, a running error bound in the standard model of floating-point arithmetic (on the GPU, the bound arithmetic uses per-instruction directed rounding). With `rtol=`, a bound-driven ladder escalates certified-fp64 → certified-double-double (each step justified by its own proven bound); if neither meets `rtol` it returns the arbitrary-precision reference value **flagged as non-certified** — only the two certified tiers carry a rigorous bound. Available for all four functions on CPU and GPU. |
 
 ## Features
 
@@ -97,8 +95,9 @@ implicit:
   ([`docs/device_resident_contract.md`](docs/device_resident_contract.md)).
 - **A conditional GBS sampler** (`sampling/`) that draws photon-number samples by
   the chain rule, evaluating each mode's batch of hafnians on the GPU, validated
-  distributionally against The Walrus (total-variation distance and a chi-square
-  test).
+  distributionally (total-variation distance below 0.03 against both the exact
+  distribution and The Walrus, and a chi-square goodness-of-fit p > 10⁻³ against
+  The Walrus).
 - **Structure-aware kernels** for the sampling workload: a repeated-row
   finite-difference sieve for the loop hafnian, and a recursive prefix-Cholesky
   torontonian — including a single-large mode that splits one evaluation across

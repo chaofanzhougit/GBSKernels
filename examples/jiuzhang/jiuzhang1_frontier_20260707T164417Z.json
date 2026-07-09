@@ -1,0 +1,364 @@
+{
+ "kind": "jiuzhang1_certified_frontier_gpu",
+ "created_utc": "2026-07-07T16:44:17Z",
+ "commit": "a635174",
+ "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+ "gpu_backend": "gpu",
+ "data_source": "Jiuzhang 1.0 (quantum.ustc.edu.cn node/915)",
+ "reconstruction_validation_rms": 0.0146,
+ "modes": 100,
+ "kmax": 26,
+ "subpattern_curve": [
+  {
+   "clicks": 4,
+   "dim": 8,
+   "n": 60,
+   "rel_bound_median": 2.7698343671433388e-11,
+   "rel_bound_q05": 1.860835287113674e-11,
+   "rel_bound_q95": 5.8010357286938125e-11,
+   "kappa_median": 249484.50047489468,
+   "fp64_digits_median": 10.557546200461326,
+   "fp64_proves_a_digit": true
+  },
+  {
+   "clicks": 6,
+   "dim": 12,
+   "n": 60,
+   "rel_bound_median": 2.3865255303932315e-09,
+   "rel_bound_q05": 1.2778596830179124e-09,
+   "rel_bound_q95": 6.251143490929235e-09,
+   "kappa_median": 21495910.978778265,
+   "fp64_digits_median": 8.622233915310058,
+   "fp64_proves_a_digit": true
+  },
+  {
+   "clicks": 8,
+   "dim": 16,
+   "n": 60,
+   "rel_bound_median": 2.480513268653003e-07,
+   "rel_bound_q05": 8.895343252714907e-08,
+   "rel_bound_q95": 8.12875020788919e-07,
+   "kappa_median": 2234247726.478647,
+   "fp64_digits_median": 6.605458445512549,
+   "fp64_proves_a_digit": true
+  },
+  {
+   "clicks": 10,
+   "dim": 20,
+   "n": 60,
+   "rel_bound_median": 4.0341981559783986e-05,
+   "rel_bound_q05": 9.2936874253549e-06,
+   "rel_bound_q95": 0.0003105500180793839,
+   "kappa_median": 363368266240.06116,
+   "fp64_digits_median": 4.394242773467231,
+   "fp64_proves_a_digit": true
+  },
+  {
+   "clicks": 12,
+   "dim": 24,
+   "n": 60,
+   "rel_bound_median": 0.006780112527382318,
+   "rel_bound_q05": 0.0011710347774360047,
+   "rel_bound_q95": 0.0730977178808112,
+   "kappa_median": 61069824503698.08,
+   "fp64_digits_median": 2.168763098225022,
+   "fp64_proves_a_digit": true
+  },
+  {
+   "clicks": 14,
+   "dim": 28,
+   "n": 60,
+   "rel_bound_median": 0.3155942736036631,
+   "rel_bound_q05": 0.030794620802055993,
+   "rel_bound_q95": 3.437040939472263,
+   "kappa_median": 2842620506003439.0,
+   "fp64_digits_median": 0.5008708855795143,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 16,
+   "dim": 32,
+   "n": 60,
+   "rel_bound_median": 38.72118316396673,
+   "rel_bound_q05": 3.4676876674363033,
+   "rel_bound_q95": 470.99770541236086,
+   "kappa_median": 3.4876941213717056e+17,
+   "fp64_digits_median": 0.0,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 18,
+   "dim": 36,
+   "n": 60,
+   "rel_bound_median": 3783.226764066163,
+   "rel_bound_q05": 289.7513406005351,
+   "rel_bound_q95": 45895.754842004724,
+   "kappa_median": 3.407627728981292e+19,
+   "fp64_digits_median": 0.0,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 20,
+   "dim": 40,
+   "n": 60,
+   "rel_bound_median": 197139.03820136935,
+   "rel_bound_q05": 33123.710894162046,
+   "rel_bound_q95": 1717115.3301678905,
+   "kappa_median": 1.77567059796773e+21,
+   "fp64_digits_median": 0.0,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 22,
+   "dim": 44,
+   "n": 60,
+   "rel_bound_median": 746534.3537690032,
+   "rel_bound_q05": 316944.8259019822,
+   "rel_bound_q95": 7842405.679420556,
+   "kappa_median": 6.724183674906714e+21,
+   "fp64_digits_median": 0.0,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 24,
+   "dim": 48,
+   "n": 60,
+   "rel_bound_median": 2203963.360444227,
+   "rel_bound_q05": 652261.971464381,
+   "rel_bound_q95": 16522764.548228826,
+   "kappa_median": 1.985153713766969e+22,
+   "fp64_digits_median": 0.0,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "dim": 52,
+   "n": 60,
+   "rel_bound_median": 3705375.113142518,
+   "rel_bound_q05": 1678441.103894072,
+   "rel_bound_q95": 17258946.73277678,
+   "kappa_median": 3.3375051957633106e+22,
+   "fp64_digits_median": 0.0,
+   "fp64_proves_a_digit": false
+  }
+ ],
+ "band_events": 43,
+ "band_fp64_proves_a_digit_frac": 0.0,
+ "band_rows": [
+  {
+   "clicks": 24,
+   "rel_bound": 741061.8285441115,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 2368162.8012854885,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 4571879.447379797,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 10166764.583095701,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 24,
+   "rel_bound": 2711254.145800879,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 3430195.669879418,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 24,
+   "rel_bound": 591081.4150666189,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 4436596.413720287,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 11834223.530916303,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 2658715.26155607,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 21507866.530406635,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 21,
+   "rel_bound": 752600.7596776229,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 24,
+   "rel_bound": 1294099.2579169672,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 21,
+   "rel_bound": 12910741.025112806,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 3659244.2104129153,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 3986873.82627356,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 93450910.537086,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 2899493.246490216,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 24,
+   "rel_bound": 165702400.81754544,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 15754093.05542528,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 24,
+   "rel_bound": 1252239.4668590317,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 66518258.12483419,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 24,
+   "rel_bound": 776138.3609797687,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 2123208.636413737,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 22,
+   "rel_bound": 1245166.3413305632,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 4325056.577393793,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 6033003.82822943,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 4093250.3274356336,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 23,
+   "rel_bound": 947784.5990010223,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 3412787.6921630693,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 3165612.1050883583,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 12727967.2592969,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 999061.5915921729,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 22,
+   "rel_bound": 3035803.7633386864,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 22,
+   "rel_bound": 213831.78843880567,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 11920072.70902233,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 2405711.5603705356,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 2345740.563817312,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 5219277.205330791,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 23,
+   "rel_bound": 682124.6943790382,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 25,
+   "rel_bound": 7583687.577908248,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 3760620.484691089,
+   "fp64_proves_a_digit": false
+  },
+  {
+   "clicks": 26,
+   "rel_bound": 2113902.5906768516,
+   "fp64_proves_a_digit": false
+  }
+ ]
+}

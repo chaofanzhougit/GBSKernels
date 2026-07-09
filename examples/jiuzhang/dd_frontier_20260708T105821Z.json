@@ -1,0 +1,92 @@
+{
+ "kind": "jiuzhang1_dd_frontier_gpu",
+ "created_utc": "2026-07-08T10:58:21Z",
+ "commit": "a635174",
+ "container_digest": "nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:da6791294b0b04d7e65d87b7451d6f2390b4d36225ab0701ee7dfec5769829f5",
+ "gpu_backend": "gpu",
+ "n_events": 30,
+ "enclosure_failures_le12": 0,
+ "dd_tight_frontier_clicks": 26,
+ "rows": [
+  {
+   "clicks": 8,
+   "dim": 16,
+   "n": 30,
+   "fp64_rel_bound_median": 1.1547759646333466e-07,
+   "dd_rel_bound_median": 1.1503972835647547e-09,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 10,
+   "dim": 20,
+   "n": 30,
+   "fp64_rel_bound_median": 1.6355363808348412e-05,
+   "dd_rel_bound_median": 1.213065976550889e-07,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 12,
+   "dim": 24,
+   "n": 30,
+   "fp64_rel_bound_median": 0.0016065865103121497,
+   "dd_rel_bound_median": 9.242575191444496e-06,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 14,
+   "dim": 28,
+   "n": 30,
+   "fp64_rel_bound_median": 0.20298730089236053,
+   "dd_rel_bound_median": 9.381975821061893e-05,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 16,
+   "dim": 32,
+   "n": 30,
+   "fp64_rel_bound_median": 50.96664500268371,
+   "dd_rel_bound_median": 5.2917180014830755e-05,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 18,
+   "dim": 36,
+   "n": 30,
+   "fp64_rel_bound_median": 4229.599251787284,
+   "dd_rel_bound_median": 3.4010276204522356e-05,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 20,
+   "dim": 40,
+   "n": 30,
+   "fp64_rel_bound_median": 257524.80567077867,
+   "dd_rel_bound_median": 1.530967817686557e-05,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 22,
+   "dim": 44,
+   "n": 30,
+   "fp64_rel_bound_median": 558661.2029717008,
+   "dd_rel_bound_median": 9.45415544840748e-06,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 24,
+   "dim": 48,
+   "n": 30,
+   "fp64_rel_bound_median": 2620793.2358809095,
+   "dd_rel_bound_median": 1.884904655042425e-05,
+   "dd_certifies": true
+  },
+  {
+   "clicks": 26,
+   "dim": 52,
+   "n": 30,
+   "fp64_rel_bound_median": 4690893.746367753,
+   "dd_rel_bound_median": 0.0003487031365816588,
+   "dd_certifies": true
+  }
+ ]
+}

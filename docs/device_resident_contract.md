@@ -1,8 +1,9 @@
-# Device-resident + bucketing — the v1 contract
+# Device-resident + bucketing — the contract
 
-Status: **design + first increment** (this document is the contract; the Python
-bucketing layer and the C++ session land against it). Scope is deliberately v1:
-enough to make an *iterative sampler* drive the GPU efficiently, no more.
+Status: **shipped** (v2, §4). This document is the contract; §1–§3 describe the
+v1 bucketing + buffer-reuse layer, and §4 the v2 genuinely device-resident
+Session (persistent stream, pinned staging, async copies, and a zero-copy DLPack
+output handle). The Python bucketing layer and the C++ session implement it.
 
 ## 1. The problem (why this is architectural, not a benchmark)
 

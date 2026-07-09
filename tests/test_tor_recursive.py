@@ -103,3 +103,33 @@ def test_tor_single_certified_enclosure():
 
     with pytest.raises(ValueError, match="physical|uncertifiable"):
         gbskernels.tor_single(1.5 * np.eye(8), certified=True)
+
+
+def test_tor_single_ddcertified_enclosure_and_tightness():
+    """The double-double certified walk: encloses mpmath, agrees with the fp64
+    value, is tighter than the fp64 certificate, and still refuses off-domain.
+    This is the tier that certifies past the fp64 precision wall."""
+    import gbskernels
+    from highprec_ref import torontonian_mp
+
+    ext = gbskernels._load_gpu_ext()
+    if ext is None or not hasattr(ext, "tor_single_ddcertified"):
+        pytest.skip("extension predates tor_single_ddcertified")
+
+    O = np.real(physical_torontonian(6, 3))
+    vd, dd = gbskernels.tor_single(O, groups=3, dd=True)
+    exact = complex(torontonian_mp(O, dps=60)).real
+    assert abs(vd - exact) <= dd["abs_error_bound"]            # enclosure (rigorous)
+    assert dd["tier"] == "certified-dd" and np.isfinite(dd["rel_error_bound"])
+
+    vf, df = gbskernels.tor_single(O, groups=3, certified=True)
+    assert abs(vd - vf) <= df["abs_error_bound"]               # DD value in the fp64 enclosure
+    assert dd["rel_error_bound"] < df["rel_error_bound"]       # DD is strictly tighter
+
+    # worst-cancelling closed form where fp64 has already lost precision
+    a, n = 0.2, 16
+    vd, dd = gbskernels.tor_single(a * np.eye(2 * n), groups=8, dd=True)
+    assert abs(vd - (a / (1 - a)) ** n) <= dd["abs_error_bound"]
+
+    with pytest.raises(ValueError, match="physical|uncertifiable"):
+        gbskernels.tor_single(1.5 * np.eye(8), dd=True)
