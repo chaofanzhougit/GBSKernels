@@ -22,8 +22,14 @@ companion with an explicit accuracy characterization. The Walrus is used here as
 one of several independent test oracles.
 
 > **Status.** The CPU library is complete and `pip`-installable (pure Python,
-> `numpy` + `mpmath` only). The CUDA kernels are validated on NVIDIA hardware
-> (RTX 4090, A100). This is pre-1.0 software and the public API may change.
+> `numpy` + `mpmath` only). Historical release validation covers NVIDIA hardware
+> (RTX 4090, A100); the v0.2 changes pass the CPU host-shim gates and still require
+> a fresh on-device validation session. This is pre-1.0 software and the public
+> API may change.
+
+Version 0.2.0 adds the fail-closed Jiuzhang confirmatory workflow and corrects
+the real threshold-torontonian construction used by the Jiuzhang examples. See
+the [changelog](CHANGELOG.md) for the release scope and compatibility notes.
 
 ## Installation
 
@@ -75,7 +81,7 @@ implicit:
 | `"dd"` | Double-double arithmetic carried internally through the cancelling sum (a GPU tier); recovers a correct double-precision result where plain double precision cancels. |
 | `"ref"` | Arbitrary-precision reference (`mpmath`); the accuracy ground truth. |
 | `"auto"` | Double precision plus a per-evaluation cancellation indicator; evaluations flagged as risky are recomputed in a higher tier (`mpmath` on CPU, double-double on GPU). The indicator is a calibrated heuristic, not a certificate. |
-| `"certified"` | The double-precision value together with a **rigorous a-posteriori error bound**: `\|value − exact\| ≤ abs_error_bound`, a running error bound in the standard model of floating-point arithmetic (on the GPU, the bound arithmetic uses per-instruction directed rounding). With `rtol=`, a bound-driven ladder escalates certified-fp64 → certified-double-double (each step justified by its own proven bound); if neither meets `rtol` it returns the arbitrary-precision reference value **flagged as non-certified** — only the two certified tiers carry a rigorous bound. Available for all four functions on CPU and GPU. |
+| `"certified"` | The double-precision value together with a **rigorous a-posteriori error bound**: `\|value − exact\| ≤ abs_error_bound`, a running error bound in the standard model of floating-point arithmetic (on the GPU, the bound arithmetic uses per-instruction directed rounding). Available for all four functions on CPU and GPU. With `rtol=`, a failed certified-fp64 bound escalates to the arbitrary-precision reference; GPU permanent and hafnian first try a certified double-double bound. The reference result is flagged as non-certified. `tor_single(..., dd=True)` provides a separate certified-double-double large-torontonian path. |
 
 ## Features
 
@@ -102,6 +108,13 @@ implicit:
   finite-difference sieve for the loop hafnian, and a recursive prefix-Cholesky
   torontonian — including a single-large mode that splits one evaluation across
   the GPU to dimension 64 (32 modes).
+- **A fail-closed confirmatory workflow** for the public Jiuzhang example,
+  covering exposure audit, frozen design, future-beacon selection,
+  content-addressed evaluation, refusal recovery, simultaneous coherence-grid
+  inference, predictive checks, and release verification
+  ([protocol](docs/confirmatory_v2.md),
+  [tools](examples/jiuzhang/README.md)). The repository ships templates and
+  validation contracts, not a fabricated registration or completed v2 outcome.
 
 ## Verification
 
@@ -122,10 +135,16 @@ Five layers are exercised by the test suite on every commit:
    reference, including adversarial cancellation families that defeat double
    precision and must survive double-double.
 
-The development discipline is CPU-first: each CUDA kernel is first compiled and
-run on the CPU through a host pre-flight (part of the test suite), then checked
-on-device against the independent CPU reference before any performance number is
-recorded.
+The Jiuzhang v2 tooling adds workflow-contract tests for canonical hashing,
+registration timing, exclusion-ledger completeness, selection, immutable run
+reduction, refusal recovery, inference, reconstruction, and release assembly.
+
+The development discipline is CPU-first: host-shim-compatible CUDA kernels are
+compiled and run through the CPU pre-flight (part of the test suite), then the
+full source set is checked on-device against independent CPU references before
+any throughput result is considered publishable. Device-only variants such as
+the warp-specialized permanent are covered by the on-device gates; profiler
+diagnostics collected before those gates remain provisional until they pass.
 
 ## Performance
 
@@ -180,12 +199,12 @@ highprec_ref/   arbitrary-precision reference (mpmath)
 core/           CUDA C++: subset-enumeration utilities, the kernels, on-device gates
 bindings/       nanobind extension exposing the GPU backend to Python
 sampling/       boson-sampling orchestration and the conditional GBS sampler
-examples/       runnable end-to-end demo (CPU only, wheel dependencies only)
+examples/       runnable CPU demo plus Jiuzhang reproduction and v2 workflow tools
 tests/          the five-layer verification suite
 bench/          accuracy and throughput harnesses
 scripts/ envs/  scripted GPU-session runner and container definitions
-docs/           design document, benchmark protocol, device contracts
-results/        raw accuracy and throughput artifacts (append-only)
+docs/           design, benchmark/device contracts, and v2 protocol/templates
+results/        append-only validation, gate, benchmark, and profiler artifacts
 ```
 
 ## Development

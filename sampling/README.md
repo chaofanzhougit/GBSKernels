@@ -15,6 +15,10 @@ sampling produces, and where the end-to-end statistical validation attaches
     displacement carried as diagonal loop weights;
   - `torontonian_threshold_probabilities` (threshold detectors) via the
     **torontonian**, `tor(O_c) / √det Q`.
+- **`gbs.threshold_O_xxpp`** — constructs the exact real quadrature-basis
+  threshold matrix `Ox = I - Sigma_x^{-1}` and `log(sqrt(det Q))`. It is the
+  real-domain input used by `gbskernels.tor_single`; taking the entrywise real
+  part of the complex-basis matrix is not equivalent for complex correlations.
 - **`sampler.py`** — the conditional sampler. `sample(cov, num_samples, cutoff,
   backend=..., precision=..., ...)` draws photon-number samples by the
   reduced-covariance chain rule. It is hybrid host-orchestrated: the host drives
@@ -25,7 +29,10 @@ sampling produces, and where the end-to-end statistical validation attaches
   requested. The cutoff is a sequential per-mode truncation, and
   `return_diagnostics=True` returns an estimate of the discarded tail mass. A
   fully on-device variant is available as `resident=True` (double precision,
-  within a submatrix-size cap).
+  within a submatrix-size cap). The `repeated_sieve` path evaluates collision
+  patterns without materializing expanded matrices; `certified_weights=True`
+  adds rigorous kept-mass weight bounds while leaving the cutoff-tail estimate
+  explicitly heuristic.
 
 **Validation.** Sum-to-one, vacuum and odd-parity behavior, marginals, and
 batched-equals-looped identities; per-pattern agreement with The Walrus in all

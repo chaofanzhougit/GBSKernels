@@ -30,6 +30,10 @@ from sampling import gbs
 HBAR = 2.0
 
 
+def test_threshold_helper_is_part_of_the_public_module_surface():
+    assert "threshold_O_xxpp" in gbs.__all__
+
+
 def _lossy_complex_state(m: int, seed: int, eta: float = 0.6) -> np.ndarray:
     """xxpp covariance of a lossy GBS state with a COMPLEX interferometer
     (nonzero xp correlations -> complex <aa> -> max|imag(I - Q^{-1})| = O(0.1),

@@ -1,11 +1,10 @@
 """GBSKernels — GPU-native, batched photonic sampling matrix functions.
 
-Public surface (docs/DESIGN.md §7): batched-first. During the
-CPU-first phase the implementations live in the top-level ``cpu_ref`` (FP64) and
-``highprec_ref`` (mpmath) packages and are reached through this same API, so the
-forthcoming CUDA backend can slot in behind an unchanged surface and the
-differential / "batched-equals-looped" tests (docs/DESIGN.md §8, Layer 5) keep
-working verbatim.
+Public surface (docs/DESIGN.md §7): batched-first. The implementations in the
+top-level ``cpu_ref`` (FP64) and ``highprec_ref`` (mpmath) packages provide the
+CPU and reference backends; the optional CUDA extension is loaded behind the
+same API. Differential and "batched-equals-looped" tests (docs/DESIGN.md §8,
+Layer 5) exercise those paths through the public surface.
 
 Precision is always an explicit tier:
 
@@ -51,7 +50,7 @@ import numpy as np
 import cpu_ref
 import highprec_ref
 
-__version__ = "0.1.0.dev0"
+__version__ = "0.2.0"
 __all__ = [
     "perm", "perm_batched",
     "haf", "haf_batched",

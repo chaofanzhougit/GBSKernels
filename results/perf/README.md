@@ -1,8 +1,8 @@
 # results/perf/ — static resource usage and profiler captures
 
 `ptxas_*.txt` records each kernel's static resource usage (stack frame,
-registers, spills) from a profiling compile (`nvcc -Xptxas -v`) — the valid
-profiler evidence in this directory, quoted by the design notes.
+registers, spills) from a profiling compile (`nvcc -Xptxas -v`). These files
+are valid static compiler evidence; they are not achieved device-counter data.
 
 `ncu_*_PROFILER_FAILED.csv` are Nsight Compute captures that ran without GPU
 performance-counter permission (`ERR_NVGPUCTRPERM`; "No kernels were profiled").

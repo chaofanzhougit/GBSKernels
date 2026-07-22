@@ -1,7 +1,14 @@
-# Jiuzhang 1.0 certified-torontonian reproduction
+# Jiuzhang Reproduction And Confirmatory V2 Workflow
 
-Reproduces the precision-wall figure and the fp64/double-double certified
-frontier on the public Jiuzhang 1.0 threshold Gaussian-boson-sampling dataset.
+This directory contains two related public surfaces: the corrected
+certified-torontonian reproduction on the Jiuzhang 1.0 dataset, and the
+fail-closed confirmatory-v2 registration, selection, evaluation, inference,
+and release tooling.
+
+The v2 workflow contains no completed registration and no new scientific
+outcome. Its templates intentionally remain unresolved until external
+calibration, public timestamp/beacon evidence, and acquisition inputs exist.
+See the [full protocol](../../docs/confirmatory_v2.md).
 
 ## Data source
 
@@ -37,11 +44,15 @@ used for new figures or claims. Regenerate both inputs with the current scripts.
 - `build_exclusion_ledger.py`, `audit_selection_population.py`,
   `confirmatory_design.py`, `registration_readiness_v2.py`, and
   `prepare_registration_v2.py` implement the fail-closed v2 registration path
-  described in `docs/confirmatory_v2.md`.
+  described in the protocol.
 - `select_confirmatory_v2.py`, `campaign_confirmatory_v2.py`,
   `analyze_refusals.py`, `confirmatory_inference.py`, and
   `confirmatory_release.py` implement selection, immutable evaluation, refusal
   recovery, inference, and release validation.
+- `coherence_family.py`, `joint_normalizer_replicates.py`,
+  `calibration_normalizer_replicates.py`, `reconstruction_replicates.py`, and
+  `absolute_predictive_checks.py` implement the registered model family and
+  nuisance/predictive propagation required before a claim can be released.
 - `jiuzhang_frontier.py` and `dd_validate.py` regenerate corrected fp64 and
   double-double frontier artifacts under `results/jiuzhang/`.
 - `make_precision_wall.py` requires explicit corrected `--fp64-artifact` and
@@ -51,6 +62,15 @@ used for new figures or claims. Regenerate both inputs with the current scripts.
   2,995,852 decoded normal samples; used for the grey event histogram in the
   figure so it can be rebuilt without the 744 MB dataset.
 
-Run from a checkout with the CUDA extension built (`GBSKERNELS_EXT_DIR`) and
-the data files in place; for example,
-`python dd_validate.py --events 30 --kmax 26`.
+Run from the repository root with the CUDA extension built
+(`GBSKERNELS_EXT_DIR`) and the data files in place. For the final command,
+replace the uppercase timestamp markers with the filenames printed by the first
+two commands:
+
+```bash
+uv run python examples/jiuzhang/dd_validate.py --events 30 --kmax 26
+uv run python examples/jiuzhang/jiuzhang_frontier.py --kmax 32 --events 120
+uv run python examples/jiuzhang/make_precision_wall.py \
+  --fp64-artifact results/jiuzhang/jiuzhang1_frontier_CORRECTED_TIMESTAMP.json \
+  --dd-artifact results/jiuzhang/dd_frontier_CORRECTED_TIMESTAMP.json
+```

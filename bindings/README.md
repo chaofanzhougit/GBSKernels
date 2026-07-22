@@ -1,10 +1,19 @@
 # bindings/ — nanobind Python extension over the CUDA kernels
 
-`gbskernels_ext.cpp` exposes the batched GPU kernels to Python (`perm`, `perm_dd`,
-`haf`, `lhaf`, `tor`), marshalling numpy `complex128` stacks to the host-facing
-wrappers in `core/host_api.cu` (which do the H2D → launch → D2H). The Python
-package (`gbskernels`) imports it lazily and routes `backend="gpu"` through it;
-`backend="cpu"` (default) uses the reference implementation.
+`gbskernels_ext.cpp` exposes the CUDA implementation to Python:
+
+- FP64 and double-double batched permanent, hafnian, loop hafnian, and
+  torontonian kernels;
+- cancellation-indicator and certified-bound entry points, including
+  certified double-double permanent/hafnian paths;
+- FP64 and certified single-large recursive torontonians, plus the certified
+  double-double variant;
+- plain/certified repeated-row loop hafnians; and
+- the resident sampler and reusable `Session`/DLPack workspace APIs.
+
+The binding marshals NumPy stacks to the host-facing wrappers in
+`core/host_api.cu` (H2D → launch → D2H). The Python package imports it lazily
+and routes `backend="gpu"` through it; `backend="cpu"` remains the default.
 
 ```python
 import numpy as np, gbskernels
@@ -28,6 +37,9 @@ kernel* path is importable and validated **without a GPU**. This is what
 `tests/test_gpu_bindings.py` exercises (the GPU backend's results are checked
 against the CPU reference); the real GPU build of the same sources runs on-device.
 
-Both modes are validated: the host-shim build's outputs match the CPU reference
-(perm/haf/lhaf to ~1e-13, the double-double permanent **exactly**). Needs
-`nanobind` + `cmake` (dev deps).
+Both modes are gated. The host-shim extension tests compare the public binding
+surface with the independent CPU/reference implementations, including
+precision, certified, recursive, repeated-row, resident, and workspace paths.
+The real CUDA session hard-gates the underlying C++ kernels on-device and smoke-
+tests the extension; it does not duplicate every host-shim API test on-device.
+Both builds need `nanobind` + `cmake` (development dependencies).

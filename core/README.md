@@ -1,28 +1,32 @@
 # core/ — CUDA C++ kernels
 
-The four functions in two precision tiers (double and double-double), the
-subset-enumeration utilities they share, the host-facing wrappers the Python
-bindings call, and the on-device differential gates.
+The four functions in native double, double-double, and directed-rounding
+certified variants, plus the subset utilities, host-facing wrappers, sampler
+kernels, and on-device differential gates.
 
 | File | Purpose |
 |---|---|
 | `subset_engine.cuh` | Subset-enumeration utilities, the Gray-code walk (used by the permanent), and the launch macro. |
 | `dd.cuh` | Double-double arithmetic (error-free transforms, division, square root, complex double-double). |
+| `certified_rounding.cuh` | Shared upward/downward-directed scalar operations used to construct rigorous error bounds. |
 | `permanent.cu`, `permanent_dd.cu` | Batched Glynn/BB–FG permanent, double and double-double. |
+| `permanent_coop.cu`, `permanent_coop.cuh`, `permanent_warp.cu` | Cooperative and warp-specialized permanent implementations and dispatch support. |
 | `hafnian.cu`, `hafnian_dd.cu` | Batched power-trace hafnian (even N), double and double-double. |
 | `loop_hafnian.cu`, `loop_hafnian_dd.cu` | Batched power-trace loop hafnian, double and double-double. |
 | `torontonian.cu`, `torontonian_dd.cu` | Batched torontonian (subset determinants; double-double is real-input). |
 | `repeated.cu` | Repeated-row loop hafnian (finite-difference sieve), plain and certified. |
-| `tor_recursive.cu` | Recursive prefix-Cholesky torontonian, batched and single-large. |
+| `tor_recursive.cu` | Recursive prefix-Cholesky torontonian, including FP64- and double-double-certified single-large enclosures and collapse accounting. |
 | `certified.cu`, `certified_dd.cu` | Certified kernels: value plus a rigorous error bound in directed rounding. |
+| `sampler_draw.cu`, `sampler_gather.cu`, `sampler_session.cu` | Device-side conditional draws, ragged gathers, and the resident sampling chain. |
 | `host_api.cu` | Host-pointer wrappers (host→device, launch, synchronize, device→host) with checked CUDA returns. |
 | `check_*.cu` | GPU-versus-CPU-reference differential gates, including the precision gates. |
 | `bench_kernels.cu` | Kernel-only throughput timing harness. |
 
-**Validation is two-stage and CPU-first.** Every kernel first compiles and runs
-on the CPU through a host shim (`core/preflight/`, exercised by the test suite via
-`run_preflight.sh`), then passes an on-device differential gate against the
-independent CPU reference.
+**Validation is two-stage and CPU-first.** Host-shim-compatible kernels compile
+and run on the CPU (`core/preflight/`, exercised by the test suite via
+`run_preflight.sh`), then the full source set passes on-device differential gates
+against independent CPU references. Device-only variants, including
+`permanent_warp.cu`, are validated in the CUDA session rather than the host shim.
 
 **Execution model.** The default kernels evaluate one instance per thread and
 batch across the grid. Only the permanent uses the Gray-code delta walk; the

@@ -98,8 +98,7 @@ def input_cov_xxpp(r25: np.ndarray, kind: str, sign_order: str = "paper") -> np.
     """Input covariance of the 50 source modes before pairing, Eq. (4)/(12).
 
     sign_order="paper" is the published {-r_k, +r_k} alternation; "swapped"
-    is the {+r_k, -r_k} variant, kept only so the parity gate can show the
-    construction test discriminates between the two.
+    is the {+r_k, -r_k} variant retained for explicit construction audits.
     """
     if kind not in KINDS:
         raise ValueError(f"kind must be one of {KINDS}, got {kind!r}")
@@ -166,8 +165,8 @@ def build_state(kind: str, cov: np.ndarray | None = None) -> dict:
 
     ``O`` is the exact quadrature-basis torontonian matrix from
     :func:`threshold_O_xxpp`.  The legacy complex-basis real cast
-    ``Re(I - Q^{-1})`` is also returned (``O_legacy_recast``) purely so the
-    parity gates can quantify how wrong it is; never evaluate with it.
+    ``Re(I - Q^{-1})`` is also returned (``O_legacy_recast``) for audits and
+    regression tests only; never evaluate with it.
     """
     from sampling import gbs as gbs_mod
 

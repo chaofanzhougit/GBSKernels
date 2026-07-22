@@ -17,7 +17,7 @@ are, respectively,
 ```
 
 `examples/jiuzhang/coherence_family.py` constructs this family through the
-same lossy transfer-matrix channel as the parity-validated point models. A
+same lossy transfer-matrix channel as the published Q7 point models. A
 registered campaign must state whether its primary result is predictive
 comparison of fixed coherence points, an interval/posterior for coherence and
 its distance from the classical boundary, or a reconstruction-marginal

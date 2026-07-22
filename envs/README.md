@@ -1,8 +1,9 @@
 # envs/ — container definition for GPU sessions
 
-`Dockerfile` is a reproducible CUDA 12.4 + Python 3.12 image that builds `core/`
-(the four kernels, their differential gates, and the throughput harness) and
-carries the uv-managed Python environment. The CPU pre-flight
+`Dockerfile` is a versioned CUDA 12.4 + Python 3.12 development image that builds
+`core/` (the four kernels, their differential gates, and the throughput harness)
+and carries the uv-managed Python environment. Its convenience references are
+tags; published runs use the digest-pinned procedure below. The CPU pre-flight
 (`core/preflight/run_preflight.sh`) runs at build time, so an image that cannot
 pass the kernels on the host is never produced.
 

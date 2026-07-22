@@ -7,7 +7,7 @@ graft examples
 graft docs
 graft scripts
 graft envs
-include LICENSE README.md pyproject.toml
+include LICENSE README.md CHANGELOG.md CITATION.cff pyproject.toml
 prune core/build
 prune core/build_prof
 prune bindings/build

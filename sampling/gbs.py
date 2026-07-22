@@ -40,6 +40,7 @@ import gbskernels
 __all__ = ["random_gbs_kernel", "fock_patterns", "probabilities", "total_probability",
            "displaced_probabilities", "displaced_total",
            "threshold_probabilities", "threshold_total",
+           "threshold_O_xxpp",
            "torontonian_threshold_probabilities"]
 
 
@@ -250,12 +251,10 @@ def threshold_O_xxpp(cov: np.ndarray, hbar: float = 2.0) -> tuple[np.ndarray, fl
     and ``tor(Ox_S) = tor(O_S)`` exactly, with ``det Q = det Sigma_x``.
 
     This is the correct real input for :func:`gbskernels.tor_single` (which is
-    real-domain only).  The entrywise real part ``Re(I - Q^{-1})`` is NOT: for
-    states with complex pair correlations (any complex transfer matrix) it is
-    a different matrix whose torontonian is wrong by large factors -- on real
-    Jiuzhang 1.0 events its values are 20-190x too small (measured, and gated
-    against the published per-pattern probabilities of Quantum 7, 1076 in
-    examples/jiuzhang/q7_parity.py, gates G5-G6).
+    real-domain only). The entrywise real part ``Re(I - Q^{-1})`` is not an
+    equivalent matrix when the state has complex pair correlations. Exact basis
+    equivalence and a regression against that legacy cast are exercised in
+    ``tests/test_threshold_O_xxpp.py`` on states small enough for mpmath.
 
     Returns ``(Ox, log_sqrt_det)`` with ``log_sqrt_det = 0.5 * log det Sigma_x
     = 0.5 * log det Q``, so ``P(S) = tor(Ox_S) * exp(-log_sqrt_det)``.

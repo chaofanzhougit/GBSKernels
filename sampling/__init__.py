@@ -1,11 +1,11 @@
 """Thin sampling orchestration on top of the kernels.
 
-Phase 1 ships the *standard* (Aaronson-Arkhipov) boson-sampling layer, which uses
-only the permanent and is therefore validatable now; the *Gaussian* boson
-sampling chain (hafnian / torontonian) lands in Phase 3. Both exist to exercise
-the batched API on the workload photonic sampling actually produces -- many
-independent medium-sized matrix-function evaluations (docs/DESIGN.md §2.3) -- and to
-host the Layer-4 statistical validation (docs/DESIGN.md §8).
+This package ships both standard (Aaronson-Arkhipov) boson sampling through the
+permanent and Gaussian boson-sampling probability/sampler paths through the
+hafnian, loop hafnian, and torontonian. They exercise the batched API on the
+workload photonic sampling produces -- many independent medium-sized
+matrix-function evaluations (docs/DESIGN.md §2.3) -- and host the Layer-4
+statistical validation (docs/DESIGN.md §8).
 """
 
 from . import gbs
