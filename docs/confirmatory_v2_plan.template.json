@@ -1,0 +1,136 @@
+{
+  "analysis_commit": null,
+  "randomness_beacon": {
+    "provider": "REPLACE-WITH-NAMED-BEACON-PROVIDER",
+    "source": "REPLACE-WITH-FROZEN-BEACON-SOURCE",
+    "round": "REPLACE-WITH-FUTURE-BEACON-ROUND",
+    "availability_utc": "REPLACE-WITH-FUTURE-UTC"
+  },
+  "selection": {
+    "bands": [27, 28, 29, 30],
+    "targets": {
+      "27": "REPLACE-WITH-POWERED-N27",
+      "28": "REPLACE-WITH-POWERED-N28",
+      "29": "REPLACE-WITH-POWERED-N29",
+      "30": "REPLACE-WITH-POWERED-N30"
+    },
+    "reserves": {
+      "27": "REPLACE-WITH-RESERVE-N27",
+      "28": "REPLACE-WITH-RESERVE-N28",
+      "29": "REPLACE-WITH-RESERVE-N29",
+      "30": "REPLACE-WITH-RESERVE-N30"
+    },
+    "n_strata": 20,
+    "n_records": 51463365,
+    "record_bytes": 16,
+    "source_raw_sha256": "REPLACE-WITH-DATA-BIN-SHA256",
+    "exclusion_sha256": "REPLACE-WITH-EXPLICIT-EXCLUSION-LIST-SHA256",
+    "exclusion_ledger_sha256": "REPLACE-WITH-COMPLETE-EXPOSURE-LEDGER-PAYLOAD-SHA256",
+    "population_audit_sha256": "REPLACE-WITH-POPULATION-AUDIT-PAYLOAD-SHA256"
+  },
+  "models": {
+    "exp_id": 0,
+    "parameterization": "classical_excess",
+    "classical_boundary": 0.0,
+    "reference_model": "classical_boundary",
+    "alternative_model": "ideal_squeezed",
+    "coherence_points": {
+      "thermal": -1.0,
+      "subclassical_075": -0.75,
+      "subclassical_050": -0.5,
+      "subclassical_025": -0.25,
+      "classical_boundary": 0.0,
+      "quantum_025": 0.25,
+      "quantum_050": 0.5,
+      "quantum_075": 0.75,
+      "ideal_squeezed": 1.0
+    }
+  },
+  "analysis": {
+    "estimands": [
+      "best_predictive_anomalous_coherence_grid_point",
+      "joint_window_log_score_difference",
+      "click_count_log_score_difference",
+      "conditional_pattern_log_score_difference"
+    ],
+    "primary_estimand": "best_predictive_anomalous_coherence_grid_point",
+    "design_report_sha256": "REPLACE-WITH-PASSING-DESIGN-REPORT-PAYLOAD-SHA256",
+    "minimum_relevant_coherence": 0.25,
+    "target_power": 0.9,
+    "type_i_error_max": 0.05,
+    "monte_carlo_confidence": 0.99,
+    "primary_decision_rule": {
+      "method": "simultaneous_paired_model_score_max_t",
+      "claim_if_confidence_set_above_classical_boundary": true,
+      "require_predictive_pass_for_all_confidence_set_models": true,
+      "report_failure_without_suppressing_analysis": true
+    },
+    "band_weights": {
+      "27": "REPLACE-WITH-FULL-POOL-WEIGHT-C27",
+      "28": "REPLACE-WITH-FULL-POOL-WEIGHT-C28",
+      "29": "REPLACE-WITH-FULL-POOL-WEIGHT-C29",
+      "30": "REPLACE-WITH-FULL-POOL-WEIGHT-C30"
+    },
+    "bootstrap_reps": 100000,
+    "bootstrap_seed": 2026071901,
+    "alpha": 0.05,
+    "refusal_analysis": {
+      "method": "within_fixed_band_stratum_max_abs_mean_score_difference_permutation",
+      "reps": 100000,
+      "seed": 2026071904,
+      "alpha": 0.05,
+      "inferential_gate": false,
+      "recovery_method": "independent_high_precision_interval_reevaluation",
+      "minimum_precision_bits": 256,
+      "recovery_source_sha256": "REPLACE-WITH-INDEPENDENT-RECOVERY-SOURCE-SHA256",
+      "recovery_container_digest": "REPLACE-WITH-INDEPENDENT-RECOVERY-CONTAINER-DIGEST"
+    },
+    "normalizer_replicates": {
+      "count": 200,
+      "samples_per_replicate": 1000000,
+      "seed": 2026071902
+    },
+    "calibration_draws": {
+      "count": 200,
+      "seed": 2026071903,
+      "posterior_sha256": "REPLACE-WITH-CALIBRATION-POSTERIOR-SHA256",
+      "required_nuisances": ["squeezing", "transfer", "loss", "block_drift"],
+      "dark_click_model": "explicitly_zero"
+    },
+    "predictive_checks": {
+      "model_pass_policy": "all_plausible_best",
+      "detector_pairs": [[0, 1], [0, 50], [24, 25], [49, 99], [74, 75]],
+      "thresholds": {
+        "click_count_tv_max": "REPLACE-WITH-PREDICTIVE-TV-THRESHOLD",
+        "marginal_rms_max": "REPLACE-WITH-PREDICTIVE-MARGINAL-RMS-THRESHOLD",
+        "pair_covariance_rms_max": "REPLACE-WITH-PREDICTIVE-PAIR-RMS-THRESHOLD"
+      }
+    },
+    "resampling_unit": "event_within_fixed_common_stratum",
+    "resampling_method": "calibration_draw_conditioned_fixed_strata_srswor_fpc_max_t",
+    "population_scope": "finite_registered_acquisition"
+  },
+  "numerical_contract": {
+    "scope": "binary64-matrix torontonian enclosure; state/determinant intervals not certified",
+    "state_fingerprints": {},
+    "analysis_source_sha256": null
+  },
+  "prior_data_use": {
+    "record_level_policy": "exclude_all_materialized_published_selected_or_scored_records",
+    "outcome_blind_mechanical_scans_are_not_record_level_exposure": true,
+    "full_acquisition_aggregates_previously_examined": true,
+    "independent_acquisition": false,
+    "claim_scope": "finite_registered_acquisition_conditional_on_prior_aggregate_use",
+    "author_attestation_required": true
+  },
+  "external_requirements": {
+    "public_registration_required": true,
+    "future_beacon_required": true,
+    "joint_normalizer_replicates_required": true,
+    "reconstruction_required": true,
+    "absolute_predictive_checks_required": true,
+    "container_digest_required": true,
+    "calibration_draws_required": true,
+    "independent_acquisitions_required_for_process_claim": true
+  }
+}

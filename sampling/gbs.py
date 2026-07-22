@@ -237,6 +237,40 @@ def _qmat(cov: np.ndarray, hbar: float = 2.0) -> np.ndarray:
     return np.block([[aidaj, aiaj.conj()], [aiaj, aidaj.conj()]]) + np.identity(2 * N)
 
 
+def threshold_O_xxpp(cov: np.ndarray, hbar: float = 2.0) -> tuple[np.ndarray, float]:
+    """The EXACT real torontonian matrix of a zero-displacement Gaussian state.
+
+    In the quadrature (xxpp) basis the Husimi covariance is the real SPD
+    ``Sigma_x = (cov*(2/hbar) + I)/2``, and ``Ox = I - Sigma_x^{-1}`` is real by
+    construction.  The complex-basis ``O = I - Q^{-1}`` of
+    :func:`torontonian_threshold_probabilities` is ``R Ox R^dagger`` for the
+    fixed block unitary ``R = [[I, iI], [I, -iI]]/sqrt(2)``; restricting to a
+    click pattern keeps mode pairs in BOTH blocks, which commutes with ``R``,
+    so every determinant in the torontonian's inclusion-exclusion is identical
+    and ``tor(Ox_S) = tor(O_S)`` exactly, with ``det Q = det Sigma_x``.
+
+    This is the correct real input for :func:`gbskernels.tor_single` (which is
+    real-domain only).  The entrywise real part ``Re(I - Q^{-1})`` is NOT: for
+    states with complex pair correlations (any complex transfer matrix) it is
+    a different matrix whose torontonian is wrong by large factors -- on real
+    Jiuzhang 1.0 events its values are 20-190x too small (measured, and gated
+    against the published per-pattern probabilities of Quantum 7, 1076 in
+    examples/jiuzhang/q7_parity.py, gates G5-G6).
+
+    Returns ``(Ox, log_sqrt_det)`` with ``log_sqrt_det = 0.5 * log det Sigma_x
+    = 0.5 * log det Q``, so ``P(S) = tor(Ox_S) * exp(-log_sqrt_det)``.
+    """
+    n2 = cov.shape[0]
+    Sx = (np.asarray(cov, dtype=np.float64) * (2.0 / hbar) + np.eye(n2)) / 2.0
+    ev = float(np.min(np.linalg.eigvalsh((Sx + Sx.T) / 2)))
+    if ev <= 0:
+        raise AssertionError(f"Husimi not positive definite (min eig {ev:.3e})")
+    sign, logdet = np.linalg.slogdet(Sx)
+    assert sign > 0
+    Ox = np.eye(n2) - np.linalg.inv(Sx)
+    return np.ascontiguousarray(Ox), 0.5 * float(logdet)
+
+
 def torontonian_threshold_probabilities(
     cov: np.ndarray, hbar: float = 2.0, precision: str = "fp64", backend: str = "cpu"
 ) -> dict[tuple[int, ...], float]:

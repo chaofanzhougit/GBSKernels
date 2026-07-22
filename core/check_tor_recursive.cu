@@ -21,6 +21,8 @@ extern "C" void gbs_tor_recursive_single_batched(const double*, int, int, double
                                                  cudaStream_t);
 extern "C" void gbs_tor_recursive_single_cert_batched(const double*, int, int, double*,
                                                       double*, cudaStream_t);
+extern "C" void gbs_tor_recursive_single_ddcert_batched(const double*, int, int, double*,
+                                                        double*, cudaStream_t);
 }
 
 // long-double det by Gaussian elimination with partial pivoting.
@@ -284,6 +286,32 @@ int main() {
       std::printf("single-cert n=16 closed form: err %.2e bound %.2e %s\n", err, eb,
                   err <= eb ? "(enclosed at kappa~2e15)" : "ENCLOSURE VIOLATED");
       if (!(err <= eb) || !std::isfinite(eb)) s_ok = false;
+    }
+    // DD subtree outputs are collapsed to binary64 before the host reduction.
+    // At n=1, g=1 the nonempty subtree is exactly 1/(1-a), so this gate
+    // isolates that conversion and requires its residual to be in the bound.
+    {
+      const int n = 1, dim = 2, g = 1;
+      const double a = 0.1;
+      std::vector<double> O((size_t)dim * dim, 0.0);
+      O[0] = a;
+      O[3] = a;
+      double *dO = nullptr, *dp = nullptr, *db = nullptr;
+      cudaMalloc(&dO, O.size() * sizeof(double));
+      cudaMalloc(&dp, (1ull << g) * sizeof(double));
+      cudaMalloc(&db, (1ull << g) * sizeof(double));
+      cudaMemcpy(dO, O.data(), O.size() * sizeof(double), cudaMemcpyHostToDevice);
+      gbs::gbs_tor_recursive_single_ddcert_batched(dO, n, g, dp, db, 0);
+      cudaDeviceSynchronize();
+      std::vector<double> hp(1ull << g), hb(1ull << g);
+      cudaMemcpy(hp.data(), dp, hp.size() * sizeof(double), cudaMemcpyDeviceToHost);
+      cudaMemcpy(hb.data(), db, hb.size() * sizeof(double), cudaMemcpyDeviceToHost);
+      cudaFree(dO); cudaFree(dp); cudaFree(db);
+      long double exact_nonempty = 1.0L / (1.0L - (long double)a);
+      double err = std::abs((double)((long double)hp[1] - exact_nonempty));
+      std::printf("single-ddcert collapse: err %.2e bound %.2e %s\n", err, hb[1],
+                  err <= hb[1] ? "(enclosed)" : "ENCLOSURE VIOLATED");
+      if (!(err <= hb[1]) || !std::isfinite(hb[1])) s_ok = false;
     }
     if (!s_ok) { std::printf("FAIL\n"); return 1; }
     std::printf("single-large split: batched-agreement + closed forms + certified enclosure + off-domain NaN ok\n");

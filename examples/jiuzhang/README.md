@@ -16,33 +16,41 @@ frontier on the public Jiuzhang 1.0 threshold Gaussian-boson-sampling dataset.
 
 The archive is not redistributed here; download it from the source above.
 
-## Reconstruction (validated to 1.5 % RMS)
+## State construction
 
-With squeezer `k` feeding input modes `2k, 2k+1`, `nbar = sinh²r`,
-`m = sinh r cosh r`:
+`q7_construction.py` implements the paired-source construction of
+Martinez-Cifuentes et al., Quantum 7, 1076. Each source pair starts from the
+published `{-r_k, +r_k}` ordering, passes through a 50:50 beamsplitter, and
+then through the measured lossy transfer matrix.
 
-    <a†a> = conj(T)ᵀ diag(nbar) T,   <aa> = Tᵀ diag(m) T
+The evaluator uses the exact real quadrature-basis torontonian matrix
+`Ox = I - Sigma_x^-1`, where `Sigma_x = (cov + I) / 2`; see
+`sampling.gbs.threshold_O_xxpp`. Restricting a click pattern to its modes in
+both quadrature blocks preserves the torontonian under the fixed basis change.
 
-then the xxpp Wigner covariance, the Husimi `Q`, and `O = I − Q⁻¹`. A click
-pattern with `k` clicks has probability ∝ `tor(O_c)`, `O_c` the clicking modes
-in both blocks (dimension `2k`). The reconstruction is validated by comparing the
-theoretical per-detector click probability `1 − det(Q_{d,d+100})^{-1/2}` against
-the empirical rate over 10⁶ decoded samples.
+The two timestamped frontier JSONs committed in the v0.1 series predate this
+correction. They are retained as historical public artifacts and must not be
+used for new figures or claims. Regenerate both inputs with the current scripts.
 
 ## Scripts
 
-- `jiuzhang_frontier.py` — the fp64 certified κ-vs-clicks curve (Fig. 3, blue),
-  `jiuzhang1_frontier_20260707T164417Z.json`.
-- `dd_validate.py` — the on-device double-double certified frontier (Fig. 3,
-  purple) + the enclosure gate, `dd_frontier_20260708T105821Z.json`
-  (RTX 4090, `gpu_backend=gpu`, 30 events, 0 enclosure failures, tight to 26
-  clicks).
-- `make_precision_wall.py` — regenerates the precision-wall figure
-  (`--out` to choose the path; default alongside the script).
+- `build_exclusion_ledger.py`, `audit_selection_population.py`,
+  `confirmatory_design.py`, `registration_readiness_v2.py`, and
+  `prepare_registration_v2.py` implement the fail-closed v2 registration path
+  described in `docs/confirmatory_v2.md`.
+- `select_confirmatory_v2.py`, `campaign_confirmatory_v2.py`,
+  `analyze_refusals.py`, `confirmatory_inference.py`, and
+  `confirmatory_release.py` implement selection, immutable evaluation, refusal
+  recovery, inference, and release validation.
+- `jiuzhang_frontier.py` and `dd_validate.py` regenerate corrected fp64 and
+  double-double frontier artifacts under `results/jiuzhang/`.
+- `make_precision_wall.py` requires explicit corrected `--fp64-artifact` and
+  `--dd-artifact` inputs and refuses the superseded v0.1 artifacts.
+- `q7_construction.py` provides the fixed point models used by the v2 workflow.
 - `click_count_dist.npy` — click-count histogram (101 int64 bins) over the
   2,995,852 decoded normal samples; used for the grey event histogram in the
   figure so it can be rebuilt without the 744 MB dataset.
 
-Committed result JSONs carry their commit and container digest. Run from a
-checkout with the CUDA extension built (`GBSKERNELS_EXT_DIR`) and the data files
-in place; e.g. `python dd_validate.py --events 30 --kmax 26`.
+Run from a checkout with the CUDA extension built (`GBSKERNELS_EXT_DIR`) and
+the data files in place; for example,
+`python dd_validate.py --events 30 --kmax 26`.

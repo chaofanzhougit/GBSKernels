@@ -1,0 +1,197 @@
+{
+  "schema": "gbskernels.exploratory-exposure-catalog.v1",
+  "policy": {
+    "record_level_exposure_rule": "Exclude every raw record whose detector pattern or record-level result was deliberately retained, published, selected, inspected, or evaluated before registration.",
+    "aggregate_only_processing_rule": "A whole-population streaming pass used only for decoding validation, eligibility, deterministic ranking, source hashing, or aggregate counts is disclosed but does not exclude every transiently decoded record; any retained or selected record-level output from that pass is cataloged separately.",
+    "aggregate_scans_do_not_exclude_all_records": true
+  },
+  "raw_source": {
+    "path": "data/jiuzhang1/data.bin",
+    "sha256": "REPLACE-WITH-DATA-BIN-SHA256",
+    "record_bytes": 16,
+    "n_records": 51463365
+  },
+  "aggregate_exposures": [
+    {
+      "id": "full_decoder_aggregate_scan",
+      "scope": "All raw records; retained first-cap patterns are cataloged separately as record-level evidence.",
+      "operation": "Decoder validation, abnormal count, and per-band population totals.",
+      "record_level_outputs_retained": false,
+      "artifacts": [
+        {
+          "path": "examples/jiuzhang/decode_events.py",
+          "sha256": "REPLACE-WITH-DECODE-EVENTS-SHA256"
+        },
+        {
+          "path": "examples/jiuzhang/click_count_dist.npy",
+          "sha256": "REPLACE-WITH-CLICK-COUNT-DIST-SHA256"
+        }
+      ]
+    },
+    {
+      "id": "historical_selector_population_scan",
+      "scope": "All raw records; the selected manifest is cataloged separately as record-level evidence.",
+      "operation": "Normal-event eligibility, click-band membership, deterministic key ranking, and aggregate pool reporting.",
+      "record_level_outputs_retained": false,
+      "artifact": {
+        "path": "examples/jiuzhang/select_confirmatory.py",
+        "sha256": "REPLACE-WITH-HISTORICAL-SELECTOR-SHA256"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "historical_first_cap_patterns",
+      "kind": "first_cap_npz",
+      "artifact": {
+        "path": "data/jiuzhang1/campaign_events.npz",
+        "sha256": "REPLACE-WITH-CAMPAIGN-EVENTS-SHA256"
+      },
+      "metadata_key": "meta",
+      "expected_metadata": {
+        "kind": "jiuzhang1_campaign_events",
+        "n_records": 51463365,
+        "cap_per_band": 4000
+      },
+      "bands": [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+      "cap_per_band": 4000,
+      "pattern_key_template": "C{band}"
+    },
+    {
+      "id": "historical_indexed_selection",
+      "kind": "indexed_selection_npz",
+      "artifact": {
+        "path": "results/jiuzhang/confirmatory_selection_20260715T024636Z.npz",
+        "sha256": "REPLACE-WITH-HISTORICAL-SELECTION-SHA256"
+      },
+      "metadata_key": "meta",
+      "expected_metadata": {
+        "kind": "jiuzhang1_confirmatory_selection",
+        "n_records": 51463365,
+        "scanned": 51463365
+      },
+      "expected_counts": {
+        "27": 800,
+        "28": 500,
+        "29": 400,
+        "30": 300
+      },
+      "index_key_template": "ridx_C{band}",
+      "pattern_key_template": "pats_C{band}"
+    },
+    {
+      "id": "historical_index_log_crosscheck",
+      "kind": "jsonl_index_crosscheck",
+      "reference_evidence_id": "historical_indexed_selection",
+      "record_index_field": "ridx",
+      "artifacts": [
+        {
+          "path": "results/jiuzhang/confirmatory_C27_b1.jsonl",
+          "sha256": "REPLACE-WITH-C27-INDEX-LOG-SHA256"
+        },
+        {
+          "path": "results/jiuzhang/confirmatory_C28_b1.jsonl",
+          "sha256": "REPLACE-WITH-C28-INDEX-LOG-SHA256"
+        },
+        {
+          "path": "results/jiuzhang/confirmatory_C29_s1.jsonl",
+          "sha256": "REPLACE-WITH-C29-INDEX-LOG-SHA256"
+        },
+        {
+          "path": "results/jiuzhang/confirmatory_C30_b4.jsonl",
+          "sha256": "REPLACE-WITH-C30-B4-INDEX-LOG-SHA256"
+        },
+        {
+          "path": "results/jiuzhang/confirmatory_C30_s1.jsonl",
+          "sha256": "REPLACE-WITH-C30-S1-INDEX-LOG-SHA256"
+        }
+      ]
+    },
+    {
+      "id": "auxiliary_materialized_patterns",
+      "kind": "pattern_arrays",
+      "expected_unique_patterns": 719,
+      "artifacts": [
+        {
+          "path": "data/jiuzhang1/events_ge40.npy",
+          "sha256": "REPLACE-WITH-EVENTS-GE40-SHA256",
+          "expected_rows": 200
+        },
+        {
+          "path": "data/jiuzhang1/events_band13_32.npy",
+          "sha256": "REPLACE-WITH-EVENTS-BAND13-32-SHA256",
+          "expected_rows": 400
+        },
+        {
+          "path": "data/jiuzhang1/sample_events.npy",
+          "sha256": "REPLACE-WITH-SAMPLE-EVENTS-SHA256",
+          "expected_rows": 119
+        }
+      ]
+    },
+    {
+      "id": "archived_published_patterns",
+      "kind": "pattern_arrays",
+      "expected_unique_patterns": 133940,
+      "artifacts": [
+        {
+          "path": "data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_21.npy",
+          "sha256": "REPLACE-WITH-PUBLISHED-C21-SHA256",
+          "expected_rows": 4296
+        },
+        {
+          "path": "data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_22.npy",
+          "sha256": "REPLACE-WITH-PUBLISHED-C22-SHA256",
+          "expected_rows": 7471
+        },
+        {
+          "path": "data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_23.npy",
+          "sha256": "REPLACE-WITH-PUBLISHED-C23-SHA256",
+          "expected_rows": 12822
+        },
+        {
+          "path": "data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_24.npy",
+          "sha256": "REPLACE-WITH-PUBLISHED-C24-SHA256",
+          "expected_rows": 21343
+        },
+        {
+          "path": "data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_25.npy",
+          "sha256": "REPLACE-WITH-PUBLISHED-C25-SHA256",
+          "expected_rows": 34454
+        },
+        {
+          "path": "data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_26.npy",
+          "sha256": "REPLACE-WITH-PUBLISHED-C26-SHA256",
+          "expected_rows": 53554
+        }
+      ]
+    }
+  ],
+  "unresolved_provenance": [
+    {
+      "id": "missing_historical_evaluation_logs",
+      "provenance_recovered": false,
+      "exclusion_risk_resolved": true,
+      "resolution": "The complete first-cap materialized arrays are excluded, conservatively covering every record that the historical runner could address from those arrays."
+    },
+    {
+      "id": "undocumented_auxiliary_selection_procedure",
+      "provenance_recovered": false,
+      "exclusion_risk_resolved": true,
+      "resolution": "Every auxiliary pattern is matched against the complete raw acquisition and every exact raw match is excluded; no undocumented row ordering is used."
+    },
+    {
+      "id": "off_repository_record_level_access",
+      "provenance_recovered": false,
+      "exclusion_risk_resolved": false,
+      "resolution": "REPLACE-WITH-AUTHOR-CONFIRMATION-AND-ANY-ADDITIONAL-EVIDENCE"
+    }
+  ],
+  "author_attestation": {
+    "scope": "all_known_pre_registration_record_level_exposures",
+    "statement": "I attest that this catalog identifies every known Jiuzhang 1.0 raw record whose detector pattern or record-level result was deliberately retained, published, selected, inspected, or evaluated by this project before the v2 registration, including any such exposure outside this repository.",
+    "attested": false,
+    "attestor": "REPLACE-WITH-ATTESTOR",
+    "attested_utc": "REPLACE-WITH-UTC"
+  }
+}

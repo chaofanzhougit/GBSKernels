@@ -1,9 +1,10 @@
 """Certified torontonian frontier on real Jiuzhang 1.0 data, at GPU scale.
 
 Runs the single-large certified torontonian (tor_single, certified=True) over
-real Jiuzhang threshold events to populate the full condition-number-vs-clicks
-frontier up to 32 clicks (dimension 64) -- the range that is slow on the CPU
-host shim but ~1 s/eval on a real GPU.
+nested subpatterns of recorded high-click Jiuzhang events to populate a
+controlled condition-number-vs-size curve through 32 clicks (dimension 64).
+These points are not a sample of whole events conditioned on each click count;
+whole-event coverage is reported separately.
 
 Inputs (the small payload; no 785 MB data.bin needed on the box):
     T_full.npy               50 input x 100 output transfer matrix
@@ -12,9 +13,9 @@ Inputs (the small payload; no 785 MB data.bin needed on the box):
                              sub-pattern curve to k=32)
     events_band13_32.npy     real events with 13..32 clicks (whole-event coverage)
 
-State reconstruction is the recipe validated to 1.5% RMS against the empirical
-per-detector click rates: r50 = repeat(r25, 2); aiaj = T^T diag(sinh r cosh r) T;
-aidaj = conj(T)^T diag(sinh^2 r) T; xxpp covariance; Q = Husimi; O = I - Q^{-1}.
+State construction is delegated to q7_construction.build_state("squeezed"):
+the published paired-source model followed by the exact real quadrature-basis
+torontonian matrix O = I - Sigma_x^{-1}.
 
     python jiuzhang_frontier.py --kmax 32 --events 120
 
@@ -33,29 +34,27 @@ from pathlib import Path
 import numpy as np
 
 import gbskernels
-from sampling import gbs as gbs_mod
+import q7_construction as q7
 
 HERE = Path(__file__).resolve().parent
+# inputs: the repo-local payload dir if present (data/ is gitignored and pushed
+# to the box by launch_session.sh), else next to the script (legacy box layout)
+DATA = HERE.parents[1] / "data" / "jiuzhang1"
+if not (DATA / "T_full.npy").exists():
+    DATA = HERE
+# artifacts land under results/ so a session's rsync-back collects them
+OUT_DIR = HERE.parents[1] / "results" / "jiuzhang"
 U = 2.0 ** -53
 
 
 def build_O():
-    T = np.load(HERE / "T_full.npy")
-    r50 = np.repeat(np.loadtxt(HERE / "squeezing parameters.txt"), 2)
-    nbar = np.sinh(r50) ** 2
-    mm = np.sinh(r50) * np.cosh(r50)
-    aiaj = T.T @ np.diag(mm) @ T
-    aidaj = T.conj().T @ np.diag(nbar) @ T
-    M = aidaj.shape[0]
-    x = np.eye(M) + np.real(aidaj + aidaj.conj().T) + 2 * np.real(aiaj)
-    p = np.eye(M) + np.real(aidaj + aidaj.conj().T) - 2 * np.real(aiaj)
-    xp = 2 * np.imag(aiaj) + 2 * np.imag(aidaj)
-    cov = np.block([[x, xp], [xp.T, p]])
-    Q = gbs_mod._qmat(cov, 2.0)
-    ev = float(np.min(np.linalg.eigvalsh((Q + Q.conj().T).real / 2)))
-    if ev <= 0:
-        raise AssertionError(f"Husimi not PD (min eig {ev:.3e})")
-    return np.real(np.eye(2 * M) - np.linalg.inv(Q))
+    """Published paired-source Jiuzhang 1.0 squeezed-state input.
+
+    Do not reconstruct this state locally.  The former implementation used
+    50 repeated same-sign single-mode squeezers and therefore did not match
+    the 25 paired-source model.
+    """
+    return q7.build_state("squeezed")["O"]
 
 
 def cert_tor(O, clicked_modes):
@@ -75,13 +74,15 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--kmax", type=int, default=32)
     ap.add_argument("--events", type=int, default=120)
+    ap.add_argument("--band-events", type=int, default=60,
+                    help="whole 13-26-click events for the coverage block (0 = skip)")
     args = ap.parse_args()
 
     O = build_O()
     ks = list(range(4, args.kmax + 1, 2))
 
     # (1) controlled sub-pattern curve to k=kmax over many real events
-    big = np.load(HERE / "events_ge40.npy")[: args.events]
+    big = np.load(DATA / "events_ge40.npy")[: args.events]
     per_k = {k: [] for k in ks}
     for c in big:
         S = [j for j in range(len(c)) if c[j]]
@@ -104,8 +105,8 @@ def main() -> None:
     # (cap at 26 clicks: a 32-click tor_single is ~2^32 leaves = minutes/event;
     # the coverage statistic is already saturated by ~16 clicks, so ceiling-range
     # events suffice and keep per-event cost bounded).
-    band_all = np.load(HERE / "events_band13_32.npy")
-    band = band_all[band_all.sum(1) <= 26][: min(args.events, 60)]
+    band_all = np.load(DATA / "events_band13_32.npy")
+    band = band_all[band_all.sum(1) <= 26][: min(args.events, args.band_events)]
     band_rows = []
     for c in band:
         S = [j for j in range(len(c)) if c[j]]
@@ -120,20 +121,28 @@ def main() -> None:
            "container_digest": os.environ.get("GBS_CONTAINER_DIGEST"),
            "gpu_backend": gbskernels.gpu_backend_kind() if hasattr(gbskernels, "gpu_backend_kind") else None,
            "data_source": "Jiuzhang 1.0 (quantum.ustc.edu.cn node/915)",
+           "state_construction": "q7_construction.build_state('squeezed')",
+           "ensemble": "nested first-k subpatterns of recorded >=40-click events",
            "reconstruction_validation_rms": 0.0146,
            "modes": len(O) // 2, "kmax": args.kmax,
            "subpattern_curve": curve,
            "band_events": len(band_rows),
-           "band_fp64_proves_a_digit_frac": float(np.mean([r["fp64_proves_a_digit"] for r in band_rows])),
+           "band_fp64_proves_a_digit_frac":
+               float(np.mean([r["fp64_proves_a_digit"] for r in band_rows]))
+               if band_rows else None,
            "band_rows": band_rows}
-    out = HERE / f"jiuzhang1_frontier_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.json"
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out = OUT_DIR / f"jiuzhang1_frontier_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.json"
     out.write_text(json.dumps(art, indent=1))
     print(f"{'k':>3} {'dim':>4} {'n':>4} {'kappa_med':>10} {'fp64 digits':>11} {'proves?':>8}")
     for r in curve:
         print(f"{r['clicks']:>3} {r['dim']:>4} {r['n']:>4} {r['kappa_median']:>10.1e} "
               f"{r['fp64_digits_median']:>11.1f} {str(r['fp64_proves_a_digit']):>8}")
-    print(f"real band 13-32: {len(band_rows)} events, fp64 proves a digit in "
-          f"{art['band_fp64_proves_a_digit_frac']:.1%}")
+    if band_rows:
+        print(f"real band 13-32: {len(band_rows)} events, fp64 proves a digit in "
+              f"{art['band_fp64_proves_a_digit_frac']:.1%}")
+    else:
+        print("real band 13-32: skipped (--band-events 0)")
     print(f"-> {out}")
 
 

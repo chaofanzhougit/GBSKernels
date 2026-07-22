@@ -2,26 +2,20 @@
 
 Confirms, on real GPU hardware: (1) the DD kernel compiles under nvcc and runs;
 (2) it encloses the mpmath reference where affordable; (3) it is strictly tighter
-than the fp64 certificate; (4) on the real Jiuzhang state it stays certifiable
-(rel bound < 1) across and past the click range where the fp64 certificate is
-already meaningless. Fast on a GPU (the shim could not reach the high-k points).
+than the fp64 certificate; (4) on nested subpatterns of recorded high-click
+events from the published paired-source Jiuzhang state it stays certifiable
+across the tested size range. This is a controlled size curve, not a whole-event
+ensemble.
 """
 import argparse, json, os, time
 import numpy as np
-from sampling import gbs as gbs_mod
 import gbskernels
 from highprec_ref import torontonian_mp
+import q7_construction as q7
 
 def build_O():
-    T = np.load("data/jiuzhang1/T_full.npy")
-    r = np.repeat(np.loadtxt("data/jiuzhang1/squeezing parameters.txt"), 2)
-    nb = np.sinh(r) ** 2; mm = np.sinh(r) * np.cosh(r)
-    aiaj = T.T @ np.diag(mm) @ T; aidaj = T.conj().T @ np.diag(nb) @ T; M = 100
-    x = np.eye(M) + np.real(aidaj + aidaj.conj().T) + 2 * np.real(aiaj)
-    p = np.eye(M) + np.real(aidaj + aidaj.conj().T) - 2 * np.real(aiaj)
-    xp = 2 * np.imag(aiaj) + 2 * np.imag(aidaj)
-    cov = np.block([[x, xp], [xp.T, p]]); Q = gbs_mod._qmat(cov)
-    return np.real(np.eye(200) - np.linalg.inv(Q))
+    """Use the published paired-source Jiuzhang state."""
+    return q7.build_state("squeezed")["O"]
 
 def main():
     ap = argparse.ArgumentParser()
@@ -68,9 +62,12 @@ def main():
            "commit": os.environ.get("GBS_COMMIT"),
            "container_digest": os.environ.get("GBS_CONTAINER_DIGEST"),
            "gpu_backend": gbskernels.gpu_backend_kind(),
+           "state_construction": "q7_construction.build_state('squeezed')",
+           "ensemble": "nested first-k subpatterns of recorded >=40-click events",
            "n_events": len(events), "enclosure_failures_le12": encl_fail,
            "dd_tight_frontier_clicks": dd_frontier, "rows": rows}
-    out = f"data/jiuzhang1/dd_frontier_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.json"
+    os.makedirs("results/jiuzhang", exist_ok=True)
+    out = f"results/jiuzhang/dd_frontier_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}.json"
     json.dump(art, open(out, "w"), indent=1)
     print(f"\n{'k':>3} {'fp64 rel':>10} {'DD rel':>10} {'DD certifies?':>14}")
     for r in rows:

@@ -332,7 +332,7 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
           double p = L[c * TORS_MAX_DIM + c], ep = EL[c * TORS_MAX_DIM + c];
           if (!(ep < 0.5 * p)) return false; // pivot uncertifiable
           double v = sacc / p;
-          double p_lo = rd_mul(p - ep, 1.0 - 2.0 * TORS_U);
+          double p_lo = rd_sub(p, ep);
           L[r * TORS_MAX_DIM + c] = v;
           EL[r * TORS_MAX_DIM + c] =
               ru_add(ru_add(ru_div(e_s, p_lo), ru_div(ru_mul(ep, fabs(v)), p_lo)),
@@ -343,7 +343,7 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
           L[r * TORS_MAX_DIM + r] = v;
           // |sqrt(s±e) - sqrt(s)| <= e / (2 sqrt(s-e)); fl(sqrt) adds u*v
           EL[r * TORS_MAX_DIM + r] =
-              ru_add(ru_mul(TORS_U, v), ru_div(e_s, 2.0 * rd_sqrt(sacc - e_s)));
+              ru_add(ru_mul(TORS_U, v), ru_div(e_s, 2.0 * rd_sqrt(rd_sub(sacc, e_s))));
         }
       }
     }
@@ -381,9 +381,9 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
       if (!(e_det < 0.5 * detprod)) { partials[t] = NAN; pbounds[t] = INFINITY; return; }
       double sroot = sqrt(detprod);
       double tS = ru_add(ru_mul(TORS_U, sroot),
-                         ru_div(e_det, 2.0 * rd_sqrt(detprod - e_det)));
+                         ru_div(e_det, 2.0 * rd_sqrt(rd_sub(detprod, e_det))));
       double c = 1.0 / sroot;
-      double s_lo = rd_mul(sroot - tS, 1.0 - 2.0 * TORS_U);
+      double s_lo = rd_sub(sroot, tS);
       // |1/(s±t) - fl(1/s)| <= t/(s*(s-t)) + u/s, all upward-rounded
       double e_c = ru_add(ru_div(tS, rd_mul(sroot, s_lo)), ru_mul(TORS_U, c));
       total += ((n - count) & 1) ? -c : c;
@@ -436,25 +436,33 @@ extern "C" void gbs_tor_recursive_single_cert_batched(const double* d_O, int n, 
 // magnitudes are read from the hi component with a non-overlap headroom. u_DD =
 // 2^-100 is >~30x the proven double-word add/mul/div/sqrt constants
 // (Joldes-Muller-Popescu, ACM TOMS 2017), so the charge is conservative and the
-// enclosure is enforced as a test invariant against mpmath. Result value/bound
-// collapse to fp64 on output (one final u*|.| charge folded into the leaf term).
+// enclosure is enforced as a test invariant against mpmath. Each subtree's
+// DD-to-fp64 collapse residual is recovered by TwoSum and added to its bound
+// before the host reduction.
 //
-// This is what makes the Jiuzhang frontier (past the fp64 wall near 15 clicks)
-// return a TIGHT certified probability rather than only a proof that fp64 failed.
+// The result is a kernel-level enclosure for the torontonian of the supplied
+// binary64 matrix; state construction and probability normalization are outside
+// this kernel's contract.
 // Memory: dd L (64 KB) + fp64 EL (32 KB) per thread; a single evaluation owns
 // the GPU. Off-domain / uncertifiable minors write NaN / +inf as before.
 // --------------------------------------------------------------------------
 
 constexpr double TORS_U_DD = 7.888609052210118e-31; // 2^-100 (charged), >~30x proven
-constexpr double TORS_HDR = 1.0000000000000018;      // 1 + 2^-49, |dd| <= |hi|*HDR
+constexpr double TORS_DD_UFL = 8e-323;
 
 __device__ inline double tors_gamma_dd(double kk) {
   double ku = kk * TORS_U_DD;
   return ru_mul(ku / (1.0 - ku), 1.0 + 4.0 * TORS_U_DD);
 }
-// upper / lower fp64 bounds on |x| for a double-double x
-__device__ inline double md_hi(dd x) { return ru_mul(fabs(x.hi), TORS_HDR); }
-__device__ inline double md_lo(dd x) { return rd_mul(fabs(x.hi), 1.0 - 2.0 * TORS_U_DD); }
+// Triangle bounds for the represented value hi+lo.  The previous lower bound
+// multiplied |hi| by 1-2*u_DD, which rounds to one in binary64 and is false
+// whenever lo has the opposite sign.  Use the stored low word directly.
+__device__ inline double md_hi(dd x) {
+  return ru_add(fabs(x.hi), fabs(x.lo));
+}
+__device__ inline double md_lo(dd x) {
+  return fmax(0.0, rd_sub(fabs(x.hi), fabs(x.lo)));
+}
 
 __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
                                                    int n, int g,
@@ -506,7 +514,7 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
           if (!(ep < 0.5 * md_lo(pv))) return false;   // pivot uncertifiable
           dd v = dd_div(sacc, pv);
           double av = md_hi(v);
-          double p_lo = rd_mul(md_lo(pv) - ep, 1.0 - 2.0 * TORS_U_DD);
+          double p_lo = rd_sub(md_lo(pv), ep);
           L[r * TORS_MAX_DIM + c] = v;
           EL[r * TORS_MAX_DIM + c] =
               ru_add(ru_add(ru_div(e_s, p_lo), ru_div(ru_mul(ep, av), p_lo)),
@@ -517,7 +525,8 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
           double av = md_hi(v);
           L[r * TORS_MAX_DIM + r] = v;
           EL[r * TORS_MAX_DIM + r] =
-              ru_add(ru_mul(TORS_U_DD, av), ru_div(e_s, 2.0 * rd_sqrt(md_lo(sacc) - e_s)));
+              ru_add(ru_mul(TORS_U_DD, av),
+                     ru_div(e_s, 2.0 * rd_sqrt(rd_sub(md_lo(sacc), e_s))));
         }
       }
     }
@@ -557,10 +566,10 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
       dd sroot = dd_sqrt(detprod);
       double srm = md_hi(sroot), srlo = md_lo(sroot);
       double tS = ru_add(ru_mul(TORS_U_DD, srm),
-                         ru_div(e_det, 2.0 * rd_sqrt(md_lo(detprod) - e_det)));
+                         ru_div(e_det, 2.0 * rd_sqrt(rd_sub(md_lo(detprod), e_det))));
       dd c = dd_div(dd_from(1.0), sroot);
       double cm = md_hi(c);
-      double s_lo = rd_mul(srlo - tS, 1.0 - 2.0 * TORS_U_DD);
+      double s_lo = rd_sub(srlo, tS);
       double e_c = ru_add(ru_div(tS, rd_mul(srlo, s_lo)), ru_mul(TORS_U_DD, cm));
       total = dd_add(total, ((n - count) & 1) ? dd_neg(c) : c);
       e_tot = ru_add(e_tot, ru_add(e_c, ru_mul(TORS_U_DD, md_hi(total))));
@@ -584,10 +593,21 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
     if (lvl == 0) break;
     --lvl;
   }
-  // collapse dd value to fp64 output with one final rounding charge
-  double val = total.hi + total.lo;
+  // Collapse each subtree partial to fp64.  This is an FP64 operation, not a
+  // DD operation: recover its exact residual with TwoSum and charge it before
+  // the host performs the cross-subtree reduction.  The exact residual
+  // |collapse_err| bounds |val-(hi+lo)|, but the tracked DD error e_tot and the
+  // residual can share a sign at the sub-ulp level, so also charge one fp64 ulp
+  // of the collapsed magnitude (u*|val|) -- the fundamental granularity of
+  // representing this partial in fp64.  Negligible (~1e-16 rel) beside the real
+  // DD accumulation bound, but it keeps the leaf enclosure sound under an
+  // 80-bit reference (an x86 host-shim gate caught the omission; arm64 long
+  // double == double had masked it).
+  double collapse_err = 0.0;
+  double val = two_sum(total.hi, total.lo, collapse_err);
   partials[t] = val;
-  pbounds[t] = ru_add(e_tot, ru_mul(TORS_U_DD, fabs(val)));
+  pbounds[t] = ru_add(ru_add(e_tot, ru_mul(TORS_U, fabs(val))),
+                      ru_add(fabs(collapse_err), TORS_DD_UFL));
 }
 
 extern "C" void gbs_tor_recursive_single_ddcert_batched(const double* d_O, int n, int g,

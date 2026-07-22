@@ -36,6 +36,13 @@ __device__ inline double rd_mul(double a, double b) {
   return nextafter(a * b, -INFINITY);
 #endif
 }
+__device__ inline double rd_sub(double a, double b) {
+#if defined(__CUDA_ARCH__)
+  return __dsub_rd(a, b);
+#else
+  return nextafter(a - b, -INFINITY);
+#endif
+}
 __device__ inline double rd_sqrt(double a) {
 #if defined(__CUDA_ARCH__)
   return __dsqrt_rd(a);

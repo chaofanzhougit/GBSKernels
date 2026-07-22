@@ -1,0 +1,153 @@
+{
+  "schema": "gbskernels.confirmatory-design-spec.v1",
+  "bands": [27, 28, 29, 30],
+  "calibration_posterior_sha256": "REPLACE-WITH-INDEPENDENT-CALIBRATION-POSTERIOR-SHA256",
+  "simulator_source_sha256": "REPLACE-WITH-FROZEN-FORWARD-SIMULATOR-SOURCE-SHA256",
+  "analysis_contract": {
+    "models": {
+      "exp_id": 0,
+      "parameterization": "classical_excess",
+      "classical_boundary": 0.0,
+      "reference_model": "classical_boundary",
+      "alternative_model": "ideal_squeezed",
+      "coherence_points": {
+        "thermal": -1.0,
+        "subclassical_075": -0.75,
+        "subclassical_050": -0.5,
+        "subclassical_025": -0.25,
+        "classical_boundary": 0.0,
+        "quantum_025": 0.25,
+        "quantum_050": 0.5,
+        "quantum_075": 0.75,
+        "ideal_squeezed": 1.0
+      }
+    },
+    "primary_estimand": "best_predictive_anomalous_coherence_grid_point",
+    "primary_decision_rule": {
+      "method": "simultaneous_paired_model_score_max_t",
+      "claim_if_confidence_set_above_classical_boundary": true,
+      "require_predictive_pass_for_all_confidence_set_models": true,
+      "report_failure_without_suppressing_analysis": true
+    },
+    "alpha": 0.05,
+    "bootstrap_reps": 100000,
+    "bootstrap_seed": 2026071901,
+    "refusal_analysis": {
+      "method": "within_fixed_band_stratum_max_abs_mean_score_difference_permutation",
+      "reps": 100000,
+      "seed": 2026071904,
+      "alpha": 0.05,
+      "inferential_gate": false,
+      "recovery_method": "independent_high_precision_interval_reevaluation",
+      "minimum_precision_bits": 256,
+      "recovery_source_sha256": "REPLACE-WITH-INDEPENDENT-RECOVERY-SOURCE-SHA256",
+      "recovery_container_digest": "REPLACE-WITH-INDEPENDENT-RECOVERY-CONTAINER-DIGEST"
+    },
+    "normalizer_replicates": {
+      "count": 200,
+      "samples_per_replicate": 1000000,
+      "seed": 2026071902
+    },
+    "reconstruction_required": true,
+    "calibration_draws": {
+      "count": 200,
+      "seed": 2026071903,
+      "posterior_sha256": "REPLACE-WITH-CALIBRATION-POSTERIOR-SHA256",
+      "required_nuisances": [
+        "squeezing",
+        "transfer",
+        "loss",
+        "block_drift"
+      ],
+      "dark_click_model": "explicitly_zero"
+    },
+    "predictive_model_pass_policy": "all_plausible_best",
+    "predictive_detector_pairs": [
+      [0, 1],
+      [0, 50],
+      [24, 25],
+      [49, 99],
+      [74, 75]
+    ],
+    "resampling_unit": "event_within_fixed_common_stratum",
+    "resampling_method": "calibration_draw_conditioned_fixed_strata_srswor_fpc_max_t",
+    "population_scope": "finite_registered_acquisition"
+  },
+  "event_cost": {
+    "27": 1.0,
+    "28": 2.0,
+    "29": 4.0,
+    "30": 8.0
+  },
+  "candidate_targets": [
+    {
+      "name": "equal-100",
+      "targets": {"27": 100, "28": 100, "29": 100, "30": 100}
+    },
+    {
+      "name": "equal-200",
+      "targets": {"27": 200, "28": 200, "29": 200, "30": 200}
+    },
+    {
+      "name": "equal-400",
+      "targets": {"27": 400, "28": 400, "29": 400, "30": 400}
+    },
+    {
+      "name": "equal-800",
+      "targets": {"27": 800, "28": 800, "29": 800, "30": 800}
+    },
+    {
+      "name": "equal-1200",
+      "targets": {"27": 1200, "28": 1200, "29": 1200, "30": 1200}
+    },
+    {
+      "name": "equal-1600",
+      "targets": {"27": 1600, "28": 1600, "29": 1600, "30": 1600}
+    }
+  ],
+  "scenarios": {
+    "classical": [
+      "thermal",
+      "subclassical_075",
+      "subclassical_050",
+      "subclassical_025",
+      "classical_boundary"
+    ],
+    "alternative": [
+      "quantum_025",
+      "quantum_050",
+      "quantum_075",
+      "ideal_squeezed"
+    ],
+    "predictive_valid": [
+      "thermal",
+      "subclassical_075",
+      "subclassical_050",
+      "subclassical_025",
+      "classical_boundary",
+      "quantum_025",
+      "quantum_050",
+      "quantum_075",
+      "ideal_squeezed"
+    ],
+    "predictive_misspecification": [
+      "wrong_loss",
+      "wrong_transfer",
+      "unmodeled_block_drift",
+      "unmodeled_detector_response",
+      "unmodeled_dark_clicks"
+    ]
+  },
+  "criteria": {
+    "type_i_error_max": 0.05,
+    "power_min": 0.9,
+    "minimum_relevant_coherence": 0.25,
+    "monte_carlo_confidence": 0.99,
+    "simulation_trials_min": 100000,
+    "predictive_draws_min": 10000,
+    "predictive_family_false_failure_max": 0.05,
+    "predictive_misspecification_rejection_min": 0.9,
+    "refusal_trials_min": 10000,
+    "reserve_family_failure_max": 0.0001
+  }
+}

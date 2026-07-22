@@ -1,21 +1,36 @@
-"""The certified precision-wall figure (paper Fig.: two regimes on real data)."""
+"""Build the certified precision-wall figure from corrected run artifacts."""
 import json
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
 import numpy as np
 
 import argparse
 HERE = Path(__file__).resolve().parent
 _p = argparse.ArgumentParser(description=__doc__)
+_p.add_argument("--fp64-artifact", type=Path, required=True,
+                help="corrected jiuzhang_frontier.py JSON artifact")
+_p.add_argument("--dd-artifact", type=Path, required=True,
+                help="corrected dd_validate.py JSON artifact")
 _p.add_argument("--out", type=Path, default=HERE / "precision_wall.pdf",
                 help="output figure path (default: alongside this script)")
-OUT = _p.parse_args().out
+_args = _p.parse_args()
+OUT = _args.out
 
-a = json.load(open(HERE / "jiuzhang1_frontier_20260707T164417Z.json"))
+
+def _load_corrected(path: Path) -> dict:
+    artifact = json.loads(path.read_text())
+    expected = "q7_construction.build_state('squeezed')"
+    if artifact.get("state_construction") != expected:
+        raise SystemExit(
+            f"{path} predates the corrected Q7 state construction; regenerate it"
+        )
+    return artifact
+
+
+a = _load_corrected(_args.fp64_artifact)
 c = a["subpattern_curve"]
 k = np.array([r["clicks"] for r in c])
 med = np.array([r["rel_bound_median"] for r in c])
@@ -43,9 +58,7 @@ ax.plot(k, med, "-o", color="#1f77b4", ms=4.5, lw=1.8, zorder=4,
         label="fp64 certified bound (median)")
 
 # the double-double certificate tunnels under the wall (on-device, real GPU)
-import glob
-_ddf = sorted(glob.glob(str(HERE / "dd_frontier_*.json")))[-1]
-_dd = json.load(open(_ddf))
+_dd = _load_corrected(_args.dd_artifact)
 dk = np.array([r["clicks"] for r in _dd["rows"]])
 dv = np.array([r["dd_rel_bound_median"] for r in _dd["rows"]])
 ax.plot(dk, dv, "-s", color="#9467bd", ms=4.5, lw=1.8, zorder=5,
@@ -84,11 +97,11 @@ ax.set_zorder(ax2.get_zorder() + 1); ax.patch.set_visible(False)
 
 # annotate the real-event bulk on the main axis (no clipping)
 ax.annotate(f"real Jiuzhang events live here:\nmean {mean_clicks:.0f} clicks, "
-            f"{frac_ge26*100:.1f}% past the ceiling",
+            f"{frac_ge26*100:.1f}% at/past the ceiling",
             xy=(mean_clicks, 3e-11), xytext=(28.5, 8e2), fontsize=8.5, color="#444",
             ha="left", arrowprops=dict(arrowstyle="->", color="#7f7f7f", lw=0.8))
 ax.legend(loc="upper left", fontsize=8.5, framealpha=0.95)
 fig.tight_layout()
-OUT.parent.mkdir(exist_ok=True)
+OUT.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(OUT, bbox_inches="tight")
-print(f"wrote {OUT}  (fp64 last digit at k={kx:.1f}, {frac_ge26*100:.1f}% past 26)")
+print(f"wrote {OUT}  (fp64 last digit at k={kx:.1f}, {frac_ge26*100:.1f}% at/past 26)")
