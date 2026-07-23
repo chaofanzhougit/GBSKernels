@@ -22,10 +22,11 @@ companion with an explicit accuracy characterization. The Walrus is used here as
 one of several independent test oracles.
 
 > **Status.** The CPU library is complete and `pip`-installable (pure Python,
-> `numpy` + `mpmath` only). Historical release validation covers NVIDIA hardware
-> (RTX 4090, A100); the v0.2 changes pass the CPU host-shim gates and still require
-> a fresh on-device validation session. This is pre-1.0 software and the public
-> API may change.
+> `numpy` + `mpmath` only). The v0.2.0 release commit passed a fresh RTX 4090
+> session on 2026-07-23: all 24 on-device differential gates, the Python 3.12
+> binding smoke, and every physical public-path checksum passed. Historical A100
+> evidence is also retained; see the [v0.2 device evidence](results/README.md#v020-device-validation).
+> This is pre-1.0 software and the public API may change.
 
 Version 0.2.0 adds the fail-closed Jiuzhang confirmatory workflow and corrects
 the real threshold-torontonian construction used by the Jiuzhang examples. See

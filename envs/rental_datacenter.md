@@ -80,6 +80,6 @@ experiment for the paper.
 ## Cost expectation
 
 V100 ≈ **$0.2–0.6/hr**, P100 ≈ **$0.1–0.4/hr**, A30 ≈ **$0.3–0.7/hr**, A100 ≈ **$0.8–1.5/hr**,
-H100 ≈ **$2–3/hr**; one full session ≈ **45 min** (dominated by the image pull + build) →
-**≈ $0.1–2.3** depending on card (a V100 run is well under **$1**). Terminate as soon as
-`results/` is copied back.
+H100 ≈ **$2–3/hr**. The complete tagged workflow includes long CPU baselines and
+sampler sweeps, so budget **3–4 hours**, not only the build/gate time. Keep an
+independent watchdog and terminate only after `results/` is copied and verified.

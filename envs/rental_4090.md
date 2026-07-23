@@ -2,9 +2,10 @@
 
 One Ada 4090 covers everything: the kernels are tiny (~17 MB working set for a
 4096×16×16 batch) so correctness gates, throughput, the certified-numerics
-tightness figure, and the §6 certified validation on real Borealis data (both
-observables) run in one ~60–90-min session. Nothing here needs more than one
-GPU, and the 4090 posts the *faster* `tor_single` frontier (26 clicks 0.74 s).
+tightness figure, sampler sweeps, and same-instance crossover run on one GPU.
+Budget about three hours after SSH is ready, plus startup and result-retrieval
+margin; the complete 2026-07-23 v0.2.0 run took about three hours on-device.
+The 4090 posts the *faster* `tor_single` frontier (26 clicks 0.74 s).
 
 ## Turnkey: one command from access to results
 
@@ -15,7 +16,7 @@ digest, rsyncs the tree (excluding `private/`, `.git`,
 connection can't kill the run), streams the log, and copies `results/` back:
 
 ```bash
-git push origin main                       # box pulls current HEAD
+git status --short && git rev-parse HEAD   # confirm the intended clean commit
 bash scripts/launch_session.sh -p <port> <user>@<host> 89
 ```
 
@@ -24,14 +25,14 @@ bash scripts/launch_session.sh -p <port> <user>@<host> 89
 sieve incl. the M=32 PNR-base case + recursive tor + session) → build+smoke the
 nanobind extension → kernel-only throughput (incl. `tor_single` frontier) →
 GPU-vs-mpmath accuracy → 3-regime e2e → sampler throughput + sweep + R4 A/B +
-Walrus baseline + crossover → **tightness distributions** →
-**§6 on real Borealis** (dataset fetched + SHA256-verified on-box; threshold
-2000 events + PNR 400 events, the latter now one batched GPU launch/hypothesis).
-Scale the §6 sizes with `GBS_SEC6_THRESHOLD_EVENTS` / `GBS_SEC6_PNR_EVENTS`.
+Walrus baseline + crossover → **tightness distributions**. Borealis validation
+is a separate workflow; `gpu_session.sh` does not download or run that dataset.
 
 Everything self-reports the pinned commit + container digest. When it finishes,
-verify `results/` then **terminate the instance** (I do this automatically via
-the vast.ai API after a verified rsync when you've supplied a key).
+verify and copy `results/`, then **terminate the instance manually**. The launcher
+does not call a provider API or propagate the detached runner's exit code, so
+check the remote `_session.log` for `=== DONE ===` and no `[ABORT]` first. Use an
+independent provider-side or local watchdog while the detached job is billing.
 
 ## vast.ai create-instance form — exact field values
 
@@ -42,7 +43,7 @@ the vast.ai API after a verified rsync when you've supplied a key).
 | **Launch Mode** | **SSH** (so the repo can be rsync'd up and `gpu_session.sh` run) |
 | **On-start / Bash commands** | `apt-get update && apt-get install -y --no-install-recommends build-essential cmake ninja-build git python3 python3-dev python3-pip rsync ca-certificates && pip3 install --break-system-packages nanobind numpy mpmath` |
 | **Extra Filters** | `verified=true rentable=true num_gpus=1 gpu_name=RTX_4090 cuda_max_good>=12.4 disk_space>=50 reliability>=0.98 inet_down>=200` |
-| **Disk Space** | `50` (GB) — CUDA devel image (~10 GB) + build + the **§6 Borealis dataset (~1.35 GB, downloaded on-box)** + headroom |
+| **Disk Space** | `50` (GB) — CUDA devel image, dependencies, build products, results, and headroom |
 
 Notes:
 - The image is a **devel** tag (has `nvcc` + headers + `g++`); a *runtime*/*base*
@@ -55,9 +56,12 @@ Notes:
   Python deps `nanobind numpy mpmath` (+ `thewalrus` for the same-instance
   baseline). `gpu_session.sh` also self-heals these if the image lacks them.
 - The kernel-only throughput driver is stdlib-only, but the **accuracy study,
-  the sampler, the tightness figure, and the §6 Borealis validation need
-  numpy + mpmath + the built nanobind extension** — all handled on-box; no
+  sampler, and tightness figure need numpy + mpmath + the built nanobind
+  extension** — all handled on-box; no
   `uv sync` required (the session exports `GBSKERNELS_EXT_DIR=bindings/build`).
+- Official v0.2.0 bindings require Python 3.12 or newer. Ubuntu 22.04's default
+  Python 3.10 is sufficient for the C++ gates but not for a release-grade Python
+  smoke; install Python 3.12 or use a maintained image that already provides it.
 
 ## Instance spec
 
@@ -123,9 +127,11 @@ rsync -az  <user>@<box>:~/GBSKernels/results/  ./results/
 
 ## Cost expectation
 
-4090 spot ≈ **$0.30–0.70/hr**; one full session ≈ **45 min** (dominated by the
-image pull + build, not the math) → **≈ $0.30–0.50**. The real cost risk is
-leaving the box running — terminate as soon as `results/` is copied back.
+4090 on-demand offers are commonly **$0.30–0.70/hr**. Budget **3–4 hours** for
+the full tagged workflow plus startup/retrieval, or roughly **$0.90–2.80**. The
+2026-07-23 v0.2.0 session cost $1.40 at $0.3472/hr including provisioning and
+retrieval. The real cost risk is leaving the box running: keep a watchdog and
+terminate only after a checksum-verified result copy.
 
 ## Provider field-name cheat-sheet
 

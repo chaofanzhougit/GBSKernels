@@ -1,0 +1,142 @@
+{
+  "kind": "sampler_throughput",
+  "created_utc": "2026-07-23T02:20:48.684640+00:00",
+  "commit": "b2b42c3",
+  "container_digest": "vastai/base-image:cuda-13.0.3-auto@sha256:8f20625442b1bdbed1ed7ea39005db2120212c3ca7439a809bad798b847e923d",
+  "hostname": "c1251130c0d2",
+  "captured_utc": "2026-07-23T02:20:48.684731+00:00",
+  "environment": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 4090",
+      "compute_cap": "8.9",
+      "driver": "580.105.08",
+      "memory_total": "24564 MiB"
+    },
+    "cuda": "13.0",
+    "cpu": {
+      "processor": "x86_64",
+      "machine": "x86_64",
+      "logical_cores": 255
+    },
+    "blas_threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "GOTO_NUM_THREADS": "1"
+    },
+    "platform": "Linux-5.15.0-161-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "gpu_backend": "gpu",
+  "metric": "end-to-end samples/sec (chain-rule conditional GBS sampler); median + IQR over raw repeats; warm-up discarded; the 'gpu-resident' row is the v3 FULLY on-device chain (before/after vs the hybrid 'gpu' row, where in-cap)",
+  "params": {
+    "modes": 10,
+    "num_samples": 300,
+    "cutoff": 4,
+    "repeats": 3,
+    "seed": 0,
+    "warmup": "1 untimed draw/backend"
+  },
+  "env": {
+    "platform": "Linux-5.15.0-161-generic-x86_64-with-glibc2.39",
+    "numpy": "2.4.6"
+  },
+  "rows": [
+    {
+      "backend": "cpu",
+      "num_samples": 300,
+      "modes": 10,
+      "cutoff": 4,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": false,
+      "samples_per_sec_median": 6.4112795376051075,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 46.792531543876976,
+      "mean_photons": 2.48,
+      "raw_samples_per_sec": [
+        6.4112795376051075
+      ]
+    },
+    {
+      "backend": "gpu",
+      "num_samples": 300,
+      "modes": 10,
+      "cutoff": 4,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": false,
+      "samples_per_sec_median": 6.650633324255633,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 45.10848597018048,
+      "mean_photons": 2.48,
+      "raw_samples_per_sec": [
+        6.650633324255633
+      ]
+    },
+    {
+      "backend": "cpu+nosieve",
+      "num_samples": 300,
+      "modes": 10,
+      "cutoff": 4,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": false,
+      "samples_per_sec_median": 6.289948969320465,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 47.695140527095646,
+      "mean_photons": 2.48,
+      "raw_samples_per_sec": [
+        6.289948969320465
+      ]
+    },
+    {
+      "backend": "cpu+sieve",
+      "num_samples": 300,
+      "modes": 10,
+      "cutoff": 4,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": true,
+      "samples_per_sec_median": 0.32951591620143267,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 910.4264323809184,
+      "mean_photons": 2.48,
+      "raw_samples_per_sec": [
+        0.32951591620143267
+      ]
+    },
+    {
+      "backend": "gpu+nosieve",
+      "num_samples": 300,
+      "modes": 10,
+      "cutoff": 4,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": false,
+      "samples_per_sec_median": 6.630748231440065,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 45.24376277439296,
+      "mean_photons": 2.48,
+      "raw_samples_per_sec": [
+        6.630748231440065
+      ]
+    },
+    {
+      "backend": "gpu+sieve",
+      "num_samples": 300,
+      "modes": 10,
+      "cutoff": 4,
+      "repeats_requested": 3,
+      "repeats_timed": 1,
+      "repeated_sieve_effective": true,
+      "samples_per_sec_median": 4.161923522616884,
+      "samples_per_sec_iqr": 0.0,
+      "seconds_median": 72.0820549367927,
+      "mean_photons": 2.48,
+      "raw_samples_per_sec": [
+        4.161923522616884
+      ]
+    }
+  ]
+}

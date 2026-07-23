@@ -24,6 +24,32 @@ README supplies the provenance boundary. Timing artifacts come only from
 scripted GPU sessions on dedicated hardware, never from a shared CI runner
 ([`docs/DESIGN.md`](../docs/DESIGN.md) §8).
 
+## v0.2.0 device validation
+
+The release commit `b2b42c3` completed a fresh RTX 4090 (`sm_89`) session on
+2026-07-23 with driver 580.105.08, CUDA 13.0, and Python 3.12. The image was
+`vastai/base-image:cuda-13.0.3-auto` at digest
+`sha256:8f20625442b1bdbed1ed7ea39005db2120212c3ca7439a809bad798b847e923d`.
+
+- All 24 on-device gates and the nanobind GPU smoke passed
+  ([gate summary](gpu_gates/gates_4090_v020_20260723.json)).
+- The [kernel benchmark](throughput/throughput_NVIDIA_GeForce_RTX_4090_20260723T012923Z.json)
+  contains 73 finite rows; all 11 cells in the
+  [physical public-path benchmark](throughput/throughput_e2e_20260723T013248Z.json)
+  have matching GPU and CPU checksums.
+- The session also recorded [accuracy](accuracy/accuracy_all_20260723T012926Z.json),
+  [sampler throughput](sampling/sampler_throughput_20260723T014154Z.json), a strict
+  [same-instance crossover](throughput/crossover_20260723T040334Z.json), and a
+  [zero-violation certified-bound study](tightness/tightness_20260723T040406Z.json).
+- Nsight Compute lacked performance-counter permission; the retained
+  `_PROFILER_FAILED.csv` is diagnostic only, while the
+  [ptxas capture](perf/ptxas_sm89_20260723T012006Z.txt) remains valid static
+  compiler evidence.
+
+The loss-regime public-path checks also agreed. Two adversarial torontonian
+cells diverged between FP64 GPU and CPU, as expected for the deliberately
+ill-conditioned non-gating regime; the physical honesty gate remained green.
+
 ## Layout
 
 ```

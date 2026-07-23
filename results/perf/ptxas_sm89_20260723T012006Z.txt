@@ -1,0 +1,1408 @@
+# ptxas -v register/spill | arch sm_89 | commit b2b42c3 | digest vastai/base-image:cuda-13.0.3-auto@sha256:8f20625442b1bdbed1ed7ea39005db2120212c3ca7439a809bad798b847e923d
+NVIDIA GeForce RTX 4090, 580.105.08
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z21sampler_gather_kernelPK7double2iPKiiiiPS_Pi' for 'sm_89'
+ptxas info    : Function properties for _Z21sampler_gather_kernelPK7double2iPKiiiiPS_Pi
+    128 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 488.467 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z21sampler_gather_kernelPK7double2iPKiiiiPS_Pi' for 'sm_89'
+ptxas info    : Function properties for _Z21sampler_gather_kernelPK7double2iPKiiiiPS_Pi
+    128 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 115.157 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 89.997 ms
+ptxas info    : Compiling entry function '_ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 55 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 398.731 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_
+    896 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 294.321 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_
+    896 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 299.950 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 10.389 ms
+ptxas info    : Compiling entry function '_ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 55 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 404.717 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 798.355 ms
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 403.271 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_warp_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_warp_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 406.221 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 93.179 ms
+ptxas info    : Compiling entry function '_ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 55 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 401.518 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 609.167 ms
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 387.374 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs29perm_glynn_coop_reduce_kernelEPK7double2iidPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 15.711 ms
+ptxas info    : Compiling entry function '_ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26perm_glynn_coop_map_kernelEPK7double2iiiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 55 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 804.440 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs19exp_newton_coeff_ddEPKNS_9ddcomplexEii
+    16968 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 690.386 ms
+ptxas info    : Compiling entry function '_ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_
+    25696 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 602.790 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_
+    896 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 297.189 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_
+    896 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 203.813 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs19exp_newton_coeff_ddEPKNS_9ddcomplexEii
+    16968 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 400.388 ms
+ptxas info    : Compiling entry function '_ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_
+    25696 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 310.824 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20perm_glynn_dd_kernelEPK7double2iiPS0_
+    896 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 296.826 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd
+    34176 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 70 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 498.276 ms
+ptxas info    : Compiling entry function '_ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd
+    1120 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 384 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compile time = 590.055 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs19exp_newton_coeff_ddEPKNS_9ddcomplexEii
+    16968 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 385.964 ms
+ptxas info    : Compiling entry function '_ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_
+    25696 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 803.324 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd
+    34176 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 70 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 499.370 ms
+ptxas info    : Compiling entry function '_ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd
+    1120 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 384 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compile time = 501.629 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_warp_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_warp_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 516.790 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 494.449 ms
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 303.211 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd
+    10160 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 408 bytes cmem[0], 120 bytes cmem[2]
+ptxas info    : Compile time = 997.530 ms
+ptxas info    : Compiling entry function '_ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_
+    1184 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 400 bytes cmem[0], 88 bytes cmem[2]
+ptxas info    : Compile time = 603.983 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs19exp_newton_coeff_ddEPKNS_9ddcomplexEii
+    16968 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 202.737 ms
+ptxas info    : Compiling entry function '_ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_
+    25696 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 305.091 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 601.629 ms
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 405.769 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd
+    10160 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 408 bytes cmem[0], 120 bytes cmem[2]
+ptxas info    : Compile time = 908.127 ms
+ptxas info    : Compiling entry function '_ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_
+    1184 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 400 bytes cmem[0], 88 bytes cmem[2]
+ptxas info    : Compile time = 691.600 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 600.410 ms
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 404.504 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs20exp_coeff_from_kg_ddEPKNS_9ddcomplexEi
+    520 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 95.316 ms
+ptxas info    : Compiling entry function '_ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_
+    26976 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 605.786 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28perm_glynn_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 595.309 ms
+ptxas info    : Compiling entry function '_ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22perm_glynn_fp64_kernelEPK7double2iiPS0_
+    448 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 303.293 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs19exp_newton_coeff_ddEPKNS_9ddcomplexEii
+    16968 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 207.804 ms
+ptxas info    : Compiling entry function '_ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24haf_powertrace_dd_kernelEPK7double2iiPS0_
+    25696 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 388.301 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd
+    10160 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 408 bytes cmem[0], 120 bytes cmem[2]
+ptxas info    : Compile time = 1201.393 ms
+ptxas info    : Compiling entry function '_ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_
+    1184 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 400 bytes cmem[0], 88 bytes cmem[2]
+ptxas info    : Compile time = 906.026 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs20exp_coeff_from_kg_ddEPKNS_9ddcomplexEi
+    520 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 14.449 ms
+ptxas info    : Compiling entry function '_ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_
+    26976 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 596.894 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs20exp_coeff_from_kg_ddEPKNS_9ddcomplexEi
+    520 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 95.945 ms
+ptxas info    : Compiling entry function '_ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_
+    26976 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 605.030 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25lhaf_repeated_cert_kernelEPK7double2S2_iPKiiPS0_Pd
+    10160 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 408 bytes cmem[0], 120 bytes cmem[2]
+ptxas info    : Compile time = 786.171 ms
+ptxas info    : Compiling entry function '_ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20lhaf_repeated_kernelEPK7double2S2_iPKiiPS0_
+    1184 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 400 bytes cmem[0], 88 bytes cmem[2]
+ptxas info    : Compile time = 499.024 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_
+    99376 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 999.902 ms
+ptxas info    : Compiling entry function '_ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_
+    66336 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 66 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 495.742 ms
+ptxas info    : Compiling entry function '_ZN3gbs27tor_recursive_single_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27tor_recursive_single_kernelEPKdiiPd
+    33296 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 390.600 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_recursive_real_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_recursive_real_kernelEPKdiiPd
+    4816 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 115.693 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs20exp_coeff_from_kg_ddEPKNS_9ddcomplexEi
+    520 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 186.063 ms
+ptxas info    : Compiling entry function '_ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs18loop_haf_dd_kernelEPK7double2iiPS0_
+    26976 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 902.407 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd
+    34176 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 70 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 497.996 ms
+ptxas info    : Compiling entry function '_ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd
+    1120 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 384 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compile time = 480.344 ms
+ptxas info    : 218048 bytes gmem, 72 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z19sampler_draw_kernelPKdS0_iiP17curandStateXORWOWPi' for 'sm_89'
+ptxas info    : Function properties for _Z19sampler_draw_kernelPKdS0_iiP17curandStateXORWOWPi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 105.738 ms
+ptxas info    : Compiling entry function '_Z26sampler_init_states_kernelyiP17curandStateXORWOW' for 'sm_89'
+ptxas info    : Function properties for _Z26sampler_init_states_kernelyiP17curandStateXORWOW
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 16.211 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_
+    99376 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 814.180 ms
+ptxas info    : Compiling entry function '_ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_
+    66336 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 66 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 483.603 ms
+ptxas info    : Compiling entry function '_ZN3gbs27tor_recursive_single_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27tor_recursive_single_kernelEPKdiiPd
+    33296 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 301.617 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_recursive_real_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_recursive_real_kernelEPKdiiPd
+    4816 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 116.088 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs23haf_dd_certified_kernelEPK7double2iiPS0_Pd
+    34176 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 70 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 579.601 ms
+ptxas info    : Compiling entry function '_ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24perm_dd_certified_kernelEPK7double2iiPS0_Pd
+    1120 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 384 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compile time = 698.008 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_
+    99376 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 902.267 ms
+ptxas info    : Compiling entry function '_ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_
+    66336 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 66 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 396.219 ms
+ptxas info    : Compiling entry function '_ZN3gbs27tor_recursive_single_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27tor_recursive_single_kernelEPKdiiPd
+    33296 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 302.585 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_recursive_real_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_recursive_real_kernelEPKdiiPd
+    4816 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 116.143 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 218048 bytes gmem, 72 bytes cmem[3]
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs34tor_recursive_single_ddcert_kernelEPKdiiPdS2_
+    99376 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 1108.766 ms
+ptxas info    : Compiling entry function '_ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32tor_recursive_single_cert_kernelEPKdiiPdS2_
+    66336 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 66 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 693.722 ms
+ptxas info    : Compiling entry function '_ZN3gbs27tor_recursive_single_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27tor_recursive_single_kernelEPKdiiPd
+    33296 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 47 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 303.781 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_recursive_real_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_recursive_real_kernelEPKdiiPd
+    4816 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 203.650 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 218048 bytes gmem, 72 bytes cmem[3]
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs6dd_detEPNS_2ddEi
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 113.685 ms
+ptxas info    : Compiling entry function '_ZN3gbs13tor_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs13tor_dd_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 605.806 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 218048 bytes gmem, 72 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z19sampler_draw_kernelPKdS0_iiP17curandStateXORWOWPi' for 'sm_89'
+ptxas info    : Function properties for _Z19sampler_draw_kernelPKdS0_iiP17curandStateXORWOWPi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 120.954 ms
+ptxas info    : Compiling entry function '_Z26sampler_init_states_kernelyiP17curandStateXORWOW' for 'sm_89'
+ptxas info    : Function properties for _Z26sampler_init_states_kernelyiP17curandStateXORWOW
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 91.668 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 218048 bytes gmem, 72 bytes cmem[3]
+ptxas info    : Compiling entry function '_Z27sampler_extract_real_kernelPK7double2iPd' for 'sm_89'
+ptxas info    : Function properties for _Z27sampler_extract_real_kernelPK7double2iPd
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 88.907 ms
+ptxas info    : Compiling entry function '_Z26sampler_scatter_col_kernelPKiiPiii' for 'sm_89'
+ptxas info    : Function properties for _Z26sampler_scatter_col_kernelPKiiPiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 2.619 ms
+ptxas info    : Compiling entry function '_Z29sampler_compact_prefix_kernelPKiiiiPi' for 'sm_89'
+ptxas info    : Function properties for _Z29sampler_compact_prefix_kernelPKiiiiPi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 4.496 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs6dd_detEPNS_2ddEi
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 216.491 ms
+ptxas info    : Compiling entry function '_ZN3gbs13tor_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs13tor_dd_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 1106.116 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs6dd_detEPNS_2ddEi
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 280.689 ms
+ptxas info    : Compiling entry function '_ZN3gbs13tor_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs13tor_dd_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 1102.147 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs6dd_detEPNS_2ddEi
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 279.379 ms
+ptxas info    : Compiling entry function '_ZN3gbs13tor_dd_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs13tor_dd_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 1118.470 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd
+    13920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 83 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 891.192 ms
+ptxas info    : Compiling entry function '_ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd
+    43472 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 987.401 ms
+ptxas info    : Compiling entry function '_ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd
+    33072 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 600.633 ms
+ptxas info    : Compiling entry function '_ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd
+    672 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 325.544 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd
+    13920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 83 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 812.833 ms
+ptxas info    : Compiling entry function '_ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd
+    43472 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 1019.951 ms
+ptxas info    : Compiling entry function '_ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd
+    33072 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 608.183 ms
+ptxas info    : Compiling entry function '_ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd
+    672 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 394.339 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd
+    13920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 83 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 1402.519 ms
+ptxas info    : Compiling entry function '_ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd
+    43472 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 1389.551 ms
+ptxas info    : Compiling entry function '_ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd
+    33072 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 709.399 ms
+ptxas info    : Compiling entry function '_ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd
+    672 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 388.904 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20tor_certified_kernelEPK7double2iiPS0_Pd
+    13920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 83 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 1212.212 ms
+ptxas info    : Compiling entry function '_ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21lhaf_certified_kernelEPK7double2iiPS0_Pd
+    43472 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 76 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 1301.291 ms
+ptxas info    : Compiling entry function '_ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20haf_certified_kernelEPK7double2iiPS0_Pd
+    33072 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compile time = 701.479 ms
+ptxas info    : Compiling entry function '_ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21perm_certified_kernelEPK7double2iiPS0_Pd
+    672 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 68 registers, used 0 barriers, 384 bytes cmem[0], 40 bytes cmem[2]
+ptxas info    : Compile time = 337.773 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs15csqrt_principalE7double2
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 58.588 ms
+ptxas info    : Function properties for _ZN3gbs6det_luEP7double2i
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 99.205 ms
+ptxas info    : Compiling entry function '_ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 7.588 ms
+ptxas info    : Compiling entry function '_ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 391.587 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd
+    4704 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 230.877 ms
+ptxas info    : Compiling entry function '_ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 365.021 ms
+ptxas info    : Function properties for _ZN3gbs15tor_subset_termEPK7double2iim
+    9352 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 253.399 ms
+ptxas info    : Compiling entry function '_ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 287.887 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs15csqrt_principalE7double2
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 71.444 ms
+ptxas info    : Function properties for _ZN3gbs6det_luEP7double2i
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 201.611 ms
+ptxas info    : Compiling entry function '_ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 12.820 ms
+ptxas info    : Compiling entry function '_ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 877.977 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd
+    4704 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 535.130 ms
+ptxas info    : Compiling entry function '_ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 657.802 ms
+ptxas info    : Function properties for _ZN3gbs15tor_subset_termEPK7double2iim
+    9352 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 459.371 ms
+ptxas info    : Compiling entry function '_ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 373.162 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs15csqrt_principalE7double2
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 6.017 ms
+ptxas info    : Function properties for _ZN3gbs6det_luEP7double2i
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 89.333 ms
+ptxas info    : Compiling entry function '_ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 7.290 ms
+ptxas info    : Compiling entry function '_ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 367.544 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd
+    4704 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 207.864 ms
+ptxas info    : Compiling entry function '_ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 286.154 ms
+ptxas info    : Function properties for _ZN3gbs15tor_subset_termEPK7double2iim
+    9352 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 238.066 ms
+ptxas info    : Compiling entry function '_ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 277.182 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs15csqrt_principalE7double2
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 8.914 ms
+ptxas info    : Function properties for _ZN3gbs6det_luEP7double2i
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 109.842 ms
+ptxas info    : Compiling entry function '_ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 12.755 ms
+ptxas info    : Compiling entry function '_ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 356.857 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd
+    4704 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 300.333 ms
+ptxas info    : Compiling entry function '_ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 396.007 ms
+ptxas info    : Function properties for _ZN3gbs15tor_subset_termEPK7double2iim
+    9352 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 301.958 ms
+ptxas info    : Compiling entry function '_ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 239.828 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 60.947 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 9.291 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 311.988 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 225.083 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 213.260 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 250.648 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 185.861 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 170.383 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs15csqrt_principalE7double2
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 5.096 ms
+ptxas info    : Function properties for _ZN3gbs6det_luEP7double2i
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 36.407 ms
+ptxas info    : Compiling entry function '_ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.517 ms
+ptxas info    : Compiling entry function '_ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 281.810 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd
+    4704 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 205.792 ms
+ptxas info    : Compiling entry function '_ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 239.754 ms
+ptxas info    : Function properties for _ZN3gbs15tor_subset_termEPK7double2iim
+    9352 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 180.695 ms
+ptxas info    : Compiling entry function '_ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 175.190 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs15csqrt_principalE7double2
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 4.991 ms
+ptxas info    : Function properties for _ZN3gbs6det_luEP7double2i
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 56.355 ms
+ptxas info    : Compiling entry function '_ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.823 ms
+ptxas info    : Compiling entry function '_ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 207.015 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd
+    4704 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 143.390 ms
+ptxas info    : Compiling entry function '_ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 218.978 ms
+ptxas info    : Function properties for _ZN3gbs15tor_subset_termEPK7double2iim
+    9352 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 162.447 ms
+ptxas info    : Compiling entry function '_ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 183.107 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs15csqrt_principalE7double2
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 4.863 ms
+ptxas info    : Function properties for _ZN3gbs6det_luEP7double2i
+    32 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 58.635 ms
+ptxas info    : Compiling entry function '_ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22tor_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.464 ms
+ptxas info    : Compiling entry function '_ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19tor_coop_map_kernelEPK7double2iiiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 201.243 ms
+ptxas info    : Compiling entry function '_ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs25tor_real_chol_fp64_kernelEPKdiiPd
+    4704 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 135.761 ms
+ptxas info    : Compiling entry function '_ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs21tor_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 58 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 189.117 ms
+ptxas info    : Function properties for _ZN3gbs15tor_subset_termEPK7double2iim
+    9352 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 164.963 ms
+ptxas info    : Compiling entry function '_ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs15tor_fp64_kernelEPK7double2iiPS0_
+    9312 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 376 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 165.439 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs17exp_coeff_from_kgEPK7double2i
+    376 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 14.606 ms
+ptxas info    : Compiling entry function '_ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.221 ms
+ptxas info    : Compiling entry function '_ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 166 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 339.386 ms
+ptxas info    : Compiling entry function '_ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 130 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 296.480 ms
+ptxas info    : Function properties for _ZN3gbs16lhaf_subset_termEPK7double2iim
+    27016 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+ptxas info    : Compile time = 232.742 ms
+ptxas info    : Compiling entry function '_ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 126 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 245.324 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs17exp_coeff_from_kgEPK7double2i
+    376 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 14.641 ms
+ptxas info    : Compiling entry function '_ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.268 ms
+ptxas info    : Compiling entry function '_ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 166 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 309.577 ms
+ptxas info    : Compiling entry function '_ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 130 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 320.049 ms
+ptxas info    : Function properties for _ZN3gbs16lhaf_subset_termEPK7double2iim
+    27016 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+ptxas info    : Compile time = 271.936 ms
+ptxas info    : Compiling entry function '_ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 126 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 242.795 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 24.809 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.253 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 190.762 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 169.083 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 199.131 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 173.078 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 153.781 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 154.553 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs17exp_coeff_from_kgEPK7double2i
+    376 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 14.772 ms
+ptxas info    : Compiling entry function '_ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.250 ms
+ptxas info    : Compiling entry function '_ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 166 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 279.335 ms
+ptxas info    : Compiling entry function '_ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 130 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 281.447 ms
+ptxas info    : Function properties for _ZN3gbs16lhaf_subset_termEPK7double2iim
+    27016 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+ptxas info    : Compile time = 209.898 ms
+ptxas info    : Compiling entry function '_ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 126 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 231.348 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 24.893 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.219 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 219.323 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 160.292 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 213.799 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 203.550 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 177.488 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 158.754 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 24.310 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.140 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 196.612 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 168.060 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 177.887 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 155.929 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 152.085 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 164.157 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 24.476 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.118 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 190.340 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 162.547 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 172.160 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 160.240 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 156.747 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 155.421 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs17exp_coeff_from_kgEPK7double2i
+    376 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 16.983 ms
+ptxas info    : Compiling entry function '_ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 6.106 ms
+ptxas info    : Compiling entry function '_ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 166 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 281.117 ms
+ptxas info    : Compiling entry function '_ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 130 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 236.623 ms
+ptxas info    : Function properties for _ZN3gbs16lhaf_subset_termEPK7double2iim
+    27016 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+ptxas info    : Compile time = 207.707 ms
+ptxas info    : Compiling entry function '_ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 126 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 232.505 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 24.599 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.183 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 161.926 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 132.535 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 154.948 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 153.791 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 151.562 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 150.168 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 24.346 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.133 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 162.711 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 134.136 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 156.634 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 156.854 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 150.189 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 151.157 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 24.595 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.658 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 179.974 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 148.739 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 173.566 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 169.066 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 158.396 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 156.649 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 25.220 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.403 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 170.921 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 139.674 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 164.313 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 163.476 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 157.624 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 159.085 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs17exp_coeff_from_kgEPK7double2i
+    376 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 15.433 ms
+ptxas info    : Compiling entry function '_ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.810 ms
+ptxas info    : Compiling entry function '_ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 166 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 248.293 ms
+ptxas info    : Compiling entry function '_ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 130 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 236.264 ms
+ptxas info    : Function properties for _ZN3gbs16lhaf_subset_termEPK7double2iim
+    27016 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+ptxas info    : Compile time = 207.327 ms
+ptxas info    : Compiling entry function '_ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 126 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 222.405 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs16exp_newton_coeffEPK7double2ii
+    13176 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 26.133 ms
+ptxas info    : Compiling entry function '_ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs22haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.705 ms
+ptxas info    : Compiling entry function '_ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs19haf_coop_map_kernelEPK7double2iiiPS0_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 165.097 ms
+ptxas info    : Function properties for _ZN3gbs15haf_subset_termEPK7double2iim
+    19960 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 136.255 ms
+ptxas info    : Compiling entry function '_ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs32haf_powertrace_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 158.212 ms
+ptxas info    : Compiling entry function '_ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs31haf_powertrace_fp64_varn_kernelILi20EEEvPK7double2iiPKiPS1_
+    26320 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 61 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 155.900 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi12EEEvPK7double2iiPS1_
+    7360 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 152.429 ms
+ptxas info    : Compiling entry function '_ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs28haf_powertrace_fp64_kernel_tILi20EEEvPK7double2iiPS1_
+    19920 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 46 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 153.048 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs17exp_coeff_from_kgEPK7double2i
+    376 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 15.069 ms
+ptxas info    : Compiling entry function '_ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.275 ms
+ptxas info    : Compiling entry function '_ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 166 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 244.497 ms
+ptxas info    : Compiling entry function '_ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 130 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 234.239 ms
+ptxas info    : Function properties for _ZN3gbs16lhaf_subset_termEPK7double2iim
+    27016 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+ptxas info    : Compile time = 206.158 ms
+ptxas info    : Compiling entry function '_ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 126 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 224.521 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Function properties for _ZN3gbs17exp_coeff_from_kgEPK7double2i
+    376 bytes stack frame, 32 bytes spill stores, 32 bytes spill loads
+ptxas info    : Compile time = 14.665 ms
+ptxas info    : Compiling entry function '_ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs27loop_haf_coop_reduce_kernelEPK7double2iiPS0_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 5.275 ms
+ptxas info    : Compiling entry function '_ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs24loop_haf_coop_map_kernelEPK7double2iiiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 166 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 245.103 ms
+ptxas info    : Compiling entry function '_ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs26loop_haf_fp64_kappa_kernelEPK7double2iiPS0_Pd
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 130 registers, used 0 barriers, 384 bytes cmem[0], 8 bytes cmem[2]
+ptxas info    : Compile time = 235.385 ms
+ptxas info    : Function properties for _ZN3gbs16lhaf_subset_termEPK7double2iim
+    27016 bytes stack frame, 48 bytes spill stores, 48 bytes spill loads
+ptxas info    : Compile time = 205.217 ms
+ptxas info    : Compiling entry function '_ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_' for 'sm_89'
+ptxas info    : Function properties for _ZN3gbs20loop_haf_fp64_kernelEPK7double2iiPS0_
+    26960 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 126 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 223.206 ms

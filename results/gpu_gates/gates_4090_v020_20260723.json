@@ -1,0 +1,48 @@
+{
+  "kind": "gpu_gate_summary",
+  "session_started_utc": "2026-07-23T01:16:59Z",
+  "session_completed_utc": "2026-07-23T04:04:08Z",
+  "commit": "b2b42c3",
+  "container_digest": "vastai/base-image:cuda-13.0.3-auto@sha256:8f20625442b1bdbed1ed7ea39005db2120212c3ca7439a809bad798b847e923d",
+  "environment": {
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "compute_capability": "8.9",
+    "cuda_arch": "sm_89",
+    "driver": "580.105.08",
+    "cuda_toolkit": "13.0",
+    "python": "3.12.3"
+  },
+  "gates": [
+    {"name": "check_permanent", "status": "PASS"},
+    {"name": "check_hafnian", "status": "PASS"},
+    {"name": "check_loop_hafnian", "status": "PASS"},
+    {"name": "check_torontonian", "status": "PASS"},
+    {"name": "check_torontonian_real_chol", "status": "PASS"},
+    {"name": "check_permanent_dd", "status": "PASS"},
+    {"name": "check_hafnian_dd", "status": "PASS"},
+    {"name": "check_loop_hafnian_dd", "status": "PASS"},
+    {"name": "check_torontonian_dd", "status": "PASS"},
+    {"name": "check_permanent_coop", "status": "PASS"},
+    {"name": "check_haf_coop", "status": "PASS"},
+    {"name": "check_lhaf_coop", "status": "PASS"},
+    {"name": "check_tor_coop", "status": "PASS"},
+    {"name": "check_haf_small", "status": "PASS"},
+    {"name": "check_permanent_warp", "status": "PASS"},
+    {"name": "check_certified", "status": "PASS"},
+    {"name": "check_repeated", "status": "PASS"},
+    {"name": "check_tor_recursive", "status": "PASS"},
+    {"name": "check_host_api", "status": "PASS"},
+    {"name": "check_session", "status": "PASS"},
+    {"name": "check_sampler_draw", "status": "PASS"},
+    {"name": "check_sampler_gather", "status": "PASS"},
+    {"name": "check_sampler_haf_varn", "status": "PASS"},
+    {"name": "check_sampler_session", "status": "PASS"}
+  ],
+  "binding_smoke": "PASS",
+  "physical_public_path": {
+    "artifact": "../throughput/throughput_e2e_20260723T013248Z.json",
+    "cells": 11,
+    "all_backends_agree": true
+  },
+  "runner_done": true
+}
