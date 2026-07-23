@@ -34,13 +34,13 @@ the [changelog](CHANGELOG.md) for the release scope and compatibility notes.
 
 ## Installation
 
-Not yet on PyPI; install from source. The CPU backend needs only `numpy` +
-`mpmath`; the CUDA extension is a separate, optional build (see
+The CPU package is available from
+[PyPI](https://pypi.org/project/gbskernels/0.2.0/) and needs only `numpy` +
+`mpmath`. The CUDA extension is a separate, optional source build (see
 [`bindings/README.md`](bindings/README.md)):
 
 ```bash
-uv build                        # -> dist/gbskernels-*.whl, then pip install it
-# pip install gbskernels        # planned once published to PyPI
+python -m pip install gbskernels==0.2.0
 ```
 
 ## Quick start
