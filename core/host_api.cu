@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <cstring> // std::memcpy (pageable <-> pinned staging in the v2 session)
+#include <cmath>
 
 namespace gbs {
 
@@ -333,16 +334,16 @@ int gbs_tor_single_certified_host(const double* h_O, int n, int g,
   const double u = 1.1102230246251565e-16;
   const double ufl = 8e-323;
   for (uint64_t i = 0; i < nsub; ++i) {
-    if (!isfinite(h_p[i]) || !isfinite(h_b[i])) {
+    if (!std::isfinite(h_p[i]) || !std::isfinite(h_b[i])) {
       total = NAN;
       e_tot = INFINITY;
       break;
     }
     total += h_p[i]; // NaN propagates
-    if (!isfinite(total)) { e_tot = INFINITY; break; }
-    e_tot = nextafter(e_tot + h_b[i], INFINITY); // upward bound sum
-    const double add_err = nextafter(u * fabs(total) + ufl, INFINITY);
-    e_tot = nextafter(e_tot + add_err, INFINITY);
+    if (!std::isfinite(total)) { e_tot = INFINITY; break; }
+    e_tot = std::nextafter(e_tot + h_b[i], INFINITY); // upward bound sum
+    const double add_err = std::nextafter(u * std::fabs(total) + ufl, INFINITY);
+    e_tot = std::nextafter(e_tot + add_err, INFINITY);
   }
   free(h_p); free(h_b);
   *out = total;
@@ -388,16 +389,16 @@ int gbs_tor_single_ddcertified_host(const double* h_O, int n, int g,
   const double u = 1.1102230246251565e-16;
   const double ufl = 8e-323;
   for (uint64_t i = 0; i < nsub; ++i) {
-    if (!isfinite(h_p[i]) || !isfinite(h_b[i])) {
+    if (!std::isfinite(h_p[i]) || !std::isfinite(h_b[i])) {
       total = NAN;
       e_tot = INFINITY;
       break;
     }
     total += h_p[i];
-    if (!isfinite(total)) { e_tot = INFINITY; break; }
-    e_tot = nextafter(e_tot + h_b[i], INFINITY);
-    const double add_err = nextafter(u * fabs(total) + ufl, INFINITY);
-    e_tot = nextafter(e_tot + add_err, INFINITY);
+    if (!std::isfinite(total)) { e_tot = INFINITY; break; }
+    e_tot = std::nextafter(e_tot + h_b[i], INFINITY);
+    const double add_err = std::nextafter(u * std::fabs(total) + ufl, INFINITY);
+    e_tot = std::nextafter(e_tot + add_err, INFINITY);
   }
   free(h_p); free(h_b);
   *out = total;
