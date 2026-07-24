@@ -146,6 +146,14 @@ The Jiuzhang v2 tooling adds workflow-contract tests for canonical hashing,
 registration timing, exclusion-ledger completeness, selection, immutable run
 reduction, refusal recovery, inference, reconstruction, and release assembly.
 
+To run the public v0.2.1 GPU validation from a fresh clone, first stage the
+small hash-bound derived inputs (the raw USTC and Zenodo archives remain
+external):
+
+```bash
+python scripts/prepare_validation_data.py
+```
+
 The development discipline is CPU-first: host-shim-compatible CUDA kernels are
 compiled and run through the CPU pre-flight (part of the test suite), then the
 full source set is checked on-device against independent CPU references before
