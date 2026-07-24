@@ -11,7 +11,11 @@ sessions (`scripts/gpu_session.sh`), never on a shared CI runner.
 end-to-end, accuracy, sampler, the Walrus baseline, the crossover sweep — with the same
 block, so a result is reproducible from the file alone:
 
-* `commit` — `git rev-parse --short HEAD` of the exact tree that ran.
+* `commit` — the legacy compact commit field retained for artifact consumers.
+* `git.commit`, `git.tracked_dirty`, `git.source` — the full local commit,
+  whether tracked bytes differ from it, and whether the value came from Git or
+  the uploaded-session `GBS_COMMIT` override. An rsynced tree has no `.git`, so
+  its dirty state is recorded as unknown rather than guessed.
 * `container_digest` — the **pinned image digest** the instance was launched from
   (`nvidia/cuda:12.4.1-devel-ubuntu22.04@sha256:…`); fixes the toolchain.
 * `hostname`, `captured_utc`.
@@ -96,7 +100,7 @@ an accuracy-study input, not a gate.
 
 ```bash
 # host: capture provenance, push (excludes .git + local-only files)
-git rev-parse --short HEAD > COMMIT_SHA
+git rev-parse HEAD > COMMIT_SHA
 echo '<image>@sha256:<digest>' > CONTAINER_DIGEST
 rsync -az --exclude .git --exclude .venv --exclude 'core/build' --exclude 'bindings/build*' \
       --exclude 'private/' \

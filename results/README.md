@@ -11,7 +11,8 @@ Every new official benchmark or scientific artifact records the applicable
 information needed to reproduce it
 ([`docs/benchmark_protocol.md`](../docs/benchmark_protocol.md)):
 
-- the **commit** it was produced at (`GBS_COMMIT`);
+- the **commit** it was produced at (`GBS_COMMIT`) plus the local tracked-dirty
+  state when Git metadata is available;
 - the **machine environment** — GPU model, driver, CUDA version, CPU, and
   BLAS-thread caps (`bench/_provenance.py`);
 - the **input seed** or deterministic selection binding, where applicable;
@@ -23,6 +24,20 @@ do not necessarily carry every field themselves; their surrounding session or
 README supplies the provenance boundary. Timing artifacts come only from
 scripted GPU sessions on dedicated hardware, never from a shared CI runner
 ([`docs/DESIGN.md`](../docs/DESIGN.md) §8).
+
+## Jiuzhang historical fixed-sample audit
+
+`jiuzhang/legacy_fixed_sample/` contains the corrected v0.2.1 audit package:
+the hash-bound deterministic selection, the finite-population stratified
+summary, and the five historical per-band checkpoint JSONL files used as its
+row-level inputs. The selected sample was exposed during exploratory
+development. It is not held out, preregistered, or confirmatory.
+
+The checkpoint rows predate the common provenance block and do not contain
+recoverable original GPU, container, driver, or commit metadata. Their exact
+file hashes are retained; the regenerated selection and summary record the
+current implementation and Git state. Missing historical environment fields
+are disclosed rather than reconstructed.
 
 ## v0.2.0 device validation
 

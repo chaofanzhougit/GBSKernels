@@ -313,6 +313,66 @@ int main() {
                   err <= hb[1] ? "(enclosed)" : "ENCLOSURE VIOLATED");
       if (!(err <= hb[1]) || !std::isfinite(hb[1])) s_ok = false;
     }
+    // Exercise the DD a-posteriori sqrt and division residuals on a correlated
+    // SPD input (the n=1 diagonal case above has no off-diagonal Cholesky
+    // division and its determinant square root is unusually benign).
+    {
+      const int n = 3, dim = 2 * n, g = 2;
+      std::vector<double> O((size_t)dim * dim, 0.0);
+      for (int i = 0; i < dim; ++i) {
+        O[i * dim + i] = 0.08 + 0.005 * i;
+        for (int j = 0; j < i; ++j) {
+          double x = 0.004 * (1 + ((3 * i + 5 * j) % 4));
+          O[i * dim + j] = O[j * dim + i] = x;
+        }
+      }
+      double *dO = nullptr, *dp = nullptr, *db = nullptr;
+      cudaMalloc(&dO, O.size() * sizeof(double));
+      cudaMalloc(&dp, (1ull << g) * sizeof(double));
+      cudaMalloc(&db, (1ull << g) * sizeof(double));
+      cudaMemcpy(dO, O.data(), O.size() * sizeof(double), cudaMemcpyHostToDevice);
+      gbs::gbs_tor_recursive_single_ddcert_batched(dO, n, g, dp, db, 0);
+      cudaDeviceSynchronize();
+      std::vector<double> hp(1ull << g), hb(1ull << g);
+      cudaMemcpy(hp.data(), dp, hp.size() * sizeof(double), cudaMemcpyDeviceToHost);
+      cudaMemcpy(hb.data(), db, hb.size() * sizeof(double), cudaMemcpyDeviceToHost);
+      cudaFree(dO); cudaFree(dp); cudaFree(db);
+      long double got = 0.0L;
+      double eb = 0.0;
+      for (size_t i = 0; i < hp.size(); ++i) { got += (long double)hp[i]; eb += hb[i]; }
+      // 100-digit Decimal evaluation of the exact binary64 matrix above using
+      // fresh subset determinants (rounded here only to long-double storage).
+      const long double exact =
+          0.0012529106668754698456945000178228922913922540362334L;
+      double err = std::abs((double)(got - exact));
+      std::printf("single-ddcert residual path: err %.2e bound %.2e %s\n", err, eb,
+                  err <= eb ? "(enclosed)" : "ENCLOSURE VIOLATED");
+      if (!(err <= eb) || !std::isfinite(eb)) s_ok = false;
+    }
+    // An exactly representable near-singular diagonal drives the determinant
+    // product below the binary64 subnormal range.  The absolute underflow
+    // terms must make the affected subtree refuse, never return a finite bound.
+    {
+      const int n = 11, dim = 2 * n, g = n;
+      std::vector<double> O((size_t)dim * dim, 0.0);
+      const double almost_one = std::nextafter(1.0, 0.0);
+      for (int i = 0; i < dim; ++i) O[i * dim + i] = almost_one;
+      double *dO = nullptr, *dp = nullptr, *db = nullptr;
+      const size_t count = 1ull << g;
+      cudaMalloc(&dO, O.size() * sizeof(double));
+      cudaMalloc(&dp, count * sizeof(double));
+      cudaMalloc(&db, count * sizeof(double));
+      cudaMemcpy(dO, O.data(), O.size() * sizeof(double), cudaMemcpyHostToDevice);
+      gbs::gbs_tor_recursive_single_ddcert_batched(dO, n, g, dp, db, 0);
+      cudaDeviceSynchronize();
+      std::vector<double> hb(count);
+      cudaMemcpy(hb.data(), db, hb.size() * sizeof(double), cudaMemcpyDeviceToHost);
+      cudaFree(dO); cudaFree(dp); cudaFree(db);
+      const bool refused = std::isinf(hb.back());
+      std::printf("single-ddcert underflow: %s\n",
+                  refused ? "refused as required" : "FINITE OVERCLAIM");
+      if (!refused) s_ok = false;
+    }
     if (!s_ok) { std::printf("FAIL\n"); return 1; }
     std::printf("single-large split: batched-agreement + closed forms + certified enclosure + off-domain NaN ok\n");
   }

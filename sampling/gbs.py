@@ -243,7 +243,10 @@ def threshold_O_xxpp(cov: np.ndarray, hbar: float = 2.0) -> tuple[np.ndarray, fl
 
     In the quadrature (xxpp) basis the Husimi covariance is the real SPD
     ``Sigma_x = (cov*(2/hbar) + I)/2``, and ``Ox = I - Sigma_x^{-1}`` is real by
-    construction.  The complex-basis ``O = I - Q^{-1}`` of
+    construction. Both matrices are explicitly symmetrized after binary64
+    linear algebra so the returned ``Ox`` satisfies :func:`gbskernels.tor_single`'s
+    exact-symmetry contract rather than retaining inversion roundoff skew. The
+    complex-basis ``O = I - Q^{-1}`` of
     :func:`torontonian_threshold_probabilities` is ``R Ox R^dagger`` for the
     fixed block unitary ``R = [[I, iI], [I, -iI]]/sqrt(2)``; restricting to a
     click pattern keeps mode pairs in BOTH blocks, which commutes with ``R``,
@@ -261,13 +264,15 @@ def threshold_O_xxpp(cov: np.ndarray, hbar: float = 2.0) -> tuple[np.ndarray, fl
     """
     n2 = cov.shape[0]
     Sx = (np.asarray(cov, dtype=np.float64) * (2.0 / hbar) + np.eye(n2)) / 2.0
-    ev = float(np.min(np.linalg.eigvalsh((Sx + Sx.T) / 2)))
+    Sx = np.ascontiguousarray((Sx + Sx.T) / 2.0)
+    ev = float(np.min(np.linalg.eigvalsh(Sx)))
     if ev <= 0:
         raise AssertionError(f"Husimi not positive definite (min eig {ev:.3e})")
     sign, logdet = np.linalg.slogdet(Sx)
     assert sign > 0
     Ox = np.eye(n2) - np.linalg.inv(Sx)
-    return np.ascontiguousarray(Ox), 0.5 * float(logdet)
+    Ox = np.ascontiguousarray((Ox + Ox.T) / 2.0)
+    return Ox, 0.5 * float(logdet)
 
 
 def torontonian_threshold_probabilities(

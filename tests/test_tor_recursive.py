@@ -81,6 +81,37 @@ def test_tor_single_split_matches_reference_and_guards():
         gbskernels.tor_single(0.1 * np.eye(66))
 
 
+def test_tor_single_rejects_nonsymmetric_counterexample_before_dispatch(monkeypatch):
+    """The kernel reads one triangle, so accepting this matrix would certify
+    tor([[0, 0], [0.5, 0]]) = 0.1547... even though its torontonian is zero."""
+    import gbskernels
+
+    O = np.array([[0.0, 0.0], [0.5, 0.0]], dtype=np.float64)
+    assert cpu_ref.tor(O) == 0.0
+
+    def unexpected_dispatch():
+        raise AssertionError("invalid input reached the GPU loader")
+
+    monkeypatch.setattr(gbskernels, "_load_gpu_ext", unexpected_dispatch)
+    with pytest.raises(ValueError, match="exactly symmetric"):
+        gbskernels.tor_single(O)
+
+
+@pytest.mark.parametrize("bad", [np.nan, np.inf, -np.inf])
+def test_tor_single_rejects_nonfinite_input_before_dispatch(monkeypatch, bad):
+    import gbskernels
+
+    O = np.zeros((2, 2), dtype=np.float64)
+    O[0, 0] = bad
+
+    def unexpected_dispatch():
+        raise AssertionError("invalid input reached the GPU loader")
+
+    monkeypatch.setattr(gbskernels, "_load_gpu_ext", unexpected_dispatch)
+    with pytest.raises(ValueError, match="finite binary64"):
+        gbskernels.tor_single(O)
+
+
 def test_tor_single_certified_enclosure():
     """The certified single-large walk: enclosure vs mpmath on physical input,
     enclosure on the worst-cancelling closed form, and refusal (never a finite

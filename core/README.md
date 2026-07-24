@@ -28,6 +28,14 @@ and run on the CPU (`core/preflight/`, exercised by the test suite via
 against independent CPU references. Device-only variants, including
 `permanent_warp.cu`, are validated in the CUDA session rather than the host shim.
 
+**Certified arithmetic is relative-plus-absolute.** Every recurrence includes
+an explicit binary64 subnormal floor, and mixed-scale products propagate that
+absolute error through later factors. Double-double division and square root
+are bounded from outward FMA residuals of the values actually returned rather
+than assumed forward constants. Unsafe division ranges and any non-finite or
+negative certificate refuse instead of producing a finite claim; see
+[`docs/dd_certificate_proof.md`](../docs/dd_certificate_proof.md).
+
 **Execution model.** The default kernels evaluate one instance per thread and
 batch across the grid. Only the permanent uses the Gray-code delta walk; the
 hafnian, loop hafnian, and torontonian enumerate the `2^k` subsets independently,
@@ -41,7 +49,8 @@ inputs.
 **Size limits** (fixed per-thread buffers): permanent ≤ 28, hafnian ≤ 20 (double-
 double ≤ 16), loop hafnian ≤ 20 (double-double ≤ 14), torontonian 2n ≤ 24; larger
 inputs are rejected at the Python boundary. The single-large recursive torontonian
-extends to dimension 64.
+extends to dimension 64 and requires a finite matrix that is exactly symmetric
+after conversion to binary64, because its Cholesky walk consumes one triangle.
 
 ### Build and run
 

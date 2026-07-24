@@ -32,12 +32,36 @@ then through the measured lossy transfer matrix.
 
 The evaluator uses the exact real quadrature-basis torontonian matrix
 `Ox = I - Sigma_x^-1`, where `Sigma_x = (cov + I) / 2`; see
-`sampling.gbs.threshold_O_xxpp`. Restricting a click pattern to its modes in
-both quadrature blocks preserves the torontonian under the fixed basis change.
+`sampling.gbs.threshold_O_xxpp`. The helper explicitly symmetrizes the
+binary64 result before it reaches the one-triangle recursive kernel.
+Restricting a click pattern to its modes in both quadrature blocks preserves
+the torontonian under the fixed basis change.
 
 The two timestamped frontier JSONs committed in the v0.1 series predate this
 correction. They are retained as historical public artifacts and must not be
 used for new figures or claims. Regenerate both inputs with the current scripts.
+
+## Historical fixed-sample audit
+
+Version 0.2.1 also publishes the corrected audit of the deterministic sample
+selected and evaluated during earlier exploratory development. It is a private
+fixed sample in the statistical sense: it was not held out from prior analysis,
+preregistered, or selected from a future public beacon, so it is not a
+confirmatory result.
+
+- `decode_events.py` contains an executable detector-order and dead-slot audit.
+- `select_confirmatory.py` reconstructs the historical deterministic selection
+  and can bind it byte-for-byte to the retained original manifest.
+- `campaign_confirmatory.py` verifies every selected row and reports the exact
+  finite-population stratified estimand. Event sampling error, normalizer
+  diagonal sensitivity, and the arithmetic proxy remain separate quantities.
+
+The preserved inputs and regenerated audit outputs live in
+`results/jiuzhang/legacy_fixed_sample/`. The five historical checkpoint JSONL
+files predate the common provenance schema and lack recoverable original GPU,
+container, driver, and commit metadata. Their hashes preserve what is known;
+the regenerated manifest/result record current provenance without inventing
+the missing historical environment.
 
 ## Scripts
 
@@ -58,6 +82,10 @@ used for new figures or claims. Regenerate both inputs with the current scripts.
 - `make_precision_wall.py` requires explicit corrected `--fp64-artifact` and
   `--dd-artifact` inputs and refuses the superseded v0.1 artifacts.
 - `q7_construction.py` provides the fixed point models used by the v2 workflow.
+- `decode_events.py`, `select_confirmatory.py`, and
+  `campaign_confirmatory.py` reproduce the historical fixed-sample audit; their
+  names are retained for hash/history continuity and do not make it
+  confirmatory.
 - `click_count_dist.npy` — click-count histogram (101 int64 bins) over the
   2,995,852 decoded normal samples; used for the grey event histogram in the
   figure so it can be rebuilt without the 744 MB dataset.

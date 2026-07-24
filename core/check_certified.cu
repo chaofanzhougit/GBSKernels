@@ -19,6 +19,7 @@
 #include <complex>
 #include <cstdint>
 #include <cstdio>
+#include <limits>
 #include <random>
 #include <vector>
 
@@ -45,6 +46,9 @@ extern "C" void gbs_haf_powertrace_dd_batched(const cuDoubleComplex*, int, int,
                                               cuDoubleComplex*, cudaStream_t);
 extern "C" void gbs_haf_dd_certified_batched(const cuDoubleComplex*, int, int,
                                              cuDoubleComplex*, double*, cudaStream_t);
+extern "C" void gbs_cert_gamma_dd_probe(double*, cudaStream_t);
+extern "C" void gbs_tor_p_div_subnormal_probe(cuDoubleComplex*, double*,
+                                               cudaStream_t);
 }
 
 using cld = std::complex<long double>;
@@ -202,6 +206,109 @@ static void ref_tor_ld(const std::complex<double>* O, int n, cld* val, long doub
 
 struct Result { double consist, worst_slack, worst_rel_bound; bool enclosed; };
 
+using CertFn = void (*)(const cuDoubleComplex*, int, int,
+                        cuDoubleComplex*, double*, cudaStream_t);
+
+// A relative-only certificate can silently return a zero bound when every
+// intermediate lies below the normal range.  Exercise the actual permanent and
+// hafnian paths with minimum-subnormal complex inputs and require a finite,
+// explicit absolute floor from both precision tiers.
+static bool run_subnormal_floor_case(const char* name, CertFn cert, int dim) {
+  const double tiny = std::numeric_limits<double>::denorm_min();
+  const double floor = 8e-323;
+  std::vector<cuDoubleComplex> hin((size_t)dim * dim);
+  for (size_t i = 0; i < hin.size(); ++i) {
+    double im = (i & 1u) ? -tiny : tiny;
+    hin[i] = make_cuDoubleComplex(tiny, im);
+  }
+
+  cuDoubleComplex *d_in = nullptr, *d_v = nullptr;
+  double* d_b = nullptr;
+  cudaMalloc(&d_in, hin.size() * sizeof(cuDoubleComplex));
+  cudaMalloc(&d_v, sizeof(cuDoubleComplex));
+  cudaMalloc(&d_b, sizeof(double));
+  cudaMemcpy(d_in, hin.data(), hin.size() * sizeof(cuDoubleComplex),
+             cudaMemcpyHostToDevice);
+  cert(d_in, dim, 1, d_v, d_b, 0);
+  cudaDeviceSynchronize();
+
+  cuDoubleComplex value;
+  double bound = 0.0;
+  cudaMemcpy(&value, d_v, sizeof(cuDoubleComplex), cudaMemcpyDeviceToHost);
+  cudaMemcpy(&bound, d_b, sizeof(double), cudaMemcpyDeviceToHost);
+  cudaFree(d_in); cudaFree(d_v); cudaFree(d_b);
+
+  bool pass = std::isfinite(cuCreal(value)) && std::isfinite(cuCimag(value)) &&
+              std::isfinite(bound) && bound >= floor;
+  std::printf("%s subnormal floor: bound %.17e  %s\n",
+              name, bound, pass ? "ok" : "FAIL");
+  return pass;
+}
+
+// The first two row factors multiply to 2^-1100 and underflow, while the third
+// factor amplifies the lost product back to the exactly representable 2^-500.
+// A flat final underflow allowance misses this; the per-multiply recurrence must
+// propagate the absolute error through the large final factor.
+static bool run_mixed_scale_perm_case(const char* name, CertFn cert) {
+  constexpr int n = 3;
+  std::vector<cuDoubleComplex> hin((size_t)n * n,
+                                   make_cuDoubleComplex(0.0, 0.0));
+  hin[0] = make_cuDoubleComplex(std::ldexp(1.0, -600), 0.0);
+  hin[4] = make_cuDoubleComplex(std::ldexp(1.0, -500), 0.0);
+  hin[8] = make_cuDoubleComplex(std::ldexp(1.0, 600), 0.0);
+  const double exact = std::ldexp(1.0, -500);
+
+  cuDoubleComplex *d_in = nullptr, *d_v = nullptr;
+  double* d_b = nullptr;
+  cudaMalloc(&d_in, hin.size() * sizeof(cuDoubleComplex));
+  cudaMalloc(&d_v, sizeof(cuDoubleComplex));
+  cudaMalloc(&d_b, sizeof(double));
+  cudaMemcpy(d_in, hin.data(), hin.size() * sizeof(cuDoubleComplex),
+             cudaMemcpyHostToDevice);
+  cert(d_in, n, 1, d_v, d_b, 0);
+  cudaDeviceSynchronize();
+
+  cuDoubleComplex value;
+  double bound = 0.0;
+  cudaMemcpy(&value, d_v, sizeof(cuDoubleComplex), cudaMemcpyDeviceToHost);
+  cudaMemcpy(&bound, d_b, sizeof(double), cudaMemcpyDeviceToHost);
+  cudaFree(d_in); cudaFree(d_v); cudaFree(d_b);
+
+  const double err = std::hypot(cuCreal(value) - exact, cuCimag(value));
+  const bool pass = std::isfinite(cuCreal(value)) &&
+                    std::isfinite(cuCimag(value)) && std::isfinite(bound) &&
+                    err <= bound;
+  std::printf("%s mixed-scale underflow: err %.17e bound %.17e  %s\n",
+              name, err, bound, pass ? "enclosed" : "FAIL");
+  return pass;
+}
+
+static bool run_tor_div_subnormal_guard_case() {
+  cuDoubleComplex* d_values = nullptr;
+  double* d_bounds = nullptr;
+  cudaMalloc(&d_values, 4 * sizeof(cuDoubleComplex));
+  cudaMalloc(&d_bounds, 4 * sizeof(double));
+  gbs::gbs_tor_p_div_subnormal_probe(d_values, d_bounds, 0);
+  cudaDeviceSynchronize();
+  cuDoubleComplex values[4];
+  double bounds[4] = {0.0, 0.0, 0.0, 0.0};
+  cudaMemcpy(values, d_values, sizeof(values), cudaMemcpyDeviceToHost);
+  cudaMemcpy(bounds, d_bounds, sizeof(bounds), cudaMemcpyDeviceToHost);
+  cudaFree(d_values); cudaFree(d_bounds);
+
+  bool pass = true;
+  for (int i = 0; i < 3; ++i) {
+    pass = pass && std::isnan(cuCreal(values[i])) &&
+           std::isnan(cuCimag(values[i])) && std::isinf(bounds[i]);
+  }
+  const double amplified = 8e-323 / std::ldexp(1.0, -500);
+  pass = pass && cuCreal(values[3]) == 0.0 && cuCimag(values[3]) == 0.0 &&
+         std::isfinite(bounds[3]) && bounds[3] >= amplified;
+  std::printf("tor division subnormal range guards: %s\n",
+              pass ? "ok" : "FAIL");
+  return pass;
+}
+
 template <typename PlainFn, typename CertFn, typename RefFn>
 static Result run_case(PlainFn plain, CertFn cert, RefFn ref, int dim, int batch,
                        uint64_t seed, bool haf_dims, double ld_slack = 1e-17) {
@@ -259,6 +366,32 @@ static Result run_case(PlainFn plain, CertFn cert, RefFn ref, int dim, int batch
 int main() {
   bool ok = true;
   double consist = 0.0, relb = 0.0;
+
+  // `1 + 4*u_DD` rounds to 1.0 in binary64.  Exercise the replacement on
+  // device: mathematical gamma_64 is strictly greater than 64*u_DD.
+  {
+    double* d_gamma = nullptr;
+    cudaMalloc(&d_gamma, sizeof(double));
+    gbs::gbs_cert_gamma_dd_probe(d_gamma, 0);
+    cudaDeviceSynchronize();
+    double gamma = 0.0;
+    cudaMemcpy(&gamma, d_gamma, sizeof(double), cudaMemcpyDeviceToHost);
+    cudaFree(d_gamma);
+    const double ku = 64.0 * 7.888609052210118e-31;
+    bool gamma_ok = std::isfinite(gamma) && gamma > ku;
+    std::printf("DD gamma directed construction: %.17e > %.17e  %s\n",
+                gamma, ku, gamma_ok ? "ok" : "FAIL");
+    ok = ok && gamma_ok;
+  }
+
+  ok = run_subnormal_floor_case("perm fp64", gbs::gbs_perm_certified_batched, 2) && ok;
+  ok = run_subnormal_floor_case("perm dd", gbs::gbs_perm_dd_certified_batched, 2) && ok;
+  ok = run_mixed_scale_perm_case("perm fp64", gbs::gbs_perm_certified_batched) && ok;
+  ok = run_mixed_scale_perm_case("perm dd", gbs::gbs_perm_dd_certified_batched) && ok;
+  ok = run_tor_div_subnormal_guard_case() && ok;
+  // N=6 reaches j=3 in Newton's recurrence, covering a non-power-of-two divide.
+  ok = run_subnormal_floor_case("haf fp64", gbs::gbs_haf_certified_batched, 6) && ok;
+  ok = run_subnormal_floor_case("haf dd", gbs::gbs_haf_dd_certified_batched, 6) && ok;
 
   for (int n = 1; n <= 10; ++n) {
     Result r = run_case(gbs::gbs_perm_glynn_fp64_batched, gbs::gbs_perm_certified_batched,

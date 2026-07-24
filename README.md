@@ -22,25 +22,31 @@ companion with an explicit accuracy characterization. The Walrus is used here as
 one of several independent test oracles.
 
 > **Status.** The CPU library is complete and `pip`-installable (pure Python,
-> `numpy` + `mpmath` only). The v0.2.0 release commit passed a fresh RTX 4090
-> session on 2026-07-23: all 24 on-device differential gates, the Python 3.12
-> binding smoke, and every physical public-path checksum passed. Historical A100
-> evidence is also retained; see the [v0.2 device evidence](results/README.md#v020-device-validation).
+> `numpy` + `mpmath` only). A v0.2.1 tag is released only with a clean-tree GPU
+> validation manifest covering all 24 device gates, the Python binding smoke,
+> adversarial and physical enclosure families, and the Jiuzhang Gate C probe.
+> The manifest and its hash-bound evidence are attached to the GitHub release
+> and identify the exact commit. Historical v0.2.0 RTX 4090 and A100 evidence is
+> retained separately; see the [device evidence](results/README.md#v020-device-validation).
 > This is pre-1.0 software and the public API may change.
 
-Version 0.2.0 adds the fail-closed Jiuzhang confirmatory workflow and corrects
-the real threshold-torontonian construction used by the Jiuzhang examples. See
-the [changelog](CHANGELOG.md) for the release scope and compatibility notes.
+Version 0.2.1 is a correctness patch that adds subnormal-aware certified bounds
+and fail-closed certificate handling, makes the single-large real torontonian
+input contract explicit, removes inversion roundoff skew from the xxpp
+construction, records whether artifacts came from modified tracked sources,
+and packages the corrected historical Jiuzhang fixed-sample audit. That audit
+is exploratory, not a retrospective confirmatory result. See the
+[changelog](CHANGELOG.md) for the release scope.
 
 ## Installation
 
 The CPU package is available from
-[PyPI](https://pypi.org/project/gbskernels/0.2.0/) and needs only `numpy` +
+[PyPI](https://pypi.org/project/gbskernels/0.2.1/) and needs only `numpy` +
 `mpmath`. The CUDA extension is a separate, optional source build (see
 [`bindings/README.md`](bindings/README.md)):
 
 ```bash
-python -m pip install gbskernels==0.2.0
+python -m pip install gbskernels==0.2.1
 ```
 
 ## Quick start
@@ -82,7 +88,7 @@ implicit:
 | `"dd"` | Double-double arithmetic carried internally through the cancelling sum (a GPU tier); recovers a correct double-precision result where plain double precision cancels. |
 | `"ref"` | Arbitrary-precision reference (`mpmath`); the accuracy ground truth. |
 | `"auto"` | Double precision plus a per-evaluation cancellation indicator; evaluations flagged as risky are recomputed in a higher tier (`mpmath` on CPU, double-double on GPU). The indicator is a calibrated heuristic, not a certificate. |
-| `"certified"` | The double-precision value together with a **rigorous a-posteriori error bound**: `\|value − exact\| ≤ abs_error_bound`, a running error bound in the standard model of floating-point arithmetic (on the GPU, the bound arithmetic uses per-instruction directed rounding). Available for all four functions on CPU and GPU. With `rtol=`, a failed certified-fp64 bound escalates to the arbitrary-precision reference; GPU permanent and hafnian first try a certified double-double bound. The reference result is flagged as non-certified. `tor_single(..., dd=True)` provides a separate certified-double-double large-torontonian path. |
+| `"certified"` | The double-precision value together with a **rigorous a-posteriori error bound**: `\|value − exact\| ≤ abs_error_bound`, including explicit absolute terms for subnormal underflow (on the GPU, bound arithmetic uses per-instruction directed rounding). Non-finite inputs and invalid/non-finite certificates fail closed. Available for all four functions on CPU and GPU. With `rtol=`, a failed or refused certified-fp64 result escalates to the arbitrary-precision reference; GPU permanent and hafnian first try a certified double-double bound. The reference result is flagged as non-certified. `tor_single(..., dd=True)` provides a separate certified-double-double large-torontonian path. |
 
 ## Features
 

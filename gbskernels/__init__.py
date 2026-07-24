@@ -50,7 +50,7 @@ import numpy as np
 import cpu_ref
 import highprec_ref
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __all__ = [
     "perm", "perm_batched",
     "haf", "haf_batched",
@@ -347,6 +347,30 @@ def _check_diag(precision, return_diagnostics):
         )
 
 
+def _check_certified_input(A: Any) -> None:
+    """Certified claims require finite binary64 input data."""
+    try:
+        finite = np.all(np.isfinite(np.asarray(A)))
+    except (TypeError, ValueError):
+        finite = False
+    if not finite:
+        raise ValueError("certified evaluation requires finite input entries")
+
+
+def _finite_certificate(value: complex, bound: float) -> bool:
+    return (np.isfinite(value.real) and np.isfinite(value.imag)
+            and np.isfinite(bound) and bound >= 0.0)
+
+
+def _certificate_rel(value: complex, bound: float) -> float:
+    if not _finite_certificate(value, bound):
+        return float("inf")
+    magnitude = abs(value)
+    if magnitude == 0.0:
+        return 0.0 if bound == 0.0 else float("inf")
+    return float(bound / magnitude)
+
+
 def _certified_single(func: str, A: Any, backend: str, rtol: float | None = None):
     """(value, {tier, abs_error_bound, rel_error_bound, [escalated]}).
 
@@ -361,6 +385,7 @@ def _certified_single(func: str, A: Any, backend: str, rtol: float | None = None
     ``backend="gpu"`` routes perm/haf through the on-device certified kernels
     (``core/certified.cu``: the plain kernels' value path + bound accumulators);
     lhaf/tor GPU-certified are the remaining R1 kernels."""
+    _check_certified_input(A)
     if backend == "gpu":
         ext = _load_gpu_ext()
         kname = f"{func}_certified"
@@ -375,8 +400,14 @@ def _certified_single(func: str, A: Any, backend: str, rtol: float | None = None
     else:
         from cpu_ref import certified as _certified_eval
         value, bound = _certified_eval(func, A)
-    rel = bound / abs(value) if value != 0 else float("inf")
-    if rtol is not None and rel > rtol:
+    value, bound = complex(value), float(bound)
+    valid = _finite_certificate(value, bound)
+    rel = _certificate_rel(value, bound)
+    if rtol is None and not valid:
+        raise FloatingPointError(
+            f"certified {func} evaluator refused with a non-finite value or bound"
+        )
+    if rtol is not None and (not valid or not np.isfinite(rel) or rel > rtol):
         # the PROVEN ladder: certified-fp64 -> certified-dd (GPU) -> mpmath ref.
         # Each escalation is triggered by a rigorous bound, never a heuristic.
         if backend == "gpu":
@@ -386,13 +417,17 @@ def _certified_single(func: str, A: Any, backend: str, rtol: float | None = None
                 _, _, stack = _gpu_prepare(func, np.asarray(A)[None, ...], "fp64")
                 v2, b2 = (np.asarray(x) for x in getattr(ext, dname)(stack))
                 v2c, b2f = complex(v2[0]), float(b2[0])
-                rel2 = b2f / abs(v2c) if v2c != 0 else float("inf")
-                if rel2 <= rtol:
+                rel2 = _certificate_rel(v2c, b2f)
+                if (_finite_certificate(v2c, b2f) and np.isfinite(rel2)
+                        and rel2 <= rtol):
                     return v2c, {"tier": "certified-dd", "escalated": True,
                                  "abs_error_bound": b2f, "rel_error_bound": float(rel2)}
         ref = complex(_evaluate(func, A, "ref"))
+        if not (np.isfinite(ref.real) and np.isfinite(ref.imag)):
+            raise FloatingPointError(f"reference {func} evaluator returned a non-finite value")
         return ref, {"tier": "ref", "escalated": True,
-                     "abs_error_bound": float(bound), "rel_error_bound": float(rel)}
+                     "abs_error_bound": bound if valid else float("inf"),
+                     "rel_error_bound": float(rel)}
     diag = {"tier": "certified-fp64", "abs_error_bound": float(bound),
             "rel_error_bound": float(rel)}
     if rtol is not None:
@@ -411,16 +446,22 @@ def _certified_batched(func: str, matrices: Iterable[Any], backend: str,
                 "(rebuild bindings/, or use backend='cpu')."
             )
         _, _, stack = _gpu_prepare(func, matrices, "fp64")
+        _check_certified_input(stack)
         values, bounds = (np.asarray(x) for x in getattr(ext, kname)(stack))
         out = values.astype(np.complex128, copy=True)
         diags = []
         for i in range(len(out)):
             v, e = complex(out[i]), float(bounds[i])
-            rel = e / abs(v) if v != 0 else float("inf")
-            if rtol is not None and rel > rtol:
+            valid = _finite_certificate(v, e)
+            rel = _certificate_rel(v, e)
+            if rtol is not None and (not valid or not np.isfinite(rel) or rel > rtol):
                 # per-element proven ladder (certified-dd, then ref)
                 out[i], d = _certified_single(func, stack[i], "gpu", rtol)
                 diags.append(d)
+            elif not valid:
+                raise FloatingPointError(
+                    f"certified {func} batch element {i} refused with a non-finite value or bound"
+                )
             else:
                 d = {"tier": "certified-fp64", "abs_error_bound": e,
                      "rel_error_bound": rel}
@@ -440,6 +481,8 @@ def _certified_batched(func: str, matrices: Iterable[Any], backend: str,
 def _check_rtol(precision, rtol):
     if rtol is not None and precision != "certified":
         raise ValueError("rtol is a certified-tier parameter; it requires precision='certified'")
+    if rtol is not None and (not np.isfinite(rtol) or rtol < 0.0):
+        raise ValueError("rtol must be finite and non-negative")
 
 
 def _dispatch_batched(func, matrices, precision, backend, return_diagnostics=False,
@@ -538,6 +581,9 @@ def lhaf_repeated(A: Any, gamma: Any, reps: Any, backend: str = "cpu",
     M = A.shape[0]
     g = (np.zeros(M, dtype=np.complex128) if gamma is None
          else np.ascontiguousarray(gamma, dtype=np.complex128))
+    if certified:
+        _check_certified_input(A)
+        _check_certified_input(g)
     r = np.ascontiguousarray(reps, dtype=np.int32)
     single = r.ndim == 1
     if single:
@@ -573,6 +619,13 @@ def lhaf_repeated(A: Any, gamma: Any, reps: Any, backend: str = "cpu",
     else:
         raise ValueError(f"unknown backend {backend!r}; expected 'cpu' or 'gpu'")
     if certified:
+        valid = (np.all(np.isfinite(out.real)) and np.all(np.isfinite(out.imag))
+                 and np.all(np.isfinite(bounds)) and np.all(bounds >= 0.0))
+        if not valid:
+            raise FloatingPointError(
+                "certified lhaf_repeated evaluator refused with a non-finite "
+                "value or invalid bound"
+            )
         diag = {"tier": "certified-fp64",
                 "abs_error_bound": (float(bounds[0]) if single else bounds)}
         return (complex(out[0]) if single else out), diag
@@ -586,22 +639,31 @@ def tor_single(O: Any, groups: int | None = None, certified: bool = False,
     One evaluation split into ``2**groups`` prefix-Cholesky subtrees across the
     whole GPU (``core/tor_recursive.cu``) -- the path to torontonians BEYOND the
     batched kernels' dim-24 cap, up to 32 modes (the published validation
-    ceiling is 26 clicks = dim 52). Real,
-    physical-domain (SPD ``I - O_S``) inputs; off-domain raises. ``groups``
-    defaults to ``min(n, 14)``.
+    ceiling is 26 clicks = dim 52). The matrix after binary64 conversion must
+    be finite and exactly symmetric; the recursive Cholesky walk consumes one
+    triangle, so approximate symmetry is not an unambiguous input contract.
+    Physical-domain (SPD ``I - O_S``) inputs are required; off-domain raises.
+    ``groups`` defaults to ``min(n, 14)``.
 
     With ``certified=True``, also returns a rigorous a-posteriori error bound.
     ``dd=True`` (implies certified) carries the value in double-double, giving a
     TIGHT certificate past the fp64 precision wall (where the fp64 certified
     bound exceeds the value); the returned tier is ``"certified-dd"``.
     """
-    M = np.ascontiguousarray(O, dtype=np.float64)
+    A = np.asarray(O)
+    if np.iscomplexobj(A):
+        if np.any(np.imag(A) != 0):
+            raise ValueError("tor_single is real-domain only; use tor() for complex O (dim <= 24)")
+        A = np.real(A)
+    M = np.ascontiguousarray(A, dtype=np.float64)
     if M.ndim != 2 or M.shape[0] != M.shape[1] or M.shape[0] % 2 != 0:
         raise ValueError(f"tor_single: O must be square with even dimension, got {M.shape}")
     if M.shape[0] > 64:
         raise ValueError(f"tor_single: dimension {M.shape[0]} exceeds the cap 64 (n <= 32 modes)")
-    if np.iscomplexobj(O) and np.any(np.imag(np.asarray(O)) != 0):
-        raise ValueError("tor_single is real-domain only; use tor() for complex O (dim <= 24)")
+    if not np.all(np.isfinite(M)):
+        raise ValueError("tor_single: O must contain only finite binary64 values")
+    if not np.array_equal(M, M.T):
+        raise ValueError("tor_single: O must be exactly symmetric after conversion to binary64")
     n = M.shape[0] // 2
     g = min(n, 14) if groups is None else int(groups)
     if not 0 <= g <= n:
@@ -617,13 +679,13 @@ def tor_single(O: Any, groups: int | None = None, certified: bool = False,
             raise RuntimeError(f"tor_single({tier}) needs a rebuilt extension")
         v, e = getattr(ext, fn)(M, g)
         v, e = float(v), float(e)
-        if v != v or e != e or e == float("inf"):
+        if not (np.isfinite(v) and np.isfinite(e) and e >= 0.0):
             raise ValueError("tor_single: off the physical domain or uncertifiable "
                              "(the bound refuses rather than overclaims)")
         rel = e / abs(v) if v != 0 else float("inf")
         return v, {"tier": tier, "abs_error_bound": e, "rel_error_bound": rel}
     v = float(ext.tor_single(M, g))
-    if v != v: # NaN: a non-SPD minor
+    if not np.isfinite(v):
         raise ValueError("tor_single: input is off the physical domain (I - O_S not SPD); "
                          "no complex-LU fallback exists beyond dim 24")
     return v

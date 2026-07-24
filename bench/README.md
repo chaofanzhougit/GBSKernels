@@ -18,6 +18,12 @@ throughput ([`docs/DESIGN.md`](../docs/DESIGN.md) §9; the protocol is
 | `kernel_footprint.py` | Static per-thread kernel-buffer accounting used to separate source-level footprint from device-only profiler evidence. |
 | `repeated_ab.py` | Same-device A/B measurement of the repeated-row sieve against expanded hafnians, with checksum and provenance gates. |
 
+Release validation also runs
+`examples/jiuzhang/dd_adversarial_enclosure.py` against an independent mpmath
+reference. The gate fails on any enclosure violation, empty/all-refusal run,
+excessive refusal fraction, or missing required physical-family coverage; its
+artifact is hash-bound into the release-validation manifest.
+
 The cross-engine timing harnesses share the same discipline: one input generator
 (so timings are same-input), randomized execution order, raw repeats reported as
 median and interquartile range (never best-of-N), append-only output to

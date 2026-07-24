@@ -16,9 +16,11 @@ sampling produces, and where the end-to-end statistical validation attaches
   - `torontonian_threshold_probabilities` (threshold detectors) via the
     **torontonian**, `tor(O_c) / √det Q`.
 - **`gbs.threshold_O_xxpp`** — constructs the exact real quadrature-basis
-  threshold matrix `Ox = I - Sigma_x^{-1}` and `log(sqrt(det Q))`. It is the
-  real-domain input used by `gbskernels.tor_single`; taking the entrywise real
-  part of the complex-basis matrix is not equivalent for complex correlations.
+  threshold matrix `Ox = I - Sigma_x^{-1}` and `log(sqrt(det Q))`. The helper
+  explicitly removes binary64 inversion skew, so `Ox` is finite, contiguous,
+  and exactly symmetric for the real-domain `gbskernels.tor_single` contract;
+  taking the entrywise real part of the complex-basis matrix is not equivalent
+  for complex correlations.
 - **`sampler.py`** — the conditional sampler. `sample(cov, num_samples, cutoff,
   backend=..., precision=..., ...)` draws photon-number samples by the
   reduced-covariance chain rule. It is hybrid host-orchestrated: the host drives

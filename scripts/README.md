@@ -7,12 +7,15 @@ CPU-first by construction.
   pre-flight, builds `core/` with `nvcc`, and runs every mandatory differential
   gate before publishable throughput timing. Compiler and profiler diagnostics
   collected immediately after the build remain provisional until those gates
-  pass. The nanobind build/smoke and several Python evidence harnesses are best-
-  effort and report warnings when unavailable; the core build and gates remain
-  hard failures, so publishable timing never follows a failed correctness gate.
+  pass. In ordinary benchmark modes, optional evidence harnesses may warn when
+  unavailable. In release `validate` mode, the nanobind build/smoke, adversarial
+  enclosure with physical-family coverage, and Jiuzhang Gate C probe are all
+  hard gates; success writes a semantic manifest with hashes for all evidence.
 - **`launch_session.sh`** — drives a session from a workstation: it captures the
-  commit and container digest, copies the working tree to the host (excluding
-  local-only files), runs `gpu_session.sh` there, and copies `results/` back.
+  full commit and container digest, copies the working tree to the host
+  (excluding local-only files), runs `gpu_session.sh` there, and copies
+  `results/` back. Release `validate` mode refuses tracked changes, staged
+  changes, or untracked non-ignored files before upload.
 - **`session.py`** — an experimental local manifest wrapper around pluggable
   provision/terminate commands. Its safety contract is active (`--dry-run`,
   `--confirm`, CPU gate, cost caps), but manifest cells execute in the local
@@ -21,6 +24,7 @@ CPU-first by construction.
 ```bash
 bash scripts/gpu_session.sh                         # on the CUDA host
 bash scripts/launch_session.sh -p PORT USER@HOST 89 # from a workstation
+bash scripts/launch_session.sh -p PORT USER@HOST 89 IMAGE@sha256:DIGEST validate
 ```
 
 Replace `PORT` and `USER@HOST` with the SSH endpoint for the rented host.

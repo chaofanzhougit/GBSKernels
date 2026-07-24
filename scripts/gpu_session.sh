@@ -57,6 +57,17 @@ if [ -z "$ARCH" ]; then
 fi
 echo "building for CUDA arch sm_${ARCH}"
 
+# --- mode: full (default) = the whole bench suite; jiuzhang = preflight/build/
+# gates/bindings then ONLY the Jiuzhang regeneration + Gate C probe ------------
+MODE="${2:-full}"
+case "$MODE" in
+  full|jiuzhang|campaign|validate|confirmatory|confirmatory-v2) ;;
+  *) die "unsupported session mode: $MODE" ;;
+esac
+echo "session mode: ${MODE}"
+export GBS_VALIDATION_START_EPOCH="$(date +%s)"
+export GBS_VALIDATION_ARCH="$ARCH"
+
 # --- bootstrap Python deps once (CUDA devel images often ship no pip) --------
 # Every prior session needed a manual `apt install python3-pip` before the nanobind
 # ext build (step 4) and the evidence harnesses (step 6). Do it here so the session
@@ -169,15 +180,17 @@ done
 [ "$gates_ok" -eq 1 ] || die "a differential gate FAILED -- not running timing (no number from a failed gate)"
 
 # --- 4. Python bindings: build the CUDA extension + smoke it ----------------
-# Best-effort: the C++ gates above already validate the kernels + host_api on the
-# device, so a binding-build hiccup warns but does not abort the session.
+# A validate-mode release session requires this public boundary to pass. Other
+# modes retain the historical best-effort behavior because the C++ gates already
+# validate the device kernels and host API.
 say "4/6 build + smoke the nanobind GPU extension"
 python3 -m pip install --quiet nanobind numpy mpmath 2>/dev/null || true # best-effort
+bindings_ok=0
 if python3 -c 'import nanobind' 2>/dev/null; then
   if cmake -S bindings -B bindings/build -DCMAKE_CUDA_ARCHITECTURES="$ARCH" \
         -DPython_EXECUTABLE="$(command -v python3)" >/dev/null 2>&1 \
      && cmake --build bindings/build -j >/dev/null 2>&1; then
-    python3 - <<'PY' || echo " [warn] extension built but smoke failed"
+    if python3 - <<'PY'
 import sys
 sys.path.insert(0, "bindings/build")
 import gbskernels_ext as e
@@ -197,11 +210,258 @@ try:
 except ModuleNotFoundError:
     print(" (numpy absent; import-only smoke)")
 PY
+    then
+      bindings_ok=1
+    else
+      echo " [warn] extension built but smoke failed"
+    fi
   else
     echo " [warn] bindings CUDA build failed (kernels already validated by the gates)"
   fi
 else
   echo " [skip] nanobind unavailable; bindings not built (gates already validate the kernels)"
+fi
+if [ "$MODE" = "validate" ] && [ "$bindings_ok" -ne 1 ]; then
+  die "release validation requires the CUDA binding build and smoke test"
+fi
+
+# --- V. certificate validation (mode=validate) --------------------------------
+# Validates the corrected DD torontonian certificate and its implementation-
+# specific proof in docs/dd_certificate_proof.md ON DEVICE,
+# cheaply, WITHOUT regenerating any artifact:
+#   * the check_tor_recursive gate already ran in step 3 (incl. the new ddcert
+#     collapse sub-gate) -- if we got here it PASSED on the fixed kernel;
+#   * the adversarial enclosure harness (audit Gate 1.4) checks |value-ref| <= bound
+#     vs 50-digit mpmath on near-refusal / cancellation / physical families -- its
+#     exit code GATES the session (a violation means the fix is still unsound);
+#   * gate_c_probe re-measures the DD cost curve so the confirmatory-campaign
+#     budget is pinned on the fixed kernel.
+# Only after this is green do we regenerate DD artifacts / run the campaign.
+if [ "$MODE" = "validate" ]; then
+  say "V certificate validation (adversarial enclosure + cost curve; no regeneration)"
+  PYJ="python3"; command -v uv >/dev/null && PYJ="uv run python"
+  export GBSKERNELS_EXT_DIR="$PWD/bindings/build"
+  export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+  python3 -c 'import scipy' 2>/dev/null \
+    || python3 -m pip install --quiet scipy 2>/dev/null \
+    || python3 -m pip install --quiet --break-system-packages scipy 2>/dev/null || true
+  mkdir -p results/jiuzhang
+  # ENCLOSURE GATE: nonzero exit = a violation = the fix is NOT sound on device.
+  $PYJ examples/jiuzhang/dd_adversarial_enclosure.py --backend gpu --kmax 14 --per-cell 4 \
+    --require-physical --max-refusal-fraction 0.5 \
+    || die "DD adversarial enclosure FAILED on device -- fix is unsound; do NOT regenerate artifacts"
+  # Cost-curve re-measure (Gate C) also exercises the physical Jiuzhang state
+  # construction through the released Python boundary.
+  if [ -f data/jiuzhang1/T_full.npy ]; then
+    $PYJ examples/jiuzhang/gate_c_probe.py --budget-seconds 2400 \
+      || die "Gate C physical probe failed"
+  else
+    die "validate mode requires the Jiuzhang payload for Gate C"
+  fi
+  export GBS_BINDING_SMOKE=pass
+  $PYJ - <<'PY' || die "failed to write the validation manifest"
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import time
+from pathlib import Path
+
+from bench._provenance import provenance
+
+root = Path.cwd()
+started = int(os.environ["GBS_VALIDATION_START_EPOCH"])
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def newest(pattern: str) -> Path:
+    candidates = [
+        path for path in root.glob(pattern)
+        if path.stat().st_mtime >= started - 1
+    ]
+    if not candidates:
+        raise RuntimeError(f"validation artifact missing for {pattern}")
+    return max(candidates, key=lambda path: path.stat().st_mtime)
+
+
+pass_files = sorted((root / "results" / "gpu_gates").glob("*_PASS.txt"))
+if len(pass_files) != 24:
+    raise RuntimeError(f"expected 24 device PASS files, found {len(pass_files)}")
+adversarial = newest("results/jiuzhang/dd_adversarial_enclosure_gpu_*.json")
+gate_c = newest("results/jiuzhang/gate_c_probe_*.json")
+adversarial_payload = json.loads(adversarial.read_text())
+adversarial_summary = adversarial_payload.get("summary", {})
+if (
+    adversarial_summary.get("backend") != "gpu"
+    or adversarial_summary.get("gate_pass") is not True
+    or adversarial_summary.get("n_checked", 0) <= 0
+    or adversarial_summary.get("n_violations") != 0
+    or adversarial_summary.get("physical_cases", 0) <= 0
+):
+    raise RuntimeError("adversarial enclosure artifact does not record a physical GPU pass")
+gate_c_payload = json.loads(gate_c.read_text())
+if gate_c_payload.get("gpu_backend") != "gpu" or gate_c_payload.get("dry") is not False:
+    raise RuntimeError("Gate C artifact is not a real-GPU run")
+timing = gate_c_payload.get("timing", [])
+sigma = gate_c_payload.get("sigma", [])
+if not any("seconds_fp64" in row and "seconds_dd" in row for row in timing):
+    raise RuntimeError("Gate C did not complete a paired FP64/DD timing point")
+if not any(row.get("n_done", 0) >= 2 for row in sigma):
+    raise RuntimeError("Gate C did not complete a physical event sample")
+if any(row.get("n_refused", 0) for row in sigma):
+    raise RuntimeError("Gate C recorded a physical-input certificate refusal")
+evidence = pass_files + [adversarial, gate_c]
+stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+output = root / "results" / "gpu_gates" / f"validation_v021_{stamp}.json"
+payload = {
+    "kind": "gbskernels_v021_release_validation",
+    "schema": "gbskernels.release-validation.v1",
+    "status": "pass",
+    "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    "mode": "validate",
+    "cuda_arch": f"sm_{os.environ['GBS_VALIDATION_ARCH']}",
+    "binding_smoke": os.environ.get("GBS_BINDING_SMOKE"),
+    "required_device_gates": len(pass_files),
+    "provenance": provenance(),
+    "evidence": [
+        {
+            "path": str(path.relative_to(root)),
+            "size_bytes": path.stat().st_size,
+            "sha256": sha256(path),
+        }
+        for path in evidence
+    ],
+}
+output.write_text(json.dumps(payload, indent=2) + "\n")
+print(f"release validation manifest -> {output}")
+PY
+  say "DONE (validate mode)"
+  echo "Release candidate validated on device (24 gates + binding + adversarial + Gate C)."
+  echo "-> results/gpu_gates/validation_v021_*.json -- copy back and attach to the release."
+  exit 0
+fi
+
+# --- J. Jiuzhang regeneration + Gate C probe (mode=jiuzhang) ------------------
+# Regenerates, at the pinned commit and on the EXACT quadrature-basis matrix
+# (sampling.gbs.threshold_O_xxpp -- the pre-2026-07-10 artifacts used the
+# wrong real cast and are superseded): the fp64 frontier, the DD frontier,
+# a WIDE certified cross-validation against the published per-pattern
+# probabilities of Quantum 7, 1076 (their C=26 squeezed file is permuted ->
+# nearest-set match, handled in q7_parity.py), and the Gate C cost probe +
+# beyond-ceiling sigma sample. Frontier kmax=28: past k~17 the fp64 bound is
+# uniformly >> 1 (no information in higher k), and the 26->32-click reach is
+# carried by the gate_c_probe timing rows instead of 45 s/event curve points.
+if [ "$MODE" = "jiuzhang" ]; then
+  say "J Jiuzhang regeneration + Gate C (exact matrix; artifacts -> results/jiuzhang/)"
+  PYJ="python3"; command -v uv >/dev/null && PYJ="uv run python"
+  export GBSKERNELS_EXT_DIR="$PWD/bindings/build"
+  export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+  python3 -c 'import scipy' 2>/dev/null \
+    || python3 -m pip install --quiet scipy 2>/dev/null \
+    || python3 -m pip install --quiet --break-system-packages scipy 2>/dev/null || true
+  [ -f data/jiuzhang1/T_full.npy ] || die "jiuzhang payload missing (launch_session.sh pushes it in jiuzhang mode)"
+  [ -f data/q7_1076_zenodo/sq_parameters/sq_par.txt ] || die "q7 zenodo payload missing"
+  mkdir -p results/jiuzhang
+  $PYJ examples/jiuzhang/dd_validate.py --events 30 --kmax 28 || die "dd_validate FAILED"
+  $PYJ examples/jiuzhang/jiuzhang_frontier.py --kmax 28 --events 60 || die "jiuzhang_frontier FAILED"
+  $PYJ examples/jiuzhang/q7_parity.py --bands 21 22 23 24 25 26 --per-band 20 \
+      --legacy-events 2 --procs 1 || die "q7_parity gates FAILED"
+  cp -f examples/jiuzhang/q7_parity_*.json results/jiuzhang/ 2>/dev/null || true
+  $PYJ examples/jiuzhang/gate_c_probe.py --budget-seconds 2400 || echo " [warn] gate_c_probe failed"
+  say "DONE (jiuzhang mode)"
+  echo "frontier + DD frontier + wide parity + Gate C probe under results/jiuzhang/ -- copy back."
+  exit 0
+fi
+
+# --- C. stage-1 certified campaign (mode=campaign) ---------------------------
+# Conditioned Delta H(C) on the exact states: C=21-26 reproduction (fixed n)
+# + C=27-30 beyond-ceiling verdicts (adaptive 3-sigma stop, per-band budgets,
+# JSONL checkpoints -> a dead box loses at most one evaluation). Events come
+# from the proven decoder's campaign_events.npz (payload).
+if [ "$MODE" = "campaign" ]; then
+  say "C stage-1 certified campaign (exact matrix; artifacts -> results/jiuzhang/)"
+  PYJ="python3"; command -v uv >/dev/null && PYJ="uv run python"
+  export GBSKERNELS_EXT_DIR="$PWD/bindings/build"
+  export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+  [ -f data/jiuzhang1/campaign_events.npz ] || die "campaign_events.npz missing (payload)"
+  [ -f data/q7_1076_zenodo/click_probs/click_probs_squeezed_0.npy ] || die "q7 normalizer payload missing"
+  mkdir -p results/jiuzhang
+  $PYJ examples/jiuzhang/campaign.py || die "campaign FAILED"
+  say "DONE (campaign mode)"
+  echo "band summaries + pooled aggregate + per-event JSONL under results/jiuzhang/ -- copy back."
+  exit 0
+fi
+
+# --- CF. historical private fixed-sample audit (mode=confirmatory) ------------
+# Replays the author-chosen 2026-07-15 sample. It was not publicly preregistered
+# and must not support a confirmatory claim. The corrected aggregator uses the
+# realized finite-population stratum weights and reports event uncertainty,
+# normalizer sensitivity, and arithmetic proxy separately. Per-event JSONL
+# checkpoints make the audit resumable and idempotent.
+if [ "$MODE" = "confirmatory" ]; then
+  say "CF HISTORICAL private fixed-sample audit (exploratory; never a new claim)"
+  [ "${GBS_ALLOW_LEGACY_CONFIRMATORY:-0}" = "1" ] \
+    || die "legacy confirmatory mode is disabled; use confirmatory-v2"
+  PYJ="python3"; command -v uv >/dev/null && PYJ="uv run python"
+  export GBSKERNELS_EXT_DIR="$PWD/bindings/build"
+  export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+  python3 -c 'import scipy' 2>/dev/null \
+    || python3 -m pip install --quiet scipy 2>/dev/null \
+    || python3 -m pip install --quiet --break-system-packages scipy 2>/dev/null || true
+  [ -f data/jiuzhang1/T_full.npy ] || die "jiuzhang payload missing (state construction)"
+  [ -f data/q7_1076_zenodo/click_probs/click_probs_squeezed_0.npy ] || die "q7 normalizer payload missing"
+  MANIFEST="${GBS_CONFIRM_MANIFEST:-}"
+  if [ -z "$MANIFEST" ] && [ -f results/jiuzhang/legacy_fixed_sample/private_fixed_sample_selection_v2.npz ]; then
+    MANIFEST="results/jiuzhang/legacy_fixed_sample/private_fixed_sample_selection_v2.npz"
+  fi
+  if [ -z "$MANIFEST" ]; then
+    MANIFEST="$(ls -t results/jiuzhang/private_fixed_sample_selection_*.npz \
+      results/jiuzhang/confirmatory_selection_*.npz 2>/dev/null | head -1)"
+  fi
+  [ -n "$MANIFEST" ] && [ -f "$MANIFEST" ] \
+    || die "no historical fixed-sample manifest found"
+  echo "using historical manifest: $MANIFEST"
+  echo "confirmatory args: ${GBS_CONFIRM_ARGS:-<all bands>}"
+  mkdir -p results/jiuzhang
+  $PYJ examples/jiuzhang/campaign_confirmatory.py --manifest "$MANIFEST" ${GBS_CONFIRM_ARGS:-} \
+    || die "confirmatory campaign FAILED"
+  say "DONE (confirmatory mode)"
+  echo "Historical private fixed-sample artifacts under results/jiuzhang/ -- do not cite as confirmatory."
+  exit 0
+fi
+
+# --- CF2. public-registration confirmatory v2 -------------------------------
+# The caller must push a resolved registration and canonical manifest, then set
+# GBS_CONFIRM_V2_ARGS to the complete evaluator arguments. There is deliberately
+# no "newest manifest" discovery and no default scientific run.
+if [ "$MODE" = "confirmatory-v2" ]; then
+  say "CF2 public-registration confirmatory campaign (content-addressed)"
+  PYJ=(python3); command -v uv >/dev/null && PYJ=(uv run python)
+  export GBSKERNELS_EXT_DIR="$PWD/bindings/build"
+  export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+  [ -n "${GBS_CONFIRM_V2_ARGS:-}" ] \
+    || die "GBS_CONFIRM_V2_ARGS is required; v2 never auto-selects a manifest"
+  [ -n "${GBS_CONTAINER_DIGEST:-}" ] \
+    || die "GBS_CONTAINER_DIGEST is required for a v2 run contract"
+  [[ "${GBS_CONTAINER_DIGEST}" == *@sha256:* &&
+     "${GBS_CONTAINER_DIGEST##*@sha256:}" =~ ^[0-9a-fA-F]{64}$ ]] \
+    || die "GBS_CONTAINER_DIGEST must be an image@sha256:<64-hex> digest"
+  if [[ "${GBS_CONFIRM_V2_ARGS}" == *"'"* || "${GBS_CONFIRM_V2_ARGS}" == *$'\n'* ]]; then
+    die "GBS_CONFIRM_V2_ARGS may not contain quotes or newlines"
+  fi
+  read -r -a CONFIRM_V2_ARGV <<< "${GBS_CONFIRM_V2_ARGS}"
+  "${PYJ[@]}" examples/jiuzhang/campaign_confirmatory_v2.py "${CONFIRM_V2_ARGV[@]}" \
+    || die "confirmatory v2 campaign FAILED"
+  say "DONE (confirmatory-v2 mode)"
+  exit 0
 fi
 
 # --- 5. kernel-only throughput ----------------------------------------------

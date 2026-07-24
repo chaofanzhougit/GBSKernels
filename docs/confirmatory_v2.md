@@ -1,9 +1,10 @@
 # Confirmatory v2 workflow
 
-The 2026-07-15 Jiuzhang 1.0 sample is a privately frozen held-out comparison.
-It is not retroactively promoted to a public preregistration. The legacy runner
-and artifacts are outside this public workflow; new confirmatory claims use the
-v2 process below.
+The 2026-07-15 Jiuzhang 1.0 sample is an exposed private fixed sample from
+exploratory development, not an authenticated held-out comparison. It is not
+retroactively promoted to a public preregistration or confirmatory result. The
+corrected historical audit is outside this public workflow; new confirmatory
+claims use the v2 process below.
 
 ## Scientific question
 
@@ -51,7 +52,8 @@ The validator refuses a private URL, mutable record, incorrect plan hash, stale
 beacon timing, or seed chosen outside the registered derivation.
 Sample sizes and absolute-fit thresholds are deliberately placeholders. They
 must come from a frozen design specification and independently generated
-calibration-forward simulations, never from the evaluated legacy holdout.
+calibration-forward simulations, never from the evaluated historical fixed
+sample.
 
 ```bash
 # Mechanically pin the known repository evidence. Then resolve the catalog's

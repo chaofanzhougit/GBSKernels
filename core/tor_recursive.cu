@@ -280,10 +280,14 @@ extern "C" void gbs_tor_recursive_single_batched(const double* d_O, int n, int g
 // --------------------------------------------------------------------------
 
 constexpr double TORS_U = 1.1102230246251565e-16; // 2^-53
+// Absolute roundoff term for a single binary64 operation.  Sixteen minimum
+// subnormals is deliberately larger than the half-minsub IEEE-754 error and
+// remains representable in the upward-rounded bound accumulator.
+constexpr double TORS_UFL = 8e-323;
 
 __device__ inline double tors_gamma(double kk) {
-  double ku = kk * TORS_U;
-  return ru_mul(ku / (1.0 - ku), 1.0 + 4.0 * TORS_U);
+  double ku = ru_mul(kk, TORS_U);
+  return ru_div(ku, rd_sub(1.0, ku));
 }
 
 __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
@@ -316,7 +320,8 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
         int mc = ((c >> 1) == count) ? j : modes[c >> 1];
         int gc = (c & 1) ? mc + n : mc;
         double m = ((gj == gc) ? 1.0 : 0.0) - O[gj * dim + gc];
-        double e_m = (gj == gc) ? TORS_U * fabs(m) : 0.0; // one fl subtract on the diagonal
+        double e_m = (gj == gc)
+            ? ru_add(ru_mul(TORS_U, fabs(m)), TORS_UFL) : 0.0;
         double sacc = m;
         double sb = 0.0, sm = fabs(m);
         for (int u = 0; u < c; ++u) {
@@ -327,7 +332,11 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
                                         ru_mul(EL[r * TORS_MAX_DIM + u], EL[c * TORS_MAX_DIM + u]))));
           sm = ru_add(sm, ru_mul(fabs(lr), fabs(lc)));
         }
-        double e_s = ru_add(ru_add(sb, e_m), ru_mul(tors_gamma((double)(c + 2)), sm));
+        // Each accumulated product/subtraction also gets an absolute term, so
+        // the standard relative model remains valid through subnormal results.
+        double e_s = ru_add(
+            ru_add(ru_add(sb, e_m), ru_mul(tors_gamma((double)(c + 2)), sm)),
+            ru_mul((double)(4 * c + 8), TORS_UFL));
         if (c < r) {
           double p = L[c * TORS_MAX_DIM + c], ep = EL[c * TORS_MAX_DIM + c];
           if (!(ep < 0.5 * p)) return false; // pivot uncertifiable
@@ -336,14 +345,15 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
           L[r * TORS_MAX_DIM + c] = v;
           EL[r * TORS_MAX_DIM + c] =
               ru_add(ru_add(ru_div(e_s, p_lo), ru_div(ru_mul(ep, fabs(v)), p_lo)),
-                     ru_mul(TORS_U, fabs(v)));
+                     ru_add(ru_mul(TORS_U, fabs(v)), TORS_UFL));
         } else {
           if (!(sacc > 0.0) || !(e_s < 0.5 * sacc)) return false; // not (certifiably) SPD
           double v = sqrt(sacc);
           L[r * TORS_MAX_DIM + r] = v;
           // |sqrt(s±e) - sqrt(s)| <= e / (2 sqrt(s-e)); fl(sqrt) adds u*v
           EL[r * TORS_MAX_DIM + r] =
-              ru_add(ru_mul(TORS_U, v), ru_div(e_s, 2.0 * rd_sqrt(rd_sub(sacc, e_s))));
+              ru_add(ru_add(ru_mul(TORS_U, v), TORS_UFL),
+                     ru_div(e_s, 2.0 * rd_sqrt(rd_sub(sacc, e_s))));
         }
       }
     }
@@ -352,13 +362,16 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
     double b = L[(size + 1) * TORS_MAX_DIM + size + 1], eb = EL[(size + 1) * TORS_MAX_DIM + size + 1];
     double ab = a * b;
     double e_ab = ru_add(ru_add(ru_mul(fabs(a), eb), ru_mul(fabs(b), ea)),
-                         ru_add(ru_mul(ea, eb), ru_mul(TORS_U, fabs(ab))));
+                         ru_add(ru_mul(ea, eb),
+                                ru_add(ru_mul(TORS_U, fabs(ab)), TORS_UFL)));
     double d2 = ab * ab;
     double e_d2 = ru_add(ru_mul(2.0 * fabs(ab), e_ab),
-                         ru_add(ru_mul(e_ab, e_ab), ru_mul(TORS_U, d2)));
+                         ru_add(ru_mul(e_ab, e_ab),
+                                ru_add(ru_mul(TORS_U, d2), TORS_UFL)));
     double nd = detprod * d2;
     e_det = ru_add(ru_add(ru_mul(detprod, e_d2), ru_mul(d2, e_det)),
-                   ru_add(ru_mul(e_det, e_d2), ru_mul(TORS_U, fabs(nd))));
+                   ru_add(ru_mul(e_det, e_d2),
+                          ru_add(ru_mul(TORS_U, fabs(nd)), TORS_UFL)));
     detprod = nd;
     ++count;
     return true;
@@ -380,14 +393,19 @@ __global__ void tor_recursive_single_cert_kernel(const double* __restrict__ O,
       // leaf: term = 1/sqrt(detprod ± e_det)
       if (!(e_det < 0.5 * detprod)) { partials[t] = NAN; pbounds[t] = INFINITY; return; }
       double sroot = sqrt(detprod);
-      double tS = ru_add(ru_mul(TORS_U, sroot),
+      double tS = ru_add(ru_add(ru_mul(TORS_U, sroot), TORS_UFL),
                          ru_div(e_det, 2.0 * rd_sqrt(rd_sub(detprod, e_det))));
       double c = 1.0 / sroot;
       double s_lo = rd_sub(sroot, tS);
+      if (!(s_lo > 0.0) || !isfinite(c)) {
+        partials[t] = NAN; pbounds[t] = INFINITY; return;
+      }
       // |1/(s±t) - fl(1/s)| <= t/(s*(s-t)) + u/s, all upward-rounded
-      double e_c = ru_add(ru_div(tS, rd_mul(sroot, s_lo)), ru_mul(TORS_U, c));
+      double e_c = ru_add(ru_div(tS, rd_mul(sroot, s_lo)),
+                          ru_add(ru_mul(TORS_U, c), TORS_UFL));
       total += ((n - count) & 1) ? -c : c;
-      e_tot = ru_add(e_tot, ru_add(e_c, ru_mul(TORS_U, fabs(total))));
+      e_tot = ru_add(e_tot, ru_add(e_c,
+          ru_add(ru_mul(TORS_U, fabs(total)), TORS_UFL)));
       if (lvl == 0) break;
       --lvl;
       continue;
@@ -430,13 +448,11 @@ extern "C" void gbs_tor_recursive_single_cert_batched(const double* d_O, int n, 
 // Identical machine to tor_recursive_single_cert_kernel (Theorem 3'), but the
 // VALUE path is carried in double-double (dd.cuh error-free transforms) while
 // the bound path is the same real pair-arithmetic recurrence with the unit
-// roundoff replaced by the double-word constant u_DD. Every dd operation obeys
-// the same relative-error model fl(a.b)=(a.b)(1+d), |d|<=u_DD that the fp64
-// bounds were derived from, so the derivation transfers verbatim with u->u_DD;
-// magnitudes are read from the hi component with a non-overlap headroom. u_DD =
-// 2^-100 is >~30x the proven double-word add/mul/div/sqrt constants
-// (Joldes-Muller-Popescu, ACM TOMS 2017), so the charge is conservative and the
-// enclosure is enforced as a test invariant against mpmath. Each subtree's
+// roundoff replaced by the double-word constant u_DD for add/multiply chains.
+// Division and square root are certified a posteriori from residuals of the
+// actual returned double words; no unproved operation-specific constant is
+// assumed for either routine. Every value update also carries an absolute
+// underflow term. Each subtree's
 // DD-to-fp64 collapse residual is recovered by TwoSum and added to its bound
 // before the host reduction.
 //
@@ -448,11 +464,11 @@ extern "C" void gbs_tor_recursive_single_cert_batched(const double* d_O, int n, 
 // --------------------------------------------------------------------------
 
 constexpr double TORS_U_DD = 7.888609052210118e-31; // 2^-100 (charged), >~30x proven
-constexpr double TORS_DD_UFL = 8e-323;
+constexpr double TORS_DD_UFL = TORS_UFL;
 
 __device__ inline double tors_gamma_dd(double kk) {
-  double ku = kk * TORS_U_DD;
-  return ru_mul(ku / (1.0 - ku), 1.0 + 4.0 * TORS_U_DD);
+  double ku = ru_mul(kk, TORS_U_DD);
+  return ru_div(ku, rd_sub(1.0, ku));
 }
 // Triangle bounds for the represented value hi+lo.  The previous lower bound
 // multiplied |hi| by 1-2*u_DD, which rounds to one in binary64 and is false
@@ -462,6 +478,46 @@ __device__ inline double md_hi(dd x) {
 }
 __device__ inline double md_lo(dd x) {
   return fmax(0.0, rd_sub(fabs(x.hi), fabs(x.lo)));
+}
+
+// One correctly-rounded binary64 FMA/add step, expressed in terms of the
+// rounded result.  The 2u factor exceeds u/(1-u); the absolute term covers a
+// subnormal result.  These helpers evaluate a cancellation-sensitive residual
+// without first rounding the full DD product to binary64 precision.
+__device__ inline double tors_fp_step_error(double rounded) {
+  return ru_add(ru_mul(2.0 * TORS_U, fabs(rounded)), TORS_UFL);
+}
+
+// Upper bound on |<a><b> - <c>|, where <x> = x.hi + x.lo exactly.  Explicit
+// FMAs retain the high-product residual, which is essential when c is the DD
+// product returned by dd_mul and the residual is O(u^2), not O(u).
+__device__ inline double dd_mul_sub_residual_absu(dd a, dd b, dd c) {
+  double r = fma(a.hi, b.hi, -c.hi);
+  double e = tors_fp_step_error(r);
+  r = fma(a.hi, b.lo, r);
+  e = ru_add(e, tors_fp_step_error(r));
+  r = fma(a.lo, b.hi, r);
+  e = ru_add(e, tors_fp_step_error(r));
+  r = fma(a.lo, b.lo, r);
+  e = ru_add(e, tors_fp_step_error(r));
+  r = fma(-1.0, c.lo, r);
+  e = ru_add(e, tors_fp_step_error(r));
+  return isfinite(r) && isfinite(e) ? ru_add(fabs(r), e) : INFINITY;
+}
+
+// A-posteriori square-root enclosure.  If x_true is within ex of <x> and y is
+// the actual dd_sqrt result, factorization of y^2-x_true gives
+//   |y-sqrt(x_true)| <= (|y^2-<x>|+ex)/( |y|_lo+sqrt(x_lo-ex) ).
+__device__ inline bool dd_sqrt_pair_bound(dd x, double ex, dd y, double* ey) {
+  const double x_lo = md_lo(x);
+  if (!(y.hi > 0.0) || !(ex < 0.5 * x_lo)) return false;
+  const double rad_lo = rd_sub(x_lo, ex);
+  const double root_lo = rd_sqrt(rad_lo);
+  const double den_lo = rd_sub(md_lo(y), -root_lo); // downward y_lo + root_lo
+  if (!(rad_lo > 0.0) || !(root_lo > 0.0) || !(den_lo > 0.0)) return false;
+  const double residual = dd_mul_sub_residual_absu(y, y, x);
+  *ey = ru_div(ru_add(residual, ex), den_lo);
+  return isfinite(*ey);
 }
 
 __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
@@ -496,7 +552,7 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
         double ind = (gj == gc) ? 1.0 : 0.0;
         double Ov = O[gj * dim + gc];
         dd sacc = dd_add(dd_from(ind), dd_from(-Ov)); // exact (1 or 0) - O
-        double e_m = ru_mul(TORS_U_DD, md_hi(sacc));  // (charge; the fl subtract is exact in dd)
+        double e_m = ru_add(ru_mul(TORS_U_DD, md_hi(sacc)), TORS_DD_UFL);
         double sb = 0.0, sm = md_hi(sacc);
         for (int u = 0; u < c; ++u) {
           dd lr = L[r * TORS_MAX_DIM + u], lc = L[c * TORS_MAX_DIM + u];
@@ -507,26 +563,26 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
                                  ru_add(ru_mul(alr, elc), ru_mul(elr, elc))));
           sm = ru_add(sm, ru_mul(alr, alc));
         }
-        double e_s = ru_add(ru_add(sb, e_m), ru_mul(tors_gamma_dd((double)(c + 2)), sm));
+        double e_s = ru_add(
+            ru_add(ru_add(sb, e_m), ru_mul(tors_gamma_dd((double)(c + 2)), sm)),
+            ru_mul((double)(8 * c + 16), TORS_DD_UFL));
         if (c < r) {
           dd pv = L[c * TORS_MAX_DIM + c];
-          double p = md_hi(pv), ep = EL[c * TORS_MAX_DIM + c];
+          double ep = EL[c * TORS_MAX_DIM + c];
           if (!(ep < 0.5 * md_lo(pv))) return false;   // pivot uncertifiable
           dd v = dd_div(sacc, pv);
           double av = md_hi(v);
           double p_lo = rd_sub(md_lo(pv), ep);
           L[r * TORS_MAX_DIM + c] = v;
-          EL[r * TORS_MAX_DIM + c] =
-              ru_add(ru_add(ru_div(e_s, p_lo), ru_div(ru_mul(ep, av), p_lo)),
-                     ru_mul(TORS_U_DD, av));
+          const double residual = dd_mul_sub_residual_absu(v, pv, sacc);
+          EL[r * TORS_MAX_DIM + c] = ru_div(
+              ru_add(ru_add(e_s, ru_mul(ep, av)), residual), p_lo);
         } else {
           if (!(sacc.hi > 0.0) || !(e_s < 0.5 * md_lo(sacc))) return false; // not (cert.) SPD
           dd v = dd_sqrt(sacc);
-          double av = md_hi(v);
           L[r * TORS_MAX_DIM + r] = v;
-          EL[r * TORS_MAX_DIM + r] =
-              ru_add(ru_mul(TORS_U_DD, av),
-                     ru_div(e_s, 2.0 * rd_sqrt(rd_sub(md_lo(sacc), e_s))));
+          if (!dd_sqrt_pair_bound(sacc, e_s, v, &EL[r * TORS_MAX_DIM + r]))
+            return false;
         }
       }
     }
@@ -536,15 +592,18 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
     dd ab = dd_mul(a, b);
     double abm = md_hi(ab);
     double e_ab = ru_add(ru_add(ru_mul(aa, eb), ru_mul(ab_mag, ea)),
-                         ru_add(ru_mul(ea, eb), ru_mul(TORS_U_DD, abm)));
+                         ru_add(ru_mul(ea, eb),
+                                dd_mul_sub_residual_absu(a, b, ab)));
     dd d2 = dd_mul(ab, ab);
     double d2m = md_hi(d2);
     double e_d2 = ru_add(ru_mul(2.0 * abm, e_ab),
-                         ru_add(ru_mul(e_ab, e_ab), ru_mul(TORS_U_DD, d2m)));
+                         ru_add(ru_mul(e_ab, e_ab),
+                                dd_mul_sub_residual_absu(ab, ab, d2)));
     dd nd = dd_mul(detprod, d2);
-    double dpm = md_hi(detprod), ndm = md_hi(nd);
+    double dpm = md_hi(detprod);
     e_det = ru_add(ru_add(ru_mul(dpm, e_d2), ru_mul(d2m, e_det)),
-                   ru_add(ru_mul(e_det, e_d2), ru_mul(TORS_U_DD, ndm)));
+                   ru_add(ru_mul(e_det, e_d2),
+                          dd_mul_sub_residual_absu(detprod, d2, nd)));
     detprod = nd;
     ++count;
     return true;
@@ -564,15 +623,21 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
     if (lvl == rem) {
       if (!(e_det < 0.5 * md_lo(detprod))) { partials[t] = NAN; pbounds[t] = INFINITY; return; }
       dd sroot = dd_sqrt(detprod);
-      double srm = md_hi(sroot), srlo = md_lo(sroot);
-      double tS = ru_add(ru_mul(TORS_U_DD, srm),
-                         ru_div(e_det, 2.0 * rd_sqrt(rd_sub(md_lo(detprod), e_det))));
+      double srlo = md_lo(sroot);
+      double tS = 0.0;
+      if (!dd_sqrt_pair_bound(detprod, e_det, sroot, &tS)) {
+        partials[t] = NAN; pbounds[t] = INFINITY; return;
+      }
       dd c = dd_div(dd_from(1.0), sroot);
       double cm = md_hi(c);
       double s_lo = rd_sub(srlo, tS);
-      double e_c = ru_add(ru_div(tS, rd_mul(srlo, s_lo)), ru_mul(TORS_U_DD, cm));
+      if (!(s_lo > 0.0)) { partials[t] = NAN; pbounds[t] = INFINITY; return; }
+      const double recip_residual =
+          dd_mul_sub_residual_absu(c, sroot, dd_from(1.0));
+      double e_c = ru_div(ru_add(recip_residual, ru_mul(cm, tS)), s_lo);
       total = dd_add(total, ((n - count) & 1) ? dd_neg(c) : c);
-      e_tot = ru_add(e_tot, ru_add(e_c, ru_mul(TORS_U_DD, md_hi(total))));
+      e_tot = ru_add(e_tot, ru_add(e_c,
+          ru_add(ru_mul(TORS_U_DD, md_hi(total)), TORS_DD_UFL)));
       if (lvl == 0) break;
       --lvl;
       continue;
@@ -594,15 +659,9 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
     --lvl;
   }
   // Collapse each subtree partial to fp64.  This is an FP64 operation, not a
-  // DD operation: recover its exact residual with TwoSum and charge it before
-  // the host performs the cross-subtree reduction.  The exact residual
-  // |collapse_err| bounds |val-(hi+lo)|, but the tracked DD error e_tot and the
-  // residual can share a sign at the sub-ulp level, so also charge one fp64 ulp
-  // of the collapsed magnitude (u*|val|) -- the fundamental granularity of
-  // representing this partial in fp64.  Negligible (~1e-16 rel) beside the real
-  // DD accumulation bound, but it keeps the leaf enclosure sound under an
-  // 80-bit reference (an x86 host-shim gate caught the omission; arm64 long
-  // double == double had masked it).
+  // DD operation: TwoSum recovers its residual exactly in the normal range;
+  // TORS_DD_UFL covers underflow.  The extra u*|val| is a conservative explicit
+  // binary64 output-granularity charge before the host subtree reduction.
   double collapse_err = 0.0;
   double val = two_sum(total.hi, total.lo, collapse_err);
   partials[t] = val;

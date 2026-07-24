@@ -58,6 +58,52 @@ U = 2.0**-53 # unit roundoff, binary64 round-to-nearest
 C_MUL = 3.0 * U # complex multiply relative bound (> sqrt(2)*gamma_2)
 ABS_SAFE = 1.0 + 2.0**-50 # |.| upper-bound safety (faithful hypot)
 UFL = 8e-323 # absolute underflow slop per multiply (16*eta_min)
+MIN_NORMAL = np.finfo(np.float64).tiny
+
+
+def _ru_add(a: float, b: float) -> float:
+    """Binary64 addition rounded outward toward +inf for nonnegative inputs."""
+    if a == 0.0:
+        return float(b)
+    if b == 0.0:
+        return float(a)
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        value = np.float64(a) + np.float64(b)
+    return float(np.nextafter(value, np.inf))
+
+
+def _ru_mul(a: float, b: float) -> float:
+    """Binary64 multiplication rounded outward toward +inf for nonnegative inputs."""
+    if a == 0.0 or b == 0.0:
+        return 0.0
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        value = np.float64(a) * np.float64(b)
+    return float(np.nextafter(value, np.inf))
+
+
+def _ru_div(a: float, b: float) -> float:
+    """Binary64 division rounded outward toward +inf for a >= 0 and b > 0."""
+    if a == 0.0:
+        return 0.0
+    with np.errstate(over="ignore", under="ignore", invalid="ignore", divide="ignore"):
+        value = np.float64(a) / np.float64(b)
+    return float(np.nextafter(value, np.inf))
+
+
+def _rd_mul(a: float, b: float) -> float:
+    """Nonnegative lower bound for the product of nonnegative binary64 inputs."""
+    if a == 0.0 or b == 0.0:
+        return 0.0
+    with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+        value = np.float64(a) * np.float64(b)
+    return max(0.0, float(np.nextafter(value, -np.inf)))
+
+
+def _rd_sub(a: float, b: float) -> float:
+    """Nonnegative lower bound for a-b; callers establish a > b first."""
+    with np.errstate(under="ignore", invalid="ignore"):
+        value = np.float64(a) - np.float64(b)
+    return max(0.0, float(np.nextafter(value, -np.inf)))
 
 
 def _gamma(k: float) -> float:
@@ -79,7 +125,13 @@ def _inflate(bound: float, ops: float) -> float:
 
 def _absu(z) -> Any:
     """Upper bound on |z| (scalar or array)."""
-    return np.abs(z) * ABS_SAFE
+    return np.nextafter(np.abs(z) * ABS_SAFE + UFL, np.inf)
+
+
+def _absl(z) -> Any:
+    """Lower bound on |z| (scalar or array)."""
+    return np.maximum(0.0, np.nextafter(
+        np.abs(z) * (2.0 - ABS_SAFE) - UFL, -np.inf))
 
 
 # --------------------------------------------------------------------------
@@ -105,20 +157,31 @@ def certified_permanent(A: Any) -> tuple[complex, float]:
 
     # --- value path: identical operations, identical order, to permanent_glynn
     rowsum = M.sum(axis=1).astype(np.complex128)
-    total = np.prod(rowsum)
 
     # --- bound state
     g_sum = _gamma(n) # any-order length-n sum
-    g_prod = _gamma(3.0 * max(n - 1, 0)) # any-order n-factor complex product
-    e_r = g_sum * np.abs(M).sum(axis=1) * ABS_SAFE # row-sum bounds (vector)
+    e_r = g_sum * np.sum(_absu(M), axis=1) + n * UFL
 
-    def term_bound() -> float:
-        m = _absu(rowsum)
-        p_lo = float(np.prod(m))
-        p_hi = float(np.prod(m + e_r))
-        return max(p_hi - p_lo, 0.0) + g_prod * p_lo + (n + 2) * UFL
+    def product_with_bound() -> tuple[np.complex128, float]:
+        """The actual NumPy product plus an op-by-op pair enclosure.
 
-    e_tot = term_bound() # total = first product (assignment)
+        The shadow product propagates absolute multiply error through every
+        later factor. If NumPy ever chooses a different reduction result, fail
+        closed rather than attach this order-specific bound to another value.
+        """
+        p = np.complex128(rowsum[0])
+        ep = float(e_r[0])
+        for r in range(1, n):
+            A_, B_ = float(_absu(p)), float(_absu(rowsum[r]))
+            er = float(e_r[r])
+            p = np.complex128(p * rowsum[r])
+            ep = A_ * er + B_ * ep + ep * er + C_MUL * A_ * B_ + UFL
+        value = np.prod(rowsum)
+        if complex(value) != complex(p):
+            return value, float("inf")
+        return value, ep
+
+    total, e_tot = product_with_bound()
 
     sign = 1
     prev_gray = 0
@@ -130,14 +193,15 @@ def certified_permanent(A: Any) -> tuple[complex, float]:
             rowsum -= 2.0 * M[:, col]
         else:
             rowsum += 2.0 * M[:, col]
-        e_r += U * _absu(rowsum) # one rounding per element per step
+        e_r += U * _absu(rowsum) + UFL
         sign = -sign
-        total += sign * np.prod(rowsum) # sign flip exact
-        e_tot += term_bound() + U * float(_absu(total))
+        term, term_bound = product_with_bound()
+        total += sign * term # sign flip exact
+        e_tot += term_bound + U * float(_absu(total)) + UFL
         prev_gray = gray
 
     total = total / (1 << (n - 1)) # power-of-two scale: exact
-    e_tot /= float(1 << (n - 1))
+    e_tot = e_tot / float(1 << (n - 1)) + UFL
 
     ops = 8.0 * (n + 4) * float(1 << max(n - 1, 0))
     return complex(total), _inflate(e_tot, ops)
@@ -360,25 +424,88 @@ def _p_div(a, ea: float, b, eb: float):
 
     Algorithmic error (den = c^2+d^2 has theta_3; each numerator dot has
     gamma_3 <= 3.1u absolute over |a||b| by Cauchy-Schwarz; final real divides
-    u each): <= 8u*|a||b|/den_lo + 8u*|v|. Perturbation:
-    (ea*|b| + eb*|a|) / (|b|*(|b|-eb)). Guarded: eb >= |b|/2 or non-finite
-    intermediates -> bound inf.
+    u each): <= 8u*A_hi*B_hi/den_lo + 8u*|v|. Perturbation:
+    (ea*B_hi + eb*A_hi) / (B_lo*(B_lo-eb)). Upper magnitudes appear only in
+    numerators and lower magnitudes only in guards/denominators. The unscaled
+    component formula is evaluated only when both lower denominator products,
+    every nonzero numerator component product, and every nontrivial numerator
+    dot result are guaranteed normal. The perturbation bound is evaluated in a
+    factorized form with outward-rounded positive arithmetic, so a tiny ``ea``
+    cannot disappear before division by a tiny ``|b|``. Guarded: invalid
+    bounds, eb >= B_lo/2, any unsupported subnormal value operation, or
+    non-finite intermediates -> NaN value and bound inf.
     """
-    Bm = float(np.abs(b))
-    if not np.isfinite(Bm) or Bm == 0.0 or eb >= 0.5 * Bm:
-        return (a / b if Bm != 0.0 else complex(np.nan)), float("inf")
-    c, dd_ = b.real, b.imag
+    B_hi = float(_absu(b))
+    B_lo = float(_absl(b))
+    A_hi = float(_absu(a))
+    refused = (complex(np.nan, np.nan), float("inf"))
+    if (not np.isfinite(A_hi) or not np.isfinite(B_hi)
+            or not np.isfinite(ea) or not np.isfinite(eb)
+            or ea < 0.0 or eb < 0.0 or B_lo <= 0.0 or eb >= 0.5 * B_lo):
+        return refused
+    b_pert_lo = _rd_sub(B_lo, eb)
+    normal_factor = _ru_div(MIN_NORMAL, B_lo)
+    if B_lo < normal_factor or b_pert_lo < normal_factor:
+        return refused
+    den_lo = _rd_mul(_rd_mul(B_lo, B_lo), 1.0 - 8.0 * U)
+    pert_den_lo = _rd_mul(B_lo, b_pert_lo)
+    if (not np.isfinite(den_lo) or not np.isfinite(pert_den_lo)
+            or den_lo <= 0.0 or pert_den_lo <= 0.0):
+        return refused
+
+    ar, ai = float(a.real), float(a.imag)
+    c, dd_ = float(b.real), float(b.imag)
+
+    def normal_product_or_zero(x: float, y: float) -> bool:
+        if x == 0.0 or y == 0.0:
+            return True
+        return abs(x) >= _ru_div(MIN_NORMAL, abs(y))
+
+    component_pairs = ((ar, c), (ai, dd_), (ai, c), (ar, dd_))
+    if not all(normal_product_or_zero(x, y) for x, y in component_pairs):
+        return refused
+
     den = c * c + dd_ * dd_
-    vre = (a.real * c + a.imag * dd_) / den
-    vim = (a.imag * c - a.real * dd_) / den
+    if not np.isfinite(den) or den <= 0.0:
+        return refused
+    re0, re1 = ar * c, ai * dd_
+    im0, im1 = ai * c, ar * dd_
+    num_re = re0 + re1
+    num_im = im0 - im1
+
+    def normal_dot_or_exact_zero(value: float, pair0, pair1) -> bool:
+        terms_exactly_zero = ((pair0[0] == 0.0 or pair0[1] == 0.0)
+                              and (pair1[0] == 0.0 or pair1[1] == 0.0))
+        return terms_exactly_zero or (np.isfinite(value) and abs(value) >= MIN_NORMAL)
+
+    if (not normal_dot_or_exact_zero(num_re, (ar, c), (ai, dd_))
+            or not normal_dot_or_exact_zero(num_im, (ai, c), (ar, dd_))):
+        return refused
+
+    vre = num_re / den
+    vim = num_im / den
     v = complex(vre, vim)
-    if not (np.isfinite(den) and np.isfinite(vre) and np.isfinite(vim)):
-        return v, float("inf")
-    Am = float(_absu(a))
-    den_lo = Bm * Bm * (1.0 - 8.0 * U)
-    e_alg = 8.0 * U * Am * Bm / den_lo + 8.0 * U * float(_absu(v)) + UFL
-    e_pert = (ea * Bm + eb * Am) / (Bm * (Bm - eb))
-    return v, e_alg + e_pert
+    if not (np.isfinite(vre) and np.isfinite(vim)):
+        return refused
+
+    if ar == 0.0 and ai == 0.0:
+        e_alg = 16.0 * UFL
+    else:
+        ab_hi = _ru_mul(A_hi, B_hi)
+        e_alg = _ru_add(
+            _ru_div(_ru_mul(8.0 * U, ab_hi), den_lo),
+            _ru_add(_ru_mul(8.0 * U, float(_absu(v))), 16.0 * UFL),
+        )
+
+    # Algebraically identical to
+    #   (ea*B_hi + eb*A_hi) / (B_lo*(B_lo-eb)),
+    # but this ordering keeps tiny perturbations from underflowing before the
+    # small denominator amplifies them.
+    e_pert = _ru_add(
+        _ru_mul(_ru_div(ea, b_pert_lo), _ru_div(B_hi, B_lo)),
+        _ru_mul(_ru_div(eb, B_lo), _ru_div(A_hi, b_pert_lo)),
+    )
+    return v, _ru_add(e_alg, e_pert)
 
 
 def _p_inv_sqrt(z, ez: float):
@@ -390,17 +517,20 @@ def _p_inv_sqrt(z, ez: float):
     delta <= |z|/2 then |s - sqrt(z_true)| <= delta / sqrt(|z|) (monotonicity
     of t*(2*sqrt|z| - t)). The reciprocal reuses _p_div on (1, 0)/(s, t).
     """
-    Zm = float(np.abs(z))
-    if not np.isfinite(Zm) or ez >= 0.5 * Zm:
+    Zm = float(np.abs(z))  # value path
+    Z_hi = float(_absu(z))
+    Z_lo = float(_absl(z))
+    if not np.isfinite(Z_hi) or Z_lo <= 0.0 or ez >= 0.5 * Z_lo:
         return complex(np.nan), float("inf")
     if z.real < 0.0 and abs(z.imag) <= ez: # disc may cross the branch cut
         return complex(np.sqrt(z)), float("inf")
     s = complex(np.sqrt(z))
     sq, e_sq = _p_mul(s, 0.0, s, 0.0) # fl(s*s) with its own bound
-    delta = float(np.abs(sq - z)) * ABS_SAFE + e_sq + U * (float(np.abs(sq)) + Zm) + ez
-    if delta > 0.5 * Zm:
+    delta = (float(_absu(sq - z)) + e_sq
+             + U * (float(_absu(sq)) + Z_hi) + ez)
+    if delta > 0.5 * Z_lo:
         return s, float("inf")
-    t = delta / np.sqrt(Zm * (1.0 - 4.0 * U)) # sqrt(|z|) lower bound in the divisor
+    t = delta / np.sqrt(Z_lo * (1.0 - 4.0 * U))
     return _p_div(1.0 + 0j, 0.0, s, t)
 
 
@@ -431,7 +561,7 @@ def _certified_det_lu(Ap: list[list[tuple[Any, float]]]) -> tuple[complex, float
                 m_, me_ = _p_mul(f, fe, *A[col][c])
                 v0, e0 = A[r][c]
                 v1 = v0 - m_
-                A[r][c] = (v1, e0 + me_ + U * float(_absu(v1)))
+                A[r][c] = (v1, e0 + me_ + U * float(_absu(v1)) + UFL)
     return complex(det), float(e_det)
 
 
@@ -470,7 +600,7 @@ def certified_torontonian(O: Any) -> tuple[complex, float]:
                     for c in range(k):
                         if r == c:
                             v = 1.0 - sub[r, c]
-                            row.append((v, U * float(_absu(v))))
+                            row.append((v, U * float(_absu(v)) + UFL))
                         else:
                             row.append((-sub[r, c], 0.0))
                     Ap.append(row)
@@ -481,7 +611,7 @@ def certified_torontonian(O: Any) -> tuple[complex, float]:
                 total = total + term
             else:
                 total = total - term
-            e_tot += tb + U * float(_absu(total))
+            e_tot += tb + U * float(_absu(total)) + UFL
     return complex(total), _inflate(e_tot, ops)
 
 

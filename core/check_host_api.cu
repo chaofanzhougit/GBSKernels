@@ -23,6 +23,8 @@ int gbs_perm_dd_host(const cuDoubleComplex*, int, int, cuDoubleComplex*);
 int gbs_haf_host(const cuDoubleComplex*, int, int, cuDoubleComplex*);
 int gbs_lhaf_host(const cuDoubleComplex*, int, int, cuDoubleComplex*);
 int gbs_tor_host(const cuDoubleComplex*, int, int, cuDoubleComplex*);
+int gbs_tor_single_certified_host(const double*, int, int, double*, double*);
+int gbs_tor_single_ddcertified_host(const double*, int, int, double*, double*);
 }
 }
 
@@ -155,6 +157,39 @@ int main() {
     bool ok = worst < 1e-9;
     std::printf("  %-10s rel err %.3e (coop dispatch, n=12)  %s\n", "perm@n12", worst, ok ? "ok" : "FAIL");
     if (!ok) failures++;
+  }
+  // Certified recursive wrappers include the host subtree reduction.  Check
+  // both tiers against a closed form, then require an explicit refusal when a
+  // DD determinant is driven below the subnormal range.
+  {
+    const int n = 2, dim = 2 * n, g = 2;
+    std::vector<double> O((size_t)dim * dim, 0.0);
+    for (int i = 0; i < dim; ++i) O[i * dim + i] = 0.2;
+    for (bool dd : {false, true}) {
+      double out = 0.0, bound = 0.0;
+      int rc = dd ? gbs::gbs_tor_single_ddcertified_host(O.data(), n, g, &out, &bound)
+                  : gbs::gbs_tor_single_certified_host(O.data(), n, g, &out, &bound);
+      bool ok = rc == 0 && std::isfinite(bound) && std::abs(out - 0.0625) <= bound;
+      std::printf("  %-10s err %.3e bound %.3e  %s\n",
+                  dd ? "tor_ddcert" : "tor_cert", std::abs(out - 0.0625), bound,
+                  ok ? "ok" : "FAIL");
+      if (!ok) failures++;
+    }
+  }
+  {
+    const int n = 11, dim = 2 * n, g = n;
+    std::vector<double> O((size_t)dim * dim, 0.0);
+    const double almost_one = std::nextafter(1.0, 0.0);
+    for (int i = 0; i < dim; ++i) O[i * dim + i] = almost_one;
+    for (bool dd : {false, true}) {
+      double out = 0.0, bound = 0.0;
+      int rc = dd ? gbs::gbs_tor_single_ddcertified_host(O.data(), n, g, &out, &bound)
+                  : gbs::gbs_tor_single_certified_host(O.data(), n, g, &out, &bound);
+      bool ok = rc == 0 && std::isinf(bound);
+      std::printf("  %-10s bound=%s  %s\n", dd ? "dd_uflow" : "fp_uflow",
+                  std::isinf(bound) ? "inf" : "finite", ok ? "ok" : "FAIL");
+      if (!ok) failures++;
+    }
   }
 
   std::printf("%s\n", failures == 0 ? "PASS" : "FAIL");

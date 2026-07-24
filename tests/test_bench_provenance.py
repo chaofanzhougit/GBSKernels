@@ -19,7 +19,8 @@ from bench import _provenance
 
 def test_provenance_block_has_the_required_fields():
     p = _provenance.provenance()
-    assert {"commit", "container_digest", "hostname", "captured_utc", "environment"} <= set(p)
+    assert {"commit", "git", "container_digest", "hostname", "captured_utc", "environment"} <= set(p)
+    assert {"commit", "tracked_dirty", "source"} <= set(p["git"])
     assert p["captured_utc"].endswith("+00:00") or p["captured_utc"].endswith("Z")
     # the machine environment makes each artifact self-describing (GPU/CPU/thread caps)
     env = p["environment"]
@@ -35,6 +36,7 @@ def test_commit_and_digest_honor_the_session_env(monkeypatch):
     assert _provenance.container_digest() == "nvidia/cuda@sha256:abc123"
     p = _provenance.provenance()
     assert p["commit"] == "deadbeef" and p["container_digest"] == "nvidia/cuda@sha256:abc123"
+    assert p["git"] == {"commit": "deadbeef", "tracked_dirty": None, "source": "GBS_COMMIT"}
 
 
 def test_missing_digest_is_recorded_as_none_not_faked(monkeypatch):

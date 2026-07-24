@@ -85,6 +85,17 @@ def test_Ox_equals_complex_basis_torontonian(m):
         assert float(tx) == pytest.approx(tc.real, rel=1e-8)
 
 
+def test_Ox_is_exactly_symmetric_binary64():
+    """Inversion roundoff must not leak an ambiguous triangle to tor_single."""
+    cov = _lossy_complex_state(8, seed=19)
+    Ox, _ = gbs.threshold_O_xxpp(cov, hbar=HBAR)
+
+    assert Ox.dtype == np.float64
+    assert Ox.flags.c_contiguous
+    assert np.all(np.isfinite(Ox))
+    assert np.array_equal(Ox, Ox.T)
+
+
 @pytest.mark.parametrize("m", [3])
 def test_Ox_reproduces_validated_threshold_distribution(m):
     """P(S) = tor(Ox_S) e^{-log sqrt det Q} matches the Walrus-validated

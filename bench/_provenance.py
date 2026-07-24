@@ -77,6 +77,25 @@ def commit() -> str | None:
         return None
 
 
+def git_state() -> dict[str, Any]:
+    """Record whether local tracked bytes are exactly represented by a commit."""
+    env_commit = os.environ.get("GBS_COMMIT", "").strip()
+    if env_commit:
+        return {"commit": env_commit, "tracked_dirty": None, "source": "GBS_COMMIT"}
+    try:
+        full = subprocess.run(
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10
+        ).stdout.strip()
+        if not full:
+            return {"commit": None, "tracked_dirty": None, "source": "unavailable"}
+        dirty = subprocess.run(
+            ["git", "diff", "--quiet", "HEAD", "--"], timeout=10
+        ).returncode != 0
+        return {"commit": full, "tracked_dirty": dirty, "source": "git"}
+    except Exception:
+        return {"commit": None, "tracked_dirty": None, "source": "unavailable"}
+
+
 def container_digest() -> str | None:
     """The pinned container image digest the run was launched from (or None)."""
     env = os.environ.get("GBS_CONTAINER_DIGEST", "").strip()
@@ -95,8 +114,10 @@ def container_digest() -> str | None:
 def provenance() -> dict[str, Any]:
     """The common provenance block embedded in every artifact (commit + container digest +
     machine environment), so a result reproduces from the file alone (docs/DESIGN.md §9)."""
+    state = git_state()
     return {
         "commit": commit(),
+        "git": state,
         "container_digest": container_digest(),
         "hostname": platform.node() or None,
         "captured_utc": datetime.now(timezone.utc).isoformat(),

@@ -153,6 +153,8 @@ __host__ __device__ inline dd dd_div(dd a, dd b) {
 
 // sqrt(a) for a >= 0, via one Newton step on a double seed (QD algorithm):
 // sqrt(a) ~ y + (a - y^2)*(x/2) with x ~ 1/sqrt(a.hi), y = a*x.
+// Certified callers must bound the actual result a posteriori from |y^2-a|;
+// this routine does not advertise an operation-specific error constant.
 __host__ __device__ inline dd dd_sqrt(dd a) {
   if (a.hi <= 0.0) return dd{0.0, 0.0};
   double x = 1.0 / sqrt(a.hi);

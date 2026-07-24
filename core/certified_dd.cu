@@ -43,6 +43,7 @@ constexpr double GBS_U_DD = 7.888609052210118e-31; // 2^-100
 constexpr double GBS_C_MUL_DD = 1.2621774483536189e-29; // 2^-96
 constexpr double GBS_DD_ABS_SAFE = 1.0 + 1.7763568394002505e-15; // 1 + 2^-49
 constexpr double GBS_DD_UFL = 8e-323;
+constexpr double GBS_FP_U = 1.1102230246251565e-16; // 2^-53
 
 // TU-local copies of permanent_dd.cu's inline conversions (identical bodies;
 // inline + same definition keeps ODR happy when the TUs are linked together).
@@ -58,12 +59,62 @@ __device__ inline ddcomplex ddc_neg_local(ddcomplex a) {
 }
 
 __device__ inline double ddc_absu(ddcomplex z) {
-  return ru_mul(hypot(z.re.hi, z.im.hi), GBS_DD_ABS_SAFE);
+  // Include the low words explicitly.  The usual relative low-word estimate
+  // is unavailable when the high word is subnormal or zero.
+  double hi = ru_mul(hypot(z.re.hi, z.im.hi), GBS_DD_ABS_SAFE);
+  double lo = ru_mul(hypot(z.re.lo, z.im.lo), GBS_DD_ABS_SAFE);
+  return ru_add(ru_add(hi, lo), GBS_DD_UFL);
+}
+
+__device__ inline double ddc_value_roundoff(ddcomplex z) {
+  return ru_add(ru_mul(GBS_U_DD, ddc_absu(z)), GBS_DD_UFL);
+}
+
+__device__ inline double ddc_collapse_roundoff(ddcomplex z) {
+  return ru_add(ru_mul(GBS_FP_U, ddc_absu(z)), GBS_DD_UFL);
+}
+
+// A posteriori residual for q = ddc_div_d(a,b), with b > 0.  Each FMA step
+// tracks its own binary64 rounding error, so this proves the quotient actually
+// returned by dd.cuh instead of relying on an undocumented relative constant.
+__device__ inline double ddc_fp_step_error(double rounded) {
+  return ru_add(ru_mul(2.0 * GBS_FP_U, fabs(rounded)), GBS_DD_UFL);
+}
+
+__device__ inline double dd_mul_d_sub_residual_absu(dd q, double b, dd a) {
+  double r = fma(q.hi, b, -a.hi);
+  double e = ddc_fp_step_error(r);
+  r = fma(q.lo, b, r);
+  e = ru_add(e, ddc_fp_step_error(r));
+  r = fma(-1.0, a.lo, r);
+  e = ru_add(e, ddc_fp_step_error(r));
+  if (!isfinite(r) || !isfinite(e)) return INFINITY;
+  return ru_add(fabs(r), e);
+}
+
+__device__ inline double ddc_div_d_pair_bound(ddcomplex q, ddcomplex a,
+                                               double b, double ea) {
+  if (!(b > 0.0) || !isfinite(b) || !isfinite(ea)) return INFINITY;
+  double residual = ru_add(dd_mul_d_sub_residual_absu(q.re, b, a.re),
+                           dd_mul_d_sub_residual_absu(q.im, b, a.im));
+  if (!isfinite(residual)) return INFINITY;
+  return ru_add(ru_div(ru_add(residual, ea), b), GBS_DD_UFL);
 }
 
 __device__ inline double cert_gamma_dd(double k) {
-  double ku = k * GBS_U_DD;
-  return ru_mul(ku / (1.0 - ku), 1.0 + 4.0 * GBS_U_DD);
+  double ku = ru_mul(k, GBS_U_DD);
+  return ru_div(ku, rd_sub(1.0, ku));
+}
+
+// Gate-only probe: unlike the former `(1 + 4*u_DD)` expression (which rounded
+// to exactly 1), the directed construction must return a value strictly above
+// k*u_DD for k>0.  Kept as a kernel so the check exercises device intrinsics.
+__global__ void cert_gamma_dd_probe_kernel(double* out) {
+  if (blockIdx.x == 0 && threadIdx.x == 0) out[0] = cert_gamma_dd(64.0);
+}
+
+extern "C" void gbs_cert_gamma_dd_probe(double* d_out, cudaStream_t stream) {
+  GBS_LAUNCH_1D(cert_gamma_dd_probe_kernel, 1, 1, stream, d_out);
 }
 
 // --------------------------------------------------------------------------
@@ -86,40 +137,43 @@ __global__ void perm_dd_certified_kernel(const cuDoubleComplex* __restrict__ mat
   ddcomplex rowsum[PERM_DDC_MAX_N];
   double e_r[PERM_DDC_MAX_N];
   const double g_sum = cert_gamma_dd((double)n);
-  const double g_prod = cert_gamma_dd(6.0 * (n > 1 ? n - 1 : 0));
 
   for (int r = 0; r < n; ++r) {
     ddcomplex s = ddc_from_cu(make_cuDoubleComplex(0.0, 0.0));
     double asum = 0.0;
     for (int c = 0; c < n; ++c) {
       s = ddc_add(s, ddc_from_cu(A[r * n + c]));
-      asum = ru_add(asum, ru_mul(cuCabs(A[r * n + c]), GBS_DD_ABS_SAFE));
+      asum = ru_add(asum, ddc_absu(ddc_from_cu(A[r * n + c])));
     }
     rowsum[r] = s;
-    e_r[r] = ru_mul(g_sum, asum);
+    e_r[r] = ru_add(ru_mul(g_sum, asum),
+                    ru_mul((double)n, GBS_DD_UFL));
   }
 
-  auto term_bound = [&](void) -> double {
-    // polydisc + product-rounding, DD scale: p_hi = ru prod (|r|+e); the exact
-    // lower product is within (1 - n*2^-49) of p of upper magnitudes, so the
-    // spread is bounded by p_hi - p_hi*(1 - slack) + polydisc term; we keep the
-    // simpler (and looser) form e_p ~ sum_i e_i/(|r_i|) * p_hi + g_prod * p_hi,
-    // computed as ratios in ru arithmetic. Ratios guard division by zero.
-    double p_hi = 1.0, ratio = 0.0;
-    for (int r = 0; r < n; ++r) {
-      double m = ddc_absu(rowsum[r]);
-      p_hi = ru_mul(p_hi, ru_add(m, e_r[r]));
-      double denom = m > 0.0 ? m : GBS_DD_UFL;
-      ratio = ru_add(ratio, ru_div(e_r[r], denom));
+  // Form the actual DD product and its enclosure together.  The pair recurrence
+  // propagates each absolute multiply error through all later factors, covering
+  // mixed-scale chains where an early product underflows before a large factor.
+  auto product_with_bound = [&](ddcomplex* value) -> double {
+    ddcomplex p = rowsum[0];
+    double ep = e_r[0];
+    for (int r = 1; r < n; ++r) {
+      const double A_ = ddc_absu(p);
+      const double B_ = ddc_absu(rowsum[r]);
+      const double er = e_r[r];
+      ddcomplex q = ddc_mul(p, rowsum[r]);
+      ep = ru_add(ru_add(ru_mul(A_, er), ru_mul(B_, ep)),
+                  ru_add(ru_mul(ep, er),
+                         ru_add(ru_mul(GBS_C_MUL_DD, ru_mul(A_, B_)),
+                                GBS_DD_UFL)));
+      p = q;
     }
-    return ru_add(ru_mul(p_hi, ratio),
-                  ru_add(ru_mul(g_prod, p_hi), (n + 2) * GBS_DD_UFL));
+    *value = p;
+    return ep;
   };
 
-  ddcomplex prod = rowsum[0];
-  for (int r = 1; r < n; ++r) prod = ddc_mul(prod, rowsum[r]);
+  ddcomplex prod;
+  double e_tot = product_with_bound(&prod);
   ddcomplex total = prod;
-  double e_tot = term_bound();
 
   int sign = 1;
   const uint64_t terms = 1ull << (n - 1);
@@ -129,20 +183,21 @@ __global__ void perm_dd_certified_kernel(const cuDoubleComplex* __restrict__ mat
     double step = gray_bit_of(i, k) ? -2.0 : +2.0; // exact scale in DD too
     for (int r = 0; r < n; ++r) {
       rowsum[r] = ddc_add(rowsum[r], ddc_mul_d(ddc_from_cu(A[r * n + col]), step));
-      e_r[r] = ru_add(e_r[r], ru_mul(GBS_U_DD, ddc_absu(rowsum[r])));
+      e_r[r] = ru_add(e_r[r], ddc_value_roundoff(rowsum[r]));
     }
     sign = -sign;
-    ddcomplex p = rowsum[0];
-    for (int r = 1; r < n; ++r) p = ddc_mul(p, rowsum[r]);
+    ddcomplex p;
+    double ep = product_with_bound(&p);
     total = sign > 0 ? ddc_add(total, p) : ddc_sub(total, p);
-    e_tot = ru_add(e_tot, ru_add(term_bound(), ru_mul(GBS_U_DD, ddc_absu(total))));
+    e_tot = ru_add(e_tot, ru_add(ep, ddc_value_roundoff(total)));
   }
 
-  total = ddc_mul_d(total, 1.0 / (double)terms); // power of two: exact
+  total = ddc_mul_d(total, 1.0 / (double)terms);
   out[b] = ddc_to_cu(total);
-  // the DD->double collapse on output adds one 2^-53-level rounding of the value
-  bound[b] = ru_add(e_tot / (double)terms,
-                    ru_mul(1.1102230246251565e-16, ddc_absu(total)));
+  // Power-of-two scaling can still underflow at the subnormal boundary.  The
+  // final DD->binary64 collapse is charged separately.
+  double scaled_bound = ru_add(ru_div(e_tot, (double)terms), GBS_DD_UFL);
+  bound[b] = ru_add(scaled_bound, ddc_collapse_roundoff(total));
 }
 
 extern "C" void gbs_perm_dd_certified_batched(const cuDoubleComplex* d_mats, int n,
@@ -217,7 +272,8 @@ __global__ void haf_dd_certified_kernel(const cuDoubleComplex* __restrict__ mats
           atr = ru_add(atr, ddc_absu(P[i * size + i]));
         }
         p[k] = tr;
-        e_tr[k] = ru_add(etr, ru_mul(g_tr, atr));
+        e_tr[k] = ru_add(ru_add(etr, ru_mul(g_tr, atr)),
+                         ru_mul((double)size, GBS_DD_UFL));
         if (k < n) {
           for (int i = 0; i < size * size; ++i) Pabs[i] = ddc_absu(P[i]);
           ddcomplex T[HAF_DDC_MAX_N * HAF_DDC_MAX_N];
@@ -233,7 +289,8 @@ __global__ void haf_dd_certified_kernel(const cuDoubleComplex* __restrict__ mats
                 sm = ru_add(sm, ru_mul(Pabs[i * size + t], ca));
               }
               T[i * size + j] = s;
-              TB[i * size + j] = ru_add(ru_add(sb, ru_mul(c_dot, sm)), size * GBS_DD_UFL);
+              TB[i * size + j] = ru_add(ru_add(sb, ru_mul(c_dot, sm)),
+                                        ru_mul((double)size, GBS_DD_UFL));
             }
           for (int i = 0; i < size * size; ++i) { P[i] = T[i]; E[i] = TB[i]; }
         }
@@ -248,27 +305,26 @@ __global__ void haf_dd_certified_kernel(const cuDoubleComplex* __restrict__ mats
         for (int k = 1; k <= j; ++k) {
           ddcomplex half_pk = ddc_mul_d(p[k], 0.5); // exact
           double A_ = ddc_absu(half_pk), B_ = ddc_absu(e[j - k]);
-          double e_hk = 0.5 * e_tr[k];
+          double e_hk = ru_add(ru_mul(0.5, e_tr[k]), GBS_DD_UFL);
           acc = ddc_add(acc, ddc_mul(half_pk, e[j - k]));
           double pb = ru_add(ru_add(ru_mul(A_, eb[j - k]), ru_mul(B_, e_hk)),
                              ru_add(ru_mul(e_hk, eb[j - k]),
                                     ru_add(ru_mul(GBS_C_MUL_DD, ru_mul(A_, B_)),
                                            GBS_DD_UFL)));
-          acc_b = ru_add(acc_b, ru_add(pb, ru_mul(GBS_U_DD, ddc_absu(acc))));
+          acc_b = ru_add(acc_b, ru_add(pb, ddc_value_roundoff(acc)));
         }
         e[j] = ddc_div_d(acc, (double)j); // proper DD divide
-        eb[j] = ru_add(ru_div(acc_b, (double)j), ru_mul(GBS_U_DD, ddc_absu(e[j])));
+        eb[j] = ddc_div_d_pair_bound(e[j], acc, (double)j, acc_b);
       }
       coeff = e[n];
       cb = eb[n];
     }
     ddcomplex term = ((n - m) & 1) ? ddc_neg_local(coeff) : coeff;
     total = ddc_add(total, term);
-    e_tot = ru_add(e_tot, ru_add(cb, ru_mul(GBS_U_DD, ddc_absu(total))));
+    e_tot = ru_add(e_tot, ru_add(cb, ddc_value_roundoff(total)));
   }
   out[b] = ddc_to_cu(total);
-  // the D->double collapse on output adds one 2^-53-level rounding of the value
-  bound[b] = ru_add(e_tot, ru_mul(1.1102230246251565e-16, ddc_absu(total)));
+  bound[b] = ru_add(e_tot, ddc_collapse_roundoff(total));
 }
 
 extern "C" void gbs_haf_dd_certified_batched(const cuDoubleComplex* d_mats, int N,

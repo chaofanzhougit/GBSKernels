@@ -96,6 +96,20 @@ def test_certified_permanent_identity_and_empty():
     assert v == 1.0 and e == 0.0
 
 
+def test_certified_permanent_propagates_mixed_scale_underflow():
+    A = np.diag([
+        np.ldexp(1.0, -600),
+        np.ldexp(1.0, -500),
+        np.ldexp(1.0, 600),
+    ]).astype(np.complex128)
+    exact = np.ldexp(1.0, -500)
+
+    v, e = certified_permanent(A)
+
+    assert abs(v - exact) <= e
+    assert np.isfinite(e)
+
+
 def test_certified_hafnian_odd_and_empty():
     v, e = certified_hafnian(_sym(4, 0)[:3, :3])
     assert v == 0.0 and e == 0.0
@@ -269,6 +283,53 @@ def test_certified_tor_branch_risk_degrades_to_inf_not_silence():
     assert e == float("inf")
 
 
+def test_pair_div_refuses_inside_magnitude_rounding_gap():
+    """The denominator guard must use an outward lower magnitude, not raw |b|."""
+    from cpu_ref.certified import _p_div
+
+    b = 3.0 + 4.0j  # exactly |b| = 5
+    eb = np.nextafter(2.5, 0.0)
+    assert eb < 0.5 * abs(b)  # the pre-fix raw-magnitude guard accepted this
+    _, e = _p_div(1.0 + 2.0j, 0.0, b, eb)
+    assert np.isinf(e)
+
+
+@pytest.mark.parametrize("imag_scale", [1.0, 2.0])
+def test_pair_div_refuses_before_subnormal_denominator_square(imag_scale):
+    from cpu_ref.certified import _p_div
+
+    s = np.ldexp(1.0, -538)
+    value, bound = _p_div(1.0 + 0.0j, 0.0, complex(s, imag_scale * s), 0.0)
+
+    assert np.isnan(value.real) and np.isnan(value.imag)
+    assert np.isinf(bound)
+
+
+def test_pair_div_refuses_subnormal_numerator_products():
+    """A normal denominator does not make A<<B component products safe."""
+    from cpu_ref.certified import _p_div
+
+    a = complex(-4.072261452359005, -4.94162777767184) * np.ldexp(1.0, -572)
+    b = complex(12.307195185197452, 9.424233382422166) * np.ldexp(1.0, -500)
+    value, bound = _p_div(a, 0.0, b, 0.0)
+
+    assert np.isnan(value.real) and np.isnan(value.imag)
+    assert np.isinf(bound)
+
+
+@pytest.mark.parametrize("ea", [8e-323, 1e-300])
+def test_pair_div_tiny_numerator_uncertainty_survives_amplification(ea):
+    """Bound arithmetic must not lose ea*|b| before division by |b|^2."""
+    from cpu_ref.certified import _p_div
+
+    b = np.ldexp(1.0, -500) + 0.0j
+    value, bound = _p_div(0.0j, ea, b, 0.0)
+
+    assert value == 0.0j
+    assert np.isfinite(bound)
+    assert bound >= ea / abs(b)
+
+
 # --------------------------------------------------------------------------
 # rtol: the provably-safe escalation (the rigorous 'auto')
 # --------------------------------------------------------------------------
@@ -291,6 +352,73 @@ def test_certified_rtol_escalates_only_when_unprovable():
 def test_certified_rtol_requires_certified_precision():
     with pytest.raises(ValueError, match="rtol"):
         gbskernels.haf(_sym(4, 3), rtol=1e-8)
+
+
+def test_certified_single_nonfinite_output_escalates_instead_of_passing(monkeypatch):
+    monkeypatch.setattr(gbskernels.cpu_ref, "certified",
+                        lambda func, A: (complex(np.nan, np.nan), float("nan")))
+    monkeypatch.setattr(gbskernels, "_evaluate",
+                        lambda func, A, precision: 7.0 + 0.0j)
+
+    with pytest.raises(FloatingPointError, match="refused"):
+        gbskernels.perm(
+            np.eye(2), precision="certified", return_diagnostics=True)
+
+    value, diag = gbskernels.perm(
+        np.eye(2), precision="certified", return_diagnostics=True, rtol=1e-8)
+
+    assert value == 7.0 + 0.0j
+    assert diag["tier"] == "ref" and diag["escalated"] is True
+    assert np.isinf(diag["abs_error_bound"])
+    assert np.isinf(diag["rel_error_bound"])
+
+
+def test_certified_batched_nonfinite_output_escalates_element(monkeypatch):
+    class FakeExt:
+        @staticmethod
+        def perm_certified(stack):
+            return (np.array([complex(np.nan, np.nan), 1.0 + 0.0j]),
+                    np.array([float("nan"), 0.0]))
+
+    fake = FakeExt()
+    monkeypatch.setattr(gbskernels, "_load_gpu_ext", lambda: fake)
+    monkeypatch.setattr(
+        gbskernels, "_gpu_prepare",
+        lambda func, matrices, precision: (
+            fake, f"{func}_{precision}",
+            np.ascontiguousarray(np.asarray(matrices, dtype=np.complex128))))
+    monkeypatch.setattr(
+        gbskernels, "_certified_single",
+        lambda func, A, backend, rtol: (
+            9.0 + 0.0j,
+            {"tier": "ref", "escalated": True,
+             "abs_error_bound": float("inf"), "rel_error_bound": float("inf")}))
+
+    with pytest.raises(FloatingPointError, match="batch element 0"):
+        gbskernels.perm_batched(
+            np.stack([np.eye(2), np.eye(2)]), precision="certified", backend="gpu",
+            return_diagnostics=True)
+
+    values, diags = gbskernels.perm_batched(
+        np.stack([np.eye(2), np.eye(2)]), precision="certified", backend="gpu",
+        return_diagnostics=True, rtol=1e-8)
+
+    assert values.tolist() == [9.0 + 0.0j, 1.0 + 0.0j]
+    assert diags[0]["tier"] == "ref" and diags[0]["escalated"] is True
+    assert diags[1]["tier"] == "certified-fp64" and diags[1]["escalated"] is False
+
+
+def test_certified_single_rejects_nonfinite_input():
+    with pytest.raises(ValueError, match="finite input"):
+        gbskernels.perm(
+            np.array([[np.nan]]), precision="certified", return_diagnostics=True)
+
+
+def test_certified_batched_rejects_nonfinite_input():
+    stack = np.array([[[1.0]], [[np.inf]]])
+    with pytest.raises(ValueError, match="finite input"):
+        gbskernels.perm_batched(
+            stack, precision="certified", return_diagnostics=True)
 
 
 # --------------------------------------------------------------------------

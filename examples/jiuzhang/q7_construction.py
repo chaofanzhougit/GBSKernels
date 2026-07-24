@@ -34,7 +34,9 @@ HERE = Path(__file__).resolve().parent
 DATA = HERE.parents[1] / "data" / "jiuzhang1"
 ZEN = HERE.parents[1] / "data" / "q7_1076_zenodo"
 
-# Conservative fp64 slogdet slack charged to every log sqrt(det Q).
+# Historical pilot-grade fp64 slogdet heuristic.  The legacy campaign did not
+# replace it with outward transcendental arithmetic, so downstream reports must
+# label the resulting width as an arithmetic proxy rather than a certificate.
 LSDQ_SLACK = 1e-9
 
 KINDS = ("squeezed", "squashed")
