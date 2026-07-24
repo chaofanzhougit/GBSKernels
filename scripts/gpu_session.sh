@@ -79,6 +79,14 @@ if [ "$MODE" = "validate" ]; then
     bench/_provenance.py; do
     [ -f "$required" ] || die "validate-mode source missing: $required"
   done
+  for required in \
+    data/jiuzhang1/T_full.npy \
+    data/jiuzhang1/events_band13_32.npy \
+    "data/jiuzhang1/squeezing parameters.txt" \
+    data/q7_1076_zenodo/click_probs/click_probs_squeezed_0.npy \
+    data/q7_1076_zenodo/click_probs/click_probs_squashed_0.npy; do
+    [ -f "$required" ] || die "validate-mode data missing: $required (run scripts/prepare_validation_data.py)"
+  done
 fi
 
 # --- bootstrap Python deps once (CUDA devel images often ship no pip) --------

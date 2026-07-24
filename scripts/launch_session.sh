@@ -112,8 +112,8 @@ if [ "$MODE" = "jiuzhang" ] || [ "$MODE" = "campaign" ] || [ "$MODE" = "validate
   mkdir -p "$PAY/data/jiuzhang1" "$PAY/data/q7_1076_zenodo/pattern_probs/patterns_exp"
   # Validate mode also runs Gate C on the retained event band. Historical and
   # v2 campaign modes receive their event patterns through their manifests.
-  if [ "$MODE" = "validate" ]; then
-    J1_FILES=(T_full.npy events_band13_32.npy "squeezing parameters.txt")
+if [ "$MODE" = "validate" ]; then
+  J1_FILES=(T_full.npy events_band13_32.npy "squeezing parameters.txt")
   elif [ "$MODE" = "confirmatory" ] || [ "$MODE" = "confirmatory-v2" ]; then
     J1_FILES=(T_full.npy "squeezing parameters.txt")
   else
@@ -126,14 +126,22 @@ if [ "$MODE" = "jiuzhang" ] || [ "$MODE" = "campaign" ] || [ "$MODE" = "validate
     cp data/jiuzhang1/campaign_events.npz "$PAY/data/jiuzhang1/" \
       || { echo "ABORT: campaign_events.npz missing (run decode_events.py)" >&2; exit 1; }
   fi
-  cp -R data/q7_1076_zenodo/sq_parameters data/q7_1076_zenodo/transfer_matrices \
-        data/q7_1076_zenodo/click_probs data/q7_1076_zenodo/covariance_matrices \
-        "$PAY/data/q7_1076_zenodo/" || { echo "ABORT: q7 zenodo payload missing" >&2; exit 1; }
-  cp data/q7_1076_zenodo/pattern_probs/probs_sqz_0_clicks_*.npy \
-     data/q7_1076_zenodo/pattern_probs/probs_sqs_0_clicks_*.npy \
-     "$PAY/data/q7_1076_zenodo/pattern_probs/"
-  cp data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_*.npy \
-     "$PAY/data/q7_1076_zenodo/pattern_probs/patterns_exp/"
+  if [ "$MODE" = "validate" ]; then
+    mkdir -p "$PAY/data/q7_1076_zenodo/click_probs"
+    cp data/q7_1076_zenodo/click_probs/click_probs_squeezed_0.npy \
+       data/q7_1076_zenodo/click_probs/click_probs_squashed_0.npy \
+       "$PAY/data/q7_1076_zenodo/click_probs/" \
+      || { echo "ABORT: validate click-probability payload missing" >&2; exit 1; }
+  else
+    cp -R data/q7_1076_zenodo/sq_parameters data/q7_1076_zenodo/transfer_matrices \
+          data/q7_1076_zenodo/click_probs data/q7_1076_zenodo/covariance_matrices \
+          "$PAY/data/q7_1076_zenodo/" || { echo "ABORT: q7 zenodo payload missing" >&2; exit 1; }
+    cp data/q7_1076_zenodo/pattern_probs/probs_sqz_0_clicks_*.npy \
+       data/q7_1076_zenodo/pattern_probs/probs_sqs_0_clicks_*.npy \
+       "$PAY/data/q7_1076_zenodo/pattern_probs/"
+    cp data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_*.npy \
+       "$PAY/data/q7_1076_zenodo/pattern_probs/"
+  fi
   rsync -az -e "$RSH" "$PAY/data/" "${TARGET}:~/GBSKernels/data/" \
     || { echo "ABORT: payload rsync failed" >&2; exit 1; }
   rm -rf "$(dirname "$PAY")"

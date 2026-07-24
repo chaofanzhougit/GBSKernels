@@ -23,6 +23,21 @@ See the [full protocol](../../docs/confirmatory_v2.md).
 
 The archive is not redistributed here; download it from the source above.
 
+For the public v0.2.1 GPU `validate` session, the repository ships six small,
+hash-bound derived inputs. Stage them into the ignored `data/` layout before
+launching a session:
+
+```bash
+python scripts/prepare_validation_data.py
+```
+
+This is sufficient for the 24 device gates, binding smoke, adversarial
+enclosure, and Gate C probe. The full raw archive is still required only when
+rerunning the complete decoder or regenerating the event supply; the Zenodo
+bundle is still required for the broader parity and reconstruction scripts.
+The staged files and their provenance are listed in
+[`validation_data/README.md`](validation_data/README.md).
+
 ## State construction
 
 `q7_construction.py` implements the paired-source construction of
