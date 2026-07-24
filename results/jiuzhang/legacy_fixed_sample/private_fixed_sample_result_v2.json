@@ -1,0 +1,623 @@
+{
+ "kind": "jiuzhang1_private_fixed_sample_legacy_result",
+ "schema": "gbskernels.jiuzhang1-private-fixed-sample.v2",
+ "inference_status": "historical exploratory private fixed sample; not held-out or confirmatory",
+ "created_utc": "2026-07-24T04:45:05Z",
+ "provenance": {
+  "commit": "de7d75e",
+  "git": {
+   "commit": "de7d75e9551c2d951b090028eeb26367e9400955",
+   "tracked_dirty": false,
+   "source": "git"
+  },
+  "container_digest": null,
+  "hostname": "Harolds-MacBook-Air.local",
+  "captured_utc": "2026-07-24T04:45:05.682614+00:00",
+  "environment": {
+   "gpu": null,
+   "cuda": null,
+   "cpu": {
+    "processor": "arm",
+    "machine": "arm64",
+    "logical_cores": 10
+   },
+   "blas_threads": {
+    "OPENBLAS_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "GOTO_NUM_THREADS": null
+   },
+   "platform": "macOS-26.5.2-arm64-arm-64bit",
+   "python": "3.12.13"
+  }
+ },
+ "inputs": {
+  "selection_manifest": {
+   "path": "results/jiuzhang/legacy_fixed_sample/private_fixed_sample_selection_v2.npz",
+   "sha256": "726cb444c09b92aa09887bed7942f1050302810db4b97d8481244d58c5a9f1b1"
+  },
+  "checkpoints": [
+   {
+    "path": "results/jiuzhang/legacy_fixed_sample/confirmatory_C27_b1.jsonl",
+    "sha256": "950da7a02a72ab72c4e70433b574b522578f729cec2cf68a5a5c2e34121c5439"
+   },
+   {
+    "path": "results/jiuzhang/legacy_fixed_sample/confirmatory_C28_b1.jsonl",
+    "sha256": "202402d6160137d9a0ff10a608daf45a9255150076309893c2abd7b515c302b3"
+   },
+   {
+    "path": "results/jiuzhang/legacy_fixed_sample/confirmatory_C29_s1.jsonl",
+    "sha256": "6e5bf218f848840481b3f50bb57c48ec8449404e2da9deddcd9c717824c82e20"
+   },
+   {
+    "path": "results/jiuzhang/legacy_fixed_sample/confirmatory_C30_b4.jsonl",
+    "sha256": "8b701fea46f059e101da14b95f76011d580b9a5d16ca94208dbaf296f93a8d48"
+   },
+   {
+    "path": "results/jiuzhang/legacy_fixed_sample/confirmatory_C30_s1.jsonl",
+    "sha256": "d48261ab38f958e5900d7765a870b7897941d2566fd33f568cad34d6083fab6f"
+   }
+  ],
+  "normalizers": {
+   "files": [
+    {
+     "path": "data/q7_1076_zenodo/click_probs/click_probs_squeezed_0.npy",
+     "sha256": "a17d938cc1eb0276829d3968edbd13d5ec524b81bb295dccf81120c574df5d63"
+    },
+    {
+     "path": "data/q7_1076_zenodo/click_probs/click_probs_squashed_0.npy",
+     "sha256": "85b7fef71e4b56c1d35ff647bb2a05a0107d0bdc1ad496d2b6a30315c6ee6edf"
+    }
+   ],
+   "uncertainty_convention": "across-group standard deviation of 100 group means; not divided by sqrt(100)",
+   "cross_band_covariance": "unavailable"
+  },
+  "band_weight_histogram": {
+   "path": "examples/jiuzhang/click_count_dist.npy",
+   "sha256": "3281b17a47c05e8c1d87f303175cad354077b03116127ba2668008356d1166ac",
+   "prefix_records": 3000000,
+   "normal_records": 2995852,
+   "selected_band_counts": {
+    "27": 9342,
+    "28": 13898,
+    "29": 19981,
+    "30": 27671
+   },
+   "normalization": "within C=27..30 only"
+  }
+ },
+ "aggregation_implementation": {
+  "examples/jiuzhang/campaign_confirmatory.py": "17191fe50beafa8c714403f7020e3686bf615b61bf029167f93e790e74a17d3f"
+ },
+ "historical_event_implementation": {
+  "status": "unresolved",
+  "reason": "checkpoint rows did not record GPU, container, extension, or source identity"
+ },
+ "unresolved_provenance": [
+  "historical per-event GPU/container/extension identity was not recorded",
+  "historical event rows do not retain separate torontonian values and bounds"
+ ],
+ "complete": true,
+ "manifest_meta": {
+  "kind": "jiuzhang1_private_fixed_sample_selection",
+  "schema": "gbskernels.jiuzhang1-private-fixed-sample-selection.v2",
+  "created_utc": "2026-07-24T04:44:27Z",
+  "seed": 20260715,
+  "strata": 10,
+  "stage1_cap": 4000,
+  "targets": {
+   "27": 800,
+   "28": 500,
+   "29": 400,
+   "30": 300
+  },
+  "report": {
+   "27": {
+    "pool": 158827,
+    "selected": 800,
+    "target": 800,
+    "shortfall": 0,
+    "pool_ridx_min": 1282852,
+    "pool_ridx_max": 51463228,
+    "selected_ridx_min": 1300462,
+    "selected_ridx_max": 51414226,
+    "strata_filled": 10,
+    "eligible_by_stratum": [
+     16028,
+     16147,
+     15956,
+     15723,
+     15655,
+     16035,
+     15659,
+     15969,
+     15916,
+     15739
+    ],
+    "selected_by_stratum": [
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80,
+     80
+    ],
+    "stratum_edges": [
+     1282852.0,
+     6300889.7,
+     11318927.4,
+     16336965.100000001,
+     21355002.8,
+     26373040.5,
+     31391078.200000003,
+     36409115.9,
+     41427153.6,
+     46445191.300000004,
+     51463229.0
+    ],
+    "allocation": "equal quota within band-specific record-index strata"
+   },
+   "28": {
+    "pool": 234440,
+    "selected": 500,
+    "target": 500,
+    "shortfall": 0,
+    "pool_ridx_min": 863051,
+    "pool_ridx_max": 51463144,
+    "selected_ridx_min": 876795,
+    "selected_ridx_max": 51453848,
+    "strata_filled": 10,
+    "eligible_by_stratum": [
+     23551,
+     23340,
+     23501,
+     23405,
+     23387,
+     23596,
+     23560,
+     23419,
+     23238,
+     23443
+    ],
+    "selected_by_stratum": [
+     50,
+     50,
+     50,
+     50,
+     50,
+     50,
+     50,
+     50,
+     50,
+     50
+    ],
+    "stratum_edges": [
+     863051.0,
+     5923060.4,
+     10983069.8,
+     16043079.200000001,
+     21103088.6,
+     26163098.0,
+     31223107.400000002,
+     36283116.800000004,
+     41343126.2,
+     46403135.6,
+     51463145.0
+    ],
+    "allocation": "equal quota within band-specific record-index strata"
+   },
+   "29": {
+    "pool": 336386,
+    "selected": 400,
+    "target": 400,
+    "shortfall": 0,
+    "pool_ridx_min": 612692,
+    "pool_ridx_max": 51463199,
+    "selected_ridx_min": 694379,
+    "selected_ridx_max": 51373037,
+    "strata_filled": 10,
+    "eligible_by_stratum": [
+     33719,
+     33679,
+     33601,
+     33124,
+     33719,
+     33922,
+     33740,
+     33655,
+     33606,
+     33621
+    ],
+    "selected_by_stratum": [
+     40,
+     40,
+     40,
+     40,
+     40,
+     40,
+     40,
+     40,
+     40,
+     40
+    ],
+    "stratum_edges": [
+     612692.0,
+     5697742.8,
+     10782793.6,
+     15867844.399999999,
+     20952895.2,
+     26037946.0,
+     31122996.799999997,
+     36208047.6,
+     41293098.4,
+     46378149.199999996,
+     51463200.0
+    ],
+    "allocation": "equal quota within band-specific record-index strata"
+   },
+   "30": {
+    "pool": 467388,
+    "selected": 300,
+    "target": 300,
+    "shortfall": 0,
+    "pool_ridx_min": 429812,
+    "pool_ridx_max": 51463309,
+    "selected_ridx_min": 431983,
+    "selected_ridx_max": 51317825,
+    "strata_filled": 10,
+    "eligible_by_stratum": [
+     47096,
+     46975,
+     46433,
+     46238,
+     47087,
+     46852,
+     46848,
+     46873,
+     46688,
+     46298
+    ],
+    "selected_by_stratum": [
+     30,
+     30,
+     30,
+     30,
+     30,
+     30,
+     30,
+     30,
+     30,
+     30
+    ],
+    "stratum_edges": [
+     429812.0,
+     5533161.8,
+     10636511.6,
+     15739861.399999999,
+     20843211.2,
+     25946561.0,
+     31049910.799999997,
+     36153260.6,
+     41256610.4,
+     46359960.199999996,
+     51463310.0
+    ],
+    "allocation": "equal quota within band-specific record-index strata"
+   }
+  },
+  "n_records": 51463365,
+  "scanned": 51463365,
+  "published_excluded": 0,
+  "source": {
+   "path": "data/jiuzhang1/data.bin",
+   "size_bytes": 823413840,
+   "records_hashed": 51463365,
+   "hash_scope": "full file",
+   "sha256": "79c0d32ff0e1319944fa7a10226653a1044261d5f53e917a9a9179c9963da7e0"
+  },
+  "implementation": {
+   "examples/jiuzhang/select_confirmatory.py": "166938a1670552c601b31d23969586d803cc5fef2c64e5d013ea9c60c93354aa",
+   "examples/jiuzhang/decode_events.py": "30d50712d6d656e40a0177935a07bac26ea642a121740e4f7485644fb39180fc"
+  },
+  "selection_design": {
+   "status": "historical private fixed-sample exploratory design",
+   "stratum_scope": "band-specific eligible record-index range",
+   "allocation": "equal quota per stratum",
+   "analysis_requirement": "finite-population stratum weighting"
+  },
+  "note": "Disjoint from the first stage1-cap events per band; not a public preregistration",
+  "historical_manifest_binding": {
+   "path": "data/jiuzhang1/historical_confirmatory_selection_20260715T024636Z.npz",
+   "sha256": "1ef860e9acdfb9785057a9335fd82bde3d2bed9923fe21f1760b7bb63f995f72",
+   "verified_arrays": [
+    "ridx_C27",
+    "pats_C27",
+    "ridx_C28",
+    "pats_C28",
+    "ridx_C29",
+    "pats_C29",
+    "ridx_C30",
+    "pats_C30"
+   ],
+   "all_equal": true
+  },
+  "provenance": {
+   "commit": "de7d75e",
+   "git": {
+    "commit": "de7d75e9551c2d951b090028eeb26367e9400955",
+    "tracked_dirty": false,
+    "source": "git"
+   },
+   "container_digest": null,
+   "hostname": "Harolds-MacBook-Air.local",
+   "captured_utc": "2026-07-24T04:44:27.418118+00:00",
+   "environment": {
+    "gpu": null,
+    "cuda": null,
+    "cpu": {
+     "processor": "arm",
+     "machine": "arm64",
+     "logical_cores": 10
+    },
+    "blas_threads": {
+     "OPENBLAS_NUM_THREADS": null,
+     "OMP_NUM_THREADS": null,
+     "MKL_NUM_THREADS": null,
+     "GOTO_NUM_THREADS": null
+    },
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.12.13"
+   }
+  }
+ },
+ "bands": {
+  "27": {
+   "C": 27,
+   "n_events": 800,
+   "eligible_population": 158827,
+   "delta_H": 0.02857221495242425,
+   "pattern_log_ratio": -0.12252233647567588,
+   "arithmetic_proxy": 1.091386573312376e-05,
+   "event_se": 0.005164143467694201,
+   "normalizer_scale": 0.004057223732999289,
+   "normalizer_shift": 0.15109455142810013,
+   "population_by_stratum": [
+    16028,
+    16147,
+    15956,
+    15723,
+    15655,
+    16035,
+    15659,
+    15969,
+    15916,
+    15739
+   ],
+   "sample_by_stratum": [
+    80,
+    80,
+    80,
+    80,
+    80,
+    80,
+    80,
+    80,
+    80,
+    80
+   ],
+   "population_weights": [
+    0.10091483186108155,
+    0.10166407474799624,
+    0.10046150843370459,
+    0.09899450345344306,
+    0.09856636466092038,
+    0.10095890497207653,
+    0.09859154929577464,
+    0.100543358496981,
+    0.10020966208516184,
+    0.09909524199286016
+   ],
+   "estimator": "finite-population weighted mean for realized band-specific equal-quota strata",
+   "squashed_wins": true,
+   "n_evaluated": 800,
+   "n_refused": 0,
+   "selection_complete": true
+  },
+  "28": {
+   "C": 28,
+   "n_events": 500,
+   "eligible_population": 234440,
+   "delta_H": 0.03670324410306432,
+   "pattern_log_ratio": -0.08946081736794102,
+   "arithmetic_proxy": 1.6044602942059406e-05,
+   "event_se": 0.006853985175633292,
+   "normalizer_scale": 0.0034898851126112123,
+   "normalizer_shift": 0.12616406147100534,
+   "population_by_stratum": [
+    23551,
+    23340,
+    23501,
+    23405,
+    23387,
+    23596,
+    23560,
+    23419,
+    23238,
+    23443
+   ],
+   "sample_by_stratum": [
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50,
+    50
+   ],
+   "population_weights": [
+    0.10045640675652619,
+    0.09955638969459137,
+    0.10024313257123357,
+    0.09983364613547176,
+    0.09975686742876642,
+    0.10064835352328955,
+    0.10049479610987885,
+    0.09989336290735369,
+    0.09912131035659444,
+    0.09999573451629415
+   ],
+   "estimator": "finite-population weighted mean for realized band-specific equal-quota strata",
+   "squashed_wins": true,
+   "n_evaluated": 500,
+   "n_refused": 0,
+   "selection_complete": true
+  },
+  "29": {
+   "C": 29,
+   "n_events": 400,
+   "eligible_population": 336386,
+   "delta_H": 0.021303836758441302,
+   "pattern_log_ratio": -0.08224644579745319,
+   "arithmetic_proxy": 3.6487805575248074e-05,
+   "event_se": 0.007698538990784871,
+   "normalizer_scale": 0.0030017952579920386,
+   "normalizer_shift": 0.10355028255589449,
+   "population_by_stratum": [
+    33719,
+    33679,
+    33601,
+    33124,
+    33719,
+    33922,
+    33740,
+    33655,
+    33606,
+    33621
+   ],
+   "sample_by_stratum": [
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40,
+    40
+   ],
+   "population_weights": [
+    0.10023901113601637,
+    0.1001201001230729,
+    0.09988822364783315,
+    0.09847020981848234,
+    0.10023901113601637,
+    0.10084248452670444,
+    0.10030143941781168,
+    0.10004875351530682,
+    0.09990308752445108,
+    0.09994767915430487
+   ],
+   "estimator": "finite-population weighted mean for realized band-specific equal-quota strata",
+   "squashed_wins": true,
+   "n_evaluated": 400,
+   "n_refused": 0,
+   "selection_complete": true
+  },
+  "30": {
+   "C": 30,
+   "n_events": 300,
+   "eligible_population": 467388,
+   "delta_H": 0.031111508861808364,
+   "pattern_log_ratio": -0.05201589376091808,
+   "arithmetic_proxy": 0.00016942089448376187,
+   "event_se": 0.009370595240929605,
+   "normalizer_scale": 0.0025810343194466144,
+   "normalizer_shift": 0.08312740262272644,
+   "population_by_stratum": [
+    47096,
+    46975,
+    46433,
+    46238,
+    47087,
+    46852,
+    46848,
+    46873,
+    46688,
+    46298
+   ],
+   "sample_by_stratum": [
+    30,
+    30,
+    30,
+    30,
+    30,
+    30,
+    30,
+    30,
+    30,
+    30
+   ],
+   "population_weights": [
+    0.10076424726351554,
+    0.10050536171232466,
+    0.09934572560699034,
+    0.09892851335507116,
+    0.10074499131342696,
+    0.1002421970611141,
+    0.10023363886107474,
+    0.10028712761132079,
+    0.09989131085950002,
+    0.09905688635566168
+   ],
+   "estimator": "finite-population weighted mean for realized band-specific equal-quota strata",
+   "squashed_wins": true,
+   "n_evaluated": 300,
+   "n_refused": 0,
+   "selection_complete": true
+  }
+ },
+ "aggregate": {
+  "Delta_B": 0.02910881118624739,
+  "arithmetic_proxy_displacement": 8.099720193853735e-05,
+  "arithmetic_proxy_range": [
+   0.029027813984308853,
+   0.02918980838818593
+  ],
+  "event_se": 0.004511626435904078,
+  "normalizer_diagonal_sensitivity_scale": 0.0015762961194301754,
+  "normalizer_assumption": "quadrature of published per-band across-group standard deviations; cross-band covariance unavailable; not an estimator standard error",
+  "weights": {
+   "27": 0.13177791570275912,
+   "28": 0.196044687693957,
+   "29": 0.2818512667155673,
+   "30": 0.39032612988771653
+  },
+  "bands_present": [
+   27,
+   28,
+   29,
+   30
+  ],
+  "weight_counts": {
+   "27": 9342,
+   "28": 13898,
+   "29": 19981,
+   "30": 27671
+  },
+  "weight_denominator": 70892,
+  "weight_scope": "exact normalized composition of C=27..30 within the first-three-million normal-record prefix",
+  "estimand": "prefix-composition-weighted combination of full-acquisition, post-first-4000-per-band eligible-population means",
+  "inference_status": "historical exploratory point estimate with separated sensitivity scales",
+  "reconstruction_layer": "not computed; result conditional on frozen point models",
+  "scope": "conditional cross-entropy comparison of two frozen point models; not absolute fit, not classical simulability, not quantum-feature absence",
+  "complete": true
+ }
+}
