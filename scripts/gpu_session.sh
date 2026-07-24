@@ -68,6 +68,19 @@ echo "session mode: ${MODE}"
 export GBS_VALIDATION_START_EPOCH="$(date +%s)"
 export GBS_VALIDATION_ARCH="$ARCH"
 
+# Validate-mode entry points must be part of the uploaded source tree. Check
+# before dependency installation and compilation so an incomplete release
+# candidate cannot consume a GPU session before failing at the final gates.
+if [ "$MODE" = "validate" ]; then
+  for required in \
+    examples/jiuzhang/dd_adversarial_enclosure.py \
+    examples/jiuzhang/gate_c_probe.py \
+    examples/jiuzhang/q7_construction.py \
+    bench/_provenance.py; do
+    [ -f "$required" ] || die "validate-mode source missing: $required"
+  done
+fi
+
 # --- bootstrap Python deps once (CUDA devel images often ship no pip) --------
 # Every prior session needed a manual `apt install python3-pip` before the nanobind
 # ext build (step 4) and the evidence harnesses (step 6). Do it here so the session
