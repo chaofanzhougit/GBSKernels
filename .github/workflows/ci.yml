@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Sync environment
-        run: uv sync
+        run: uv sync --locked
       - name: Run CPU verification suite (fast tier; Layers 1, 2-CPU, 3, 5-CPU)
         run: uv run pytest -ra -m "not slow"
 
@@ -34,7 +34,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Sync environment
-        run: uv sync
+        run: uv sync --locked
       - name: Run CPU verification suite (slow tier; statistical / oracle)
         run: uv run pytest -ra -m "slow"
 
@@ -46,14 +46,16 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
-      - name: Build wheel
-        run: uv build --wheel -o dist
-      - name: Install wheel in a clean venv and run the end-to-end example
+      - name: Build wheel and source distribution
+        run: uv build --wheel --sdist -o dist
+      - name: Rebuild wheel from source distribution
+        run: uv build --wheel dist/gbskernels-*.tar.gz -o /tmp/from-sdist
+      - name: Install rebuilt wheel in a clean venv and run the end-to-end example
         # The example exercises the wheel-only surface (kernels, precision tiers,
         # GBS distribution, the conditional sampler) from a neutral cwd, so it is
         # the packaging smoke-test: it must run on exactly what `pip install` ships.
         run: |
           uv venv /tmp/fresh --python 3.12
-          uv pip install --python /tmp/fresh/bin/python dist/*.whl
+          uv pip install --python /tmp/fresh/bin/python /tmp/from-sdist/*.whl
           cp examples/gbs_demo.py /tmp/
           cd /tmp && ./fresh/bin/python gbs_demo.py

@@ -7,8 +7,9 @@ graft examples
 graft docs
 graft scripts
 graft envs
+graft tests
 graft results/jiuzhang/legacy_fixed_sample
-include LICENSE README.md CHANGELOG.md CITATION.cff pyproject.toml
+include LICENSE README.md CHANGELOG.md CITATION.cff THIRD_PARTY_NOTICES.md pyproject.toml uv.lock
 prune core/build
 prune core/build_prof
 prune bindings/build

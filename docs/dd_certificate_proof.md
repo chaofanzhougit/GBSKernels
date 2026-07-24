@@ -1,7 +1,7 @@
 # Proof of the double-double torontonian enclosure (post-audit)
 
-Status: **desk proof, device-validation pending.** This document supplies the
-implementation-specific numerical proof required by the public
+Status: **desk proof with release-gated device evidence.** This document
+supplies the implementation-specific numerical proof required by the public
 [`confirmatory_v2.md`](confirmatory_v2.md) contract and the historical-plan
 reconciliation in
 [`preregistration_jiuzhang1_confirmatory.md`](preregistration_jiuzhang1_confirmatory.md).
@@ -9,9 +9,12 @@ It covers the double-double (DD) single-instance recursive torontonian and
 states and proves the bounds used by the corrected kernel
 (`core/tor_recursive.cu`, `core/dd.cuh`, and
 `core/certified_rounding.cuh`) relies on. It is the mathematical half of Item 1; the
-empirical half — enclosure against an independent-precision reference on
-adversarial inputs and dimensions through 64 — is the on-device test harness
-(`examples/jiuzhang/dd_adversarial_enclosure.py`) and is not discharged here.
+empirical half -- enclosure against an independent-precision reference on
+adversarial and physical inputs -- is the on-device test harness
+(`examples/jiuzhang/dd_adversarial_enclosure.py`) and is not a theorem proved by
+this document. A tagged release is permitted only when the clean exact commit
+produces the hash-bound validation manifest described in the
+[release evidence record](../results/README.md#v021-device-validation).
 
 Notation follows the manuscript supplement (M1–M5): `u = 2^-53` is the binary64
 unit roundoff; `fl(·)` is round-to-nearest-even; `ru_*` / `rd_*` are the
@@ -55,8 +58,8 @@ Because `md_lo` feeds every pivot guard and every denominator lower bound in
 the Cholesky recursion, an over-large `md_lo` produces an **under**-large error
 charge (dividing a numerator error by too large a denominator, or clearing a
 pivot guard that should refuse), so a returned enclosure `E` could be smaller
-than the true error — the enclosure is unsound, not merely loose. This is
-Fatal blocker #1 of `docs/quantum_submission_audit.md`.
+than the true error -- the enclosure is unsound, not merely loose. This was
+the first fatal numerical issue identified by the release audit.
 
 ---
 
@@ -370,22 +373,26 @@ the pre-audit guards could wrongly clear.
 
 ---
 
-## 6. What remains (device validation — Item 1 empirical half)
+## 6. Required device-validation evidence (Item 1 empirical half)
 
 This proof establishes soundness of the *stated operations*. Per audit Gate
-1.4, the following must hold **on device** before any DD bound is trusted, and
-are exercised by `examples/jiuzhang/dd_adversarial_enclosure.py` against a
-50-digit `mpmath` reference:
+1.4, the following must hold **on device** before an official release claims
+the DD implementation passed its empirical gate. They are exercised by
+`examples/jiuzhang/dd_adversarial_enclosure.py` against a 50-digit `mpmath`
+reference:
 
 1. negative low words in denominator/pivot bounds (forces the DW1 lower branch);
 2. cancellation within and across subtrees (large κ);
 3. pivots within a factor of 2 of the refusal boundary (guard exactness);
 4. DD→binary64 collapse residuals near half an ulp (Lemma COLL exactness);
 5. normal/subnormal transition cases (finite enclosure or explicit refusal);
-6. dimensions through 64, wherever an independent reference is affordable.
+6. dimensions through `k=14` in the independent-reference harness, together
+   with the separate physical Gate C probe at its release-probe sizes.
 
 The invariant to check is `|ŷ − y_ref| ≤ E` with **zero** violations, plus a
 tightness distribution (bound / actual error) that stays finite on the
 physical inputs and widens honestly (never inverts) on the adversarial ones.
-Only after that passes on the release commit are the DD artifacts regenerated
-and the manuscript's "provisional" qualifier removed.
+The v0.2.1 tag is conditioned on this gate passing at the exact release commit,
+together with the 24 device gates, binding smoke, and physical Gate C probe.
+That release validation does not retroactively regenerate the older frontier,
+parity, or historical event artifacts; those keep their legacy qualifiers.

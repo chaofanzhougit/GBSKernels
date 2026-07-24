@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Stage the small, hash-bound inputs used by the public GPU validation.
 
-The raw USTC archive and the Zenodo bundle remain external and are not
-redistributed by this repository.  The six derived inputs below are small
-enough to ship and are sufficient for ``scripts/launch_session.sh ... validate``.
+The raw USTC archive and complete Zenodo bundle remain external.  The source
+release ships five attributed runtime inputs plus one decoder-audit reference;
+see THIRD_PARTY_NOTICES.md.
 """
 
 from __future__ import annotations

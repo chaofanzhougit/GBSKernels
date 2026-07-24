@@ -39,6 +39,17 @@ file hashes are retained; the regenerated selection and summary record the
 current implementation and Git state. Missing historical environment fields
 are disclosed rather than reconstructed.
 
+## v0.2.1 device validation
+
+The authoritative v0.2.1 device record is the
+`validation_v021_*.json` asset attached to the tagged GitHub release. It is
+generated only by a clean-tree `validate` session and binds the exact commit,
+pinned CUDA container digest, RTX 4090 environment, all 24 device PASS files,
+the mandatory nanobind smoke, the adversarial physical-enclosure run, and the
+Jiuzhang Gate C probe by SHA-256. The generated manifest is attached after the
+candidate passes and is therefore not committed retroactively into the commit
+it validates.
+
 ## v0.2.0 device validation
 
 The release commit `b2b42c3` completed a fresh RTX 4090 (`sm_89`) session on

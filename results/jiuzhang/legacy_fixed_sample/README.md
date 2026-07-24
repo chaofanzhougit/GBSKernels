@@ -40,10 +40,13 @@ interval or significance statistic.
 
 Reproduction uses `examples/jiuzhang/decode_events.py`,
 `select_confirmatory.py`, and `campaign_confirmatory.py`. The 744 MB raw USTC
-archive and the Q7-1076 normalizer arrays are not redistributed; their hashes
-and source locations are recorded in the generated artifacts.
+archive remains external. The small Q7-1076 click-probability arrays required
+by the public validation session are staged by
+`scripts/prepare_validation_data.py`; the full Q7 archive and any larger
+reconstruction inputs remain external, with hashes and source locations
+recorded in the generated artifacts.
 
-With those external normalizer arrays installed at the recorded paths, rerun
+With the staged normalizer arrays installed at the recorded paths, rerun
 the released aggregate against exactly the checkpoint files in this directory:
 
 ```bash

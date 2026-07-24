@@ -140,7 +140,7 @@ if [ "$MODE" = "validate" ]; then
        data/q7_1076_zenodo/pattern_probs/probs_sqs_0_clicks_*.npy \
        "$PAY/data/q7_1076_zenodo/pattern_probs/"
     cp data/q7_1076_zenodo/pattern_probs/patterns_exp/samples_0_clicks_*.npy \
-       "$PAY/data/q7_1076_zenodo/pattern_probs/"
+       "$PAY/data/q7_1076_zenodo/pattern_probs/patterns_exp/"
   fi
   rsync -az -e "$RSH" "$PAY/data/" "${TARGET}:~/GBSKernels/data/" \
     || { echo "ABORT: payload rsync failed" >&2; exit 1; }

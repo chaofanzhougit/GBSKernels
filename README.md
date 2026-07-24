@@ -147,8 +147,9 @@ registration timing, exclusion-ledger completeness, selection, immutable run
 reduction, refusal recovery, inference, reconstruction, and release assembly.
 
 To run the public v0.2.1 GPU validation from a fresh clone, first stage the
-small hash-bound derived inputs (the raw USTC and Zenodo archives remain
-external):
+small hash-bound inputs (the raw USTC and Zenodo archives remain
+external; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for data
+attribution and licensing scope):
 
 ```bash
 python scripts/prepare_validation_data.py

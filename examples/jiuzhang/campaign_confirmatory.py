@@ -6,10 +6,10 @@ sample. It is blocked for new runs unless
 historical sensitivity calculation, not a public confirmatory analysis, and
 must not support a new scientific claim.
 
-Distinct from the stage-1 exploratory campaign.py in every way the audit
-(docs/quantum_submission_audit.md) requires:
-  * events come ONLY from the frozen, disjoint, time-stratified selection manifest
-    (select_confirmatory.py), never "first-n in decode order";
+Distinct from the stage-1 exploratory campaign.py in the ways documented by
+the archived plan and ``docs/confirmatory_v2.md``:
+  * events come ONLY from the frozen, stage-1-excluded, time-stratified selection
+    manifest (select_confirmatory.py), never "first-n in decode order";
   * ALL N_C selected events per band are evaluated -- NO optional stopping;
   * the descriptive estimand is the prefix-mass-weighted Delta_B with predefined
     band weights;

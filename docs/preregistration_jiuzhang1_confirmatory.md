@@ -38,9 +38,9 @@ provenance item.
 
 **This document must be committed and publicly timestamped (repo tag + Zenodo
 or OSF) BEFORE any confirmatory likelihood is evaluated.** A commit pushed
-after the run is not a preregistration (audit, `quantum_submission_audit.md`,
-Fatal #4/#5). Everything below is frozen at timestamp; deviations are reported
-as deviations, not folded in.
+after the run is not a preregistration (see the timing and exposure rules in
+`docs/confirmatory_v2.md`). Everything below is frozen at timestamp; deviations
+are reported as deviations, not folded in.
 
 **FROZEN 2026-07-15** (after Item 1: DD revalidation + validated-kernel cost
 curve). `N_C = 800/500/400/300`, `SEED = 20260715`, `n_strata = 10`, band-mass
