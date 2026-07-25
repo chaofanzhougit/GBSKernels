@@ -28,14 +28,15 @@
 - Replace the historical Jiuzhang fixed-sample summary with its actual
   finite-population stratified estimand. Remove pseudo-confirmatory intervals
   and normalizer significance calculations that could not be justified from
-  the retained inputs; report the event standard error, normalizer diagonal
-  sensitivity, and arithmetic proxy separately.
+  the retained inputs; report the design-based event sensitivity, normalizer
+  diagonal sensitivity, and arithmetic proxy separately.
 
 ### Reproducibility
 
 - Extend artifact provenance with the full Git commit and a tracked-dirty
-  indicator, so output generated from modified tracked sources cannot be
-  attributed to a clean release commit.
+  indicator. Local Git checkouts record whether tracked bytes differ; rsynced
+  sessions using `GBS_COMMIT` have no Git metadata and record dirty state as
+  unknown rather than claiming a clean tree.
 - Package the deterministic historical selector, aggregator, decoder audit,
   five retained checkpoint JSONL files, and a hash-bound regenerated
   selection/result pair under `results/jiuzhang/legacy_fixed_sample/`.
@@ -49,11 +50,12 @@
 - The historical fixed sample was selected and evaluated during exploratory
   development. It is not held out, preregistered, or confirmatory, and this
   correction does not turn it into a confirmatory scientific result.
-- The v0.2.1 tag is conditioned on a clean-tree release-validation session:
-  all 24 device gates, the Python binding smoke, adversarial and physical
-  enclosure coverage, and the Jiuzhang Gate C probe. The GitHub release carries
-  a hash-bound validation manifest for the exact tagged commit. Retained v0.2.0
-  RTX 4090 evidence remains historical rather than validation of v0.2.1.
+- The v0.2.1 release carries a validation manifest covering all 24 device gates,
+  the Python binding smoke, adversarial and physical enclosure coverage, and the
+  Jiuzhang Gate C probe. The session is release-commit-attributed through
+  `GBS_COMMIT`; it does not hash-bind the uploaded source tree or loaded CUDA
+  extension. Retained v0.2.0 RTX 4090 evidence remains historical rather than
+  validation of v0.2.1.
 
 ## [0.2.0] - 2026-07-22
 

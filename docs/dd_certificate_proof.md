@@ -12,8 +12,8 @@ states and proves the bounds used by the corrected kernel
 empirical half -- enclosure against an independent-precision reference on
 adversarial and physical inputs -- is the on-device test harness
 (`examples/jiuzhang/dd_adversarial_enclosure.py`) and is not a theorem proved by
-this document. A tagged release is permitted only when the clean exact commit
-produces the hash-bound validation manifest described in the
+this document. The v0.2.1 release includes the release-commit-attributed,
+hash-bound evidence manifest described in the
 [release evidence record](../results/README.md#v021-device-validation).
 
 Notation follows the manuscript supplement (M1–M5): `u = 2^-53` is the binary64
@@ -392,7 +392,9 @@ reference:
 The invariant to check is `|ŷ − y_ref| ≤ E` with **zero** violations, plus a
 tightness distribution (bound / actual error) that stays finite on the
 physical inputs and widens honestly (never inverts) on the adversarial ones.
-The v0.2.1 tag is conditioned on this gate passing at the exact release commit,
-together with the 24 device gates, binding smoke, and physical Gate C probe.
-That release validation does not retroactively regenerate the older frontier,
-parity, or historical event artifacts; those keep their legacy qualifiers.
+The v0.2.1 release records this gate passing together with the 24 device gates,
+binding smoke, and physical Gate C probe. Its commit identifier comes from
+`GBS_COMMIT`; the record does not hash-bind the uploaded source tree or loaded
+CUDA extension. That release validation does not retroactively regenerate the
+older frontier, parity, or historical event artifacts; those keep their legacy
+qualifiers.

@@ -43,12 +43,14 @@ are disclosed rather than reconstructed.
 
 The authoritative v0.2.1 device record is the
 `validation_v021_*.json` asset attached to the tagged GitHub release. It is
-generated only by a clean-tree `validate` session and binds the exact commit,
-pinned CUDA container digest, RTX 4090 environment, all 24 device PASS files,
-the mandatory nanobind smoke, the adversarial physical-enclosure run, and the
-Jiuzhang Gate C probe by SHA-256. The generated manifest is attached after the
-candidate passes and is therefore not committed retroactively into the commit
-it validates.
+release-commit-attributed through the environment-supplied `GBS_COMMIT` and
+hashes the pinned CUDA container digest, RTX 4090 environment, all 24 device
+PASS files, the mandatory nanobind smoke, the adversarial physical-enclosure
+run, and the Jiuzhang Gate C probe. The rsynced host had no Git metadata, so
+`tracked_dirty` is unknown. The manifest does not hash the uploaded source tree
+or loaded CUDA extension and therefore is not a cryptographic source/binary
+binding to the tagged commit. It is attached after the candidate passes and is
+not committed retroactively into the commit it attributes.
 
 ## v0.2.0 device validation
 

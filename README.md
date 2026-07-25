@@ -22,12 +22,14 @@ companion with an explicit accuracy characterization. The Walrus is used here as
 one of several independent test oracles.
 
 > **Status.** The CPU library is complete and `pip`-installable (pure Python,
-> `numpy` + `mpmath` only). A v0.2.1 tag is released only with a clean-tree GPU
-> validation manifest covering all 24 device gates, the Python binding smoke,
-> adversarial and physical enclosure families, and the Jiuzhang Gate C probe.
-> The manifest and its hash-bound evidence are attached to the GitHub release
-> and identify the exact commit. Historical v0.2.0 RTX 4090 and A100 evidence is
-> retained separately; see the [device evidence](results/README.md#v020-device-validation).
+> `numpy` + `mpmath` only). The v0.2.1 GitHub release includes a GPU validation
+> manifest covering all 24 device gates, the Python binding smoke, adversarial
+> and physical enclosure families, and the Jiuzhang Gate C probe. The session is
+> release-commit-attributed through the environment-supplied `GBS_COMMIT`. The
+> rsynced host had no Git metadata, so `tracked_dirty` is unknown; the evidence
+> hashes and container digest do not hash-bind the uploaded source tree or loaded
+> CUDA extension. Historical v0.2.0 RTX 4090 and A100 evidence is retained
+> separately; see the [device evidence](results/README.md#v020-device-validation).
 > This is pre-1.0 software and the public API may change.
 
 Version 0.2.1 is a correctness patch that adds subnormal-aware certified bounds
@@ -40,13 +42,16 @@ is exploratory, not a retrospective confirmatory result. See the
 
 ## Installation
 
-The CPU package is available from
-[PyPI](https://pypi.org/project/gbskernels/0.2.1/) and needs only `numpy` +
-`mpmath`. The CUDA extension is a separate, optional source build (see
+The CPU package needs only `numpy` + `mpmath`. PyPI publication of v0.2.1 is
+pending; until it is live, install the exact wheel attached to the
+[GitHub release](https://github.com/chaofanzhougit/GBSKernels/releases/tag/v0.2.1).
+Once publication completes, the equivalent pinned PyPI requirement is
+`gbskernels==0.2.1`.
+The CUDA extension is a separate, optional source build (see
 [`bindings/README.md`](bindings/README.md)):
 
 ```bash
-python -m pip install gbskernels==0.2.1
+python -m pip install https://github.com/chaofanzhougit/GBSKernels/releases/download/v0.2.1/gbskernels-0.2.1-py3-none-any.whl
 ```
 
 ## Quick start
