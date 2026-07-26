@@ -39,8 +39,9 @@ repository at present.
 - **`capture_build_provenance.py`** creates a strict manifest for an immutable
   archive extraction. It verifies the release-archive and source-tree hashes and
   records the full Git commit/tree, digest-pinned container, normalized compiler
-  commands and caches, compiler/tool queries, PTX and cubin/fatbin, gate
-  binaries, wheel, and the exact compiled extension. It re-hashes the source and
+  commands and caches, compiler/tool queries, the embedded-cubin inventory and
+  SASS dump, available PTX, gate binaries, wheel, and the exact compiled
+  extension. It re-hashes the source and
   archive after capture and refuses outputs inside the source tree or an existing
   output path.
 - **`publication_gpu_session.sh`** runs on an already-provisioned CUDA host. It
@@ -71,10 +72,14 @@ repository at present.
   container declarations to equal the uploaded archive and launched image.
   Upload, SSH readiness, and execution are bounded; a separate reserved window
   retries retrieval before the teardown reserve begins. Outputs and receipts are
-  create-only, early remote failures still return a log bundle, an ambiguous
-  creation is recovered only from a unique run label, and teardown targets the
-  exact instance ID with recorded retries on normal, failure, and handled-signal
-  paths.
+  create-only, and early remote failures still return a log bundle. An ambiguous
+  creation is polled for a bounded interval and recovered only from one unique
+  run-label match; failure to recover an ID is reported as a dedicated lifecycle
+  error. Teardown targets the exact instance ID non-interactively, with delayed,
+  recorded retries and a strict active-instance-list absence check on normal,
+  failure, and handled-signal paths. Unconfirmed teardown is always the primary
+  operator-facing error, while the preceding execution error remains in the
+  receipt.
 
 The registered on-box profile is fail-closed. It is configured to accept only a
 24-gate pass, 320 Arb-contained enclosures, and complete matched timing and

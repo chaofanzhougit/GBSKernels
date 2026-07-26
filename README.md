@@ -176,7 +176,8 @@ checks both SHA-256 identities before and after the run, and requires the full G
 commit, Git tree, and digest-pinned container identity. Builds, virtual
 environment, wheel, CUDA extension, logs, and evidence are created outside the
 source tree. The resulting manifest binds the release source to compiler
-commands, tool versions, PTX/cubin, the loaded extension, the built wheel, device
+commands, tool versions, the embedded-cubin inventory and SASS dump, available
+PTX, the loaded extension, the built wheel, device
 metadata, dependency resolution, and every retained artifact.
 
 After the 24 device gates, the registered science profile is configured to run:
@@ -192,8 +193,9 @@ After the 24 device gates, the registered science profile is configured to run:
 
 The Vast.ai launcher adds a generated archive adapter, digest-pinned image,
 deterministic offer validation, dry-run and explicit-spend modes, cost/lifetime
-ceilings, bounded SSH handling, create-only retrieval, receipts, and exact-ID
-teardown on normal, failure, and handled-signal paths. See the
+ceilings, bounded ambiguous-create recovery and SSH handling, create-only
+retrieval, receipts, and exact-ID non-interactive teardown with provider-list
+absence verification on normal, failure, and handled-signal paths. See the
 [`scripts/` workflow](scripts/README.md),
 [`bench/` protocol](bench/README.md),
 [`envs/` dependencies](envs/README.md), and

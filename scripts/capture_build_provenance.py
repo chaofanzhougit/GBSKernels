@@ -417,15 +417,29 @@ def capture_build_provenance(
     )
     cache_records = _metadata_group("CMakeCache.txt", cmake_caches, root, cmake_cache_record)
 
+    device_paths = list(device_code)
     device_records = _artifact_group(
-        "device-code artifact", device_code, root, (".ptx", ".cubin", ".fatbin")
+        "device-code artifact",
+        device_paths,
+        root,
+        (".ptx", ".cubin", ".fatbin", ".sass"),
     )
-    if not any(item["filename"].endswith(".ptx") for item in device_records):
-        raise ProvenanceError("device-code artifacts must include extracted PTX")
     if not any(
-        item["filename"].endswith((".cubin", ".fatbin")) for item in device_records
+        item["filename"].endswith((".cubin", ".fatbin", ".sass"))
+        for item in device_records
     ):
-        raise ProvenanceError("device-code artifacts must include a cubin or fatbin")
+        raise ProvenanceError(
+            "device-code artifacts must include a cubin, fatbin, or SASS dump"
+        )
+    for device_path in device_paths:
+        if device_path.name.endswith(".sass"):
+            candidate = _regular_file(device_path, "SASS dump")
+            try:
+                sass = candidate.read_text(encoding="utf-8")
+            except (OSError, UnicodeError) as exc:
+                raise ProvenanceError(f"cannot read SASS dump: {candidate}") from exc
+            if "Fatbin elf code:" not in sass or "Function :" not in sass:
+                raise ProvenanceError("SASS dump has no recognizable embedded device code")
     artifact_records = {
         "build_products": _artifact_group("build product", build_products, root),
         "device_code": device_records,

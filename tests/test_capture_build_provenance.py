@@ -60,6 +60,7 @@ def _fixture(tmp_path: Path) -> dict:
     product = _write(build / "check_tor_recursive", b"ELF executable")
     ptx = _write(build / "tor_recursive.ptx", b"// PTX\n")
     cubin = _write(build / "tor_recursive.cubin", b"ELF cubin")
+    sass = _write(build / "embedded.sass", b"Fatbin elf code:\nFunction : kernel\n")
     extension = _write(build / "gbskernels_ext.so", b"ELF extension")
     wheel = _write(tmp_path / "gbskernels-0.2.1-py3-none-any.whl", b"wheel bytes")
     tools = {
@@ -76,7 +77,7 @@ def _fixture(tmp_path: Path) -> dict:
         "compile_commands": [compile_commands],
         "cmake_caches": [cmake_cache],
         "build_products": [product],
-        "device_code": [ptx, cubin],
+        "device_code": [ptx, cubin, sass],
         "extensions": [extension],
         "wheels": [wheel],
         "tools": tools,
@@ -108,7 +109,11 @@ def test_capture_binds_tree_commands_tools_and_artifacts(tmp_path, monkeypatch):
     device_names = {
         item["filename"] for item in payload["build"]["artifacts"]["device_code"]
     }
-    assert device_names == {"tor_recursive.ptx", "tor_recursive.cubin"}
+    assert device_names == {
+        "tor_recursive.ptx",
+        "tor_recursive.cubin",
+        "embedded.sass",
+    }
     assert payload["build"]["artifacts"]["extensions"][0]["sha256"]
     assert payload["build"]["artifacts"]["wheels"][0]["sha256"]
     assert payload["build"]["tools"]["nvcc"]["sha256"]
@@ -139,6 +144,54 @@ def test_capture_fails_closed_for_missing_artifact_and_hash_mismatch(tmp_path):
     args = _fixture(tmp_path / "other")
     args["expected_source_archive_sha256"] = "0" * 64
     with pytest.raises(ProvenanceError, match="source archive SHA-256"):
+        capture_build_provenance(**args)
+
+
+def test_capture_accepts_cubin_without_embedded_ptx(tmp_path):
+    args = _fixture(tmp_path)
+    args["device_code"] = [
+        artifact for artifact in args["device_code"] if artifact.suffix == ".cubin"
+    ]
+
+    payload = capture_build_provenance(**args)
+
+    assert [
+        item["filename"] for item in payload["build"]["artifacts"]["device_code"]
+    ] == ["tor_recursive.cubin"]
+
+
+def test_capture_accepts_embedded_sass_without_materialized_cubin(tmp_path):
+    args = _fixture(tmp_path)
+    args["device_code"] = [
+        artifact for artifact in args["device_code"] if artifact.suffix == ".sass"
+    ]
+
+    payload = capture_build_provenance(**args)
+
+    assert [
+        item["filename"] for item in payload["build"]["artifacts"]["device_code"]
+    ] == ["embedded.sass"]
+
+
+def test_capture_rejects_ptx_without_executable_device_evidence(tmp_path):
+    args = _fixture(tmp_path)
+    args["device_code"] = [
+        artifact for artifact in args["device_code"] if artifact.suffix == ".ptx"
+    ]
+
+    with pytest.raises(ProvenanceError, match="cubin, fatbin, or SASS"):
+        capture_build_provenance(**args)
+
+
+def test_capture_rejects_unrecognized_sass_dump(tmp_path):
+    args = _fixture(tmp_path)
+    sass = next(
+        artifact for artifact in args["device_code"] if artifact.suffix == ".sass"
+    )
+    sass.write_text("not cuobjdump output\n", encoding="ascii")
+    args["device_code"] = [sass]
+
+    with pytest.raises(ProvenanceError, match="no recognizable embedded device code"):
         capture_build_provenance(**args)
 
 

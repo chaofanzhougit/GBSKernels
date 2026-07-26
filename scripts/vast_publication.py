@@ -106,6 +106,8 @@ class PublicationConfig:
     min_cuda: float = 12.4
     min_direct_ports: int = 1
     offer_limit: int = 50
+    instance_recovery_timeout_seconds: float = 3.0 * 60.0
+    instance_recovery_poll_seconds: float = 5.0
     ssh_ready_timeout_seconds: float = 15.0 * 60.0
     ssh_poll_seconds: float = 10.0
     ssh_connect_timeout_seconds: float = 15.0
@@ -115,6 +117,7 @@ class PublicationConfig:
     retrieval_retry_seconds: float = 5.0
     destroy_attempt_timeout_seconds: float = 20.0
     destroy_attempts: int = 3
+    destroy_retry_seconds: float = 5.0
     ssh_user: str = "root"
     ssh_identity: Path | None = None
     remote_output_name: str = "publication-output.tar.gz"
@@ -322,6 +325,8 @@ def _validate_config(config: PublicationConfig) -> InputRecord:
         "maximum instance lifetime": config.max_instance_seconds,
         "disk": config.disk_gb,
         "minimum CUDA": config.min_cuda,
+        "instance recovery timeout": config.instance_recovery_timeout_seconds,
+        "instance recovery poll interval": config.instance_recovery_poll_seconds,
         "SSH readiness timeout": config.ssh_ready_timeout_seconds,
         "SSH poll interval": config.ssh_poll_seconds,
         "SSH connection timeout": config.ssh_connect_timeout_seconds,
@@ -329,6 +334,7 @@ def _validate_config(config: PublicationConfig) -> InputRecord:
         "retrieval reserve": config.retrieval_reserve_seconds,
         "retrieval retry interval": config.retrieval_retry_seconds,
         "destroy timeout": config.destroy_attempt_timeout_seconds,
+        "destroy retry interval": config.destroy_retry_seconds,
     }
     for label, value in positive.items():
         if not math.isfinite(float(value)) or float(value) <= 0.0:
@@ -343,9 +349,7 @@ def _validate_config(config: PublicationConfig) -> InputRecord:
     ):
         raise PublicationError("preflight", "integer constraints must be positive")
 
-    teardown_reserve = (
-        config.destroy_attempt_timeout_seconds * config.destroy_attempts
-    )
+    teardown_reserve = _teardown_reserve_seconds(config)
     if config.max_instance_seconds <= teardown_reserve + config.retrieval_reserve_seconds:
         raise PublicationError(
             "preflight",
@@ -422,6 +426,15 @@ def _positive_int(value: Any) -> int | None:
     except (TypeError, ValueError):
         return None
     return converted if converted > 0 else None
+
+
+def _teardown_reserve_seconds(config: PublicationConfig) -> float:
+    """Reserve destroy and verification commands plus inter-attempt delays."""
+
+    return (
+        2.0 * config.destroy_attempt_timeout_seconds * config.destroy_attempts
+        + config.destroy_retry_seconds * (config.destroy_attempts - 1)
+    )
 
 
 def _normalized_gpu(value: Any) -> str:
@@ -630,28 +643,57 @@ class VastPublicationRunner:
             raise PublicationError("search", "offer search returned an invalid JSON shape")
         return select_offer(payload, self.config)
 
-    def _show_all_instances(self) -> list[Mapping[str, Any]]:
+    def _show_all_instances(
+        self,
+        *,
+        stage: str = "instance_recovery",
+        timeout: float = 30.0,
+    ) -> list[Mapping[str, Any]]:
         payload = self._json_command(
             (self.config.vastai_bin, "--raw", "show", "instances"),
-            timeout=30.0,
-            stage="instance_recovery",
+            timeout=timeout,
+            stage=stage,
         )
         if isinstance(payload, dict):
             payload = payload.get("instances")
-        if not isinstance(payload, list):
-            raise PublicationError("instance_recovery", "instance list has invalid JSON shape")
-        return [item for item in payload if isinstance(item, dict)]
+        if not isinstance(payload, list) or not all(
+            isinstance(item, dict) for item in payload
+        ):
+            raise PublicationError(stage, "instance list has invalid JSON shape")
+        return payload
 
-    def _recover_instance_id(self, label: str) -> int | None:
-        try:
-            matches = [
-                row for row in self._show_all_instances() if row.get("label") == label
-            ]
-        except BaseException:
-            return None
-        ids = {_positive_int(row.get("id")) for row in matches}
-        ids.discard(None)
-        return next(iter(ids)) if len(ids) == 1 else None
+    def _recover_instance_id(self, label: str, deadline: float) -> int | None:
+        while True:
+            remaining = deadline - self.monotonic()
+            if remaining <= 0.0:
+                return None
+            try:
+                matches = [
+                    row
+                    for row in self._show_all_instances(
+                        timeout=min(30.0, remaining),
+                    )
+                    if row.get("label") == label
+                ]
+                if len(matches) == 1:
+                    instance_id = _positive_int(matches[0].get("id"))
+                    if instance_id is not None:
+                        return instance_id
+                elif len(matches) > 1:
+                    raise PublicationError(
+                        "instance_recovery",
+                        "run label matched more than one provider instance",
+                    )
+            except BaseException:
+                pass
+
+            remaining = deadline - self.monotonic()
+            if remaining <= 0.0:
+                return None
+            try:
+                self.sleep(min(self.config.instance_recovery_poll_seconds, remaining))
+            except BaseException:
+                continue
 
     def _show_instance(
         self, instance_id: int, timeout: float
@@ -960,7 +1002,11 @@ class VastPublicationRunner:
     def _destroy(self, instance_id: int) -> dict[str, Any]:
         attempts: list[dict[str, Any]] = []
         for attempt in range(1, self.config.destroy_attempts + 1):
-            record: dict[str, Any] = {"attempt": attempt, "success": False}
+            record: dict[str, Any] = {
+                "attempt": attempt,
+                "target_instance_id": instance_id,
+                "success": False,
+            }
             try:
                 result = self._run_command(
                     (
@@ -969,24 +1015,53 @@ class VastPublicationRunner:
                         "destroy",
                         "instance",
                         str(instance_id),
+                        "--yes",
                     ),
                     timeout=self.config.destroy_attempt_timeout_seconds,
                     stage="destroy",
                     require_success=False,
                 )
-                record["returncode"] = result.returncode
-                if result.returncode == 0:
-                    try:
-                        payload = _strict_json(result.stdout, "destroy")
-                    except PublicationError:
-                        payload = None
-                    if isinstance(payload, dict) and payload.get("success") is True:
-                        record["success"] = True
-                        attempts.append(record)
-                        return {"attempted": True, "succeeded": True, "attempts": attempts}
+                record["destroy_returncode"] = result.returncode
             except BaseException as exc:
-                record["error_type"] = type(exc).__name__
+                record["destroy_error_type"] = type(exc).__name__
+
+            verification: dict[str, Any] = {"completed": False}
+            try:
+                rows = self._show_all_instances(
+                    stage="destroy_verify",
+                    timeout=self.config.destroy_attempt_timeout_seconds,
+                )
+                active_ids: set[int] = set()
+                for row in rows:
+                    listed_id = row.get("id")
+                    if (
+                        isinstance(listed_id, bool)
+                        or not isinstance(listed_id, int)
+                        or listed_id <= 0
+                    ):
+                        raise PublicationError(
+                            "destroy_verify", "instance list contains an invalid ID"
+                        )
+                    active_ids.add(listed_id)
+                target_present = instance_id in active_ids
+                verification = {
+                    "completed": True,
+                    "target_present": target_present,
+                }
+                if not target_present:
+                    record["verification"] = verification
+                    record["success"] = True
+                    attempts.append(record)
+                    return {"attempted": True, "succeeded": True, "attempts": attempts}
+            except BaseException as exc:
+                verification["error_type"] = type(exc).__name__
+            record["verification"] = verification
             attempts.append(record)
+            if attempt < self.config.destroy_attempts:
+                try:
+                    self.sleep(self.config.destroy_retry_seconds)
+                except BaseException as exc:
+                    record["retry_sleep_error_type"] = type(exc).__name__
         return {"attempted": True, "succeeded": False, "attempts": attempts}
 
     def _dry_run_receipt(
@@ -1080,9 +1155,21 @@ class VastPublicationRunner:
                 "minimum_cuda": self.config.min_cuda,
                 "minimum_disk_gb": self.config.disk_gb,
                 "minimum_direct_ports": self.config.min_direct_ports,
+                "instance_recovery_timeout_seconds": (
+                    self.config.instance_recovery_timeout_seconds
+                ),
+                "instance_recovery_poll_seconds": (
+                    self.config.instance_recovery_poll_seconds
+                ),
                 "retrieval_reserve_seconds": self.config.retrieval_reserve_seconds,
                 "retrieval_attempts": self.config.retrieval_attempts,
                 "retrieval_retry_seconds": self.config.retrieval_retry_seconds,
+                "destroy_attempt_timeout_seconds": (
+                    self.config.destroy_attempt_timeout_seconds
+                ),
+                "destroy_attempts": self.config.destroy_attempts,
+                "destroy_retry_seconds": self.config.destroy_retry_seconds,
+                "teardown_reserve_seconds": _teardown_reserve_seconds(self.config),
             },
             "cost_ceiling": {
                 "max_hourly_usd": self.config.max_hourly_usd,
@@ -1160,10 +1247,7 @@ class VastPublicationRunner:
                 offer_id = int(offer["id"])
                 phase = self.monotonic()
                 instance_deadline = phase + self.config.max_instance_seconds
-                teardown_reserve = (
-                    self.config.destroy_attempt_timeout_seconds
-                    * self.config.destroy_attempts
-                )
+                teardown_reserve = _teardown_reserve_seconds(self.config)
                 retrieval_deadline = instance_deadline - teardown_reserve
                 work_deadline = (
                     retrieval_deadline - self.config.retrieval_reserve_seconds
@@ -1183,9 +1267,22 @@ class VastPublicationRunner:
                         raise PublicationError("create", "provider did not confirm creation")
                     if instance_id is None:
                         raise PublicationError("create", "creation response omitted instance ID")
-                except BaseException:
+                except BaseException as create_error:
                     if create_attempted and instance_id is None:
-                        instance_id = self._recover_instance_id(label)
+                        recovery_deadline = min(
+                            work_deadline,
+                            self.monotonic()
+                            + self.config.instance_recovery_timeout_seconds,
+                        )
+                        instance_id = self._recover_instance_id(
+                            label,
+                            recovery_deadline,
+                        )
+                        if instance_id is None:
+                            raise PublicationError(
+                                "instance_recovery",
+                                "creation outcome remained ambiguous after bounded recovery",
+                            ) from create_error
                     raise
                 finally:
                     timings["create_seconds"] = self.monotonic() - phase
@@ -1273,7 +1370,13 @@ class VastPublicationRunner:
                     teardown = self._destroy(instance_id)
                     timings["destroy_seconds"] = self.monotonic() - phase
 
-        if primary_error is None and not teardown.get("succeeded"):
+        preceding_error_record: dict[str, Any] | None = None
+        if teardown.get("attempted") and not teardown.get("succeeded"):
+            if primary_error is not None:
+                preceding_error_record = {
+                    "type": type(primary_error).__name__,
+                    "stage": primary_error_stage,
+                }
             primary_error = PublicationError(
                 "destroy", "instance destruction could not be confirmed"
             )
@@ -1288,6 +1391,8 @@ class VastPublicationRunner:
             if primary_error is not None
             else None
         )
+        if error_record is not None and preceding_error_record is not None:
+            error_record["preceding_error"] = preceding_error_record
         receipt = self._receipt(
             status=status,
             inputs=inputs,
@@ -1348,6 +1453,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--min-cuda", type=float, default=12.4)
     parser.add_argument("--min-direct-ports", type=int, default=1)
     parser.add_argument("--offer-limit", type=int, default=50)
+    parser.add_argument("--instance-recovery-timeout-seconds", type=float, default=180.0)
+    parser.add_argument("--instance-recovery-poll-seconds", type=float, default=5.0)
     parser.add_argument("--ssh-ready-timeout-seconds", type=float, default=900.0)
     parser.add_argument("--ssh-poll-seconds", type=float, default=10.0)
     parser.add_argument("--ssh-connect-timeout-seconds", type=float, default=15.0)
@@ -1357,6 +1464,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--retrieval-retry-seconds", type=float, default=5.0)
     parser.add_argument("--destroy-attempt-timeout-seconds", type=float, default=20.0)
     parser.add_argument("--destroy-attempts", type=int, default=3)
+    parser.add_argument("--destroy-retry-seconds", type=float, default=5.0)
     parser.add_argument("--ssh-user", default="root")
     parser.add_argument("--ssh-identity", type=Path, default=None)
     parser.add_argument("--remote-output-name", default="publication-output.tar.gz")
@@ -1385,6 +1493,8 @@ def config_from_args(args: argparse.Namespace) -> PublicationConfig:
         min_cuda=args.min_cuda,
         min_direct_ports=args.min_direct_ports,
         offer_limit=args.offer_limit,
+        instance_recovery_timeout_seconds=args.instance_recovery_timeout_seconds,
+        instance_recovery_poll_seconds=args.instance_recovery_poll_seconds,
         ssh_ready_timeout_seconds=args.ssh_ready_timeout_seconds,
         ssh_poll_seconds=args.ssh_poll_seconds,
         ssh_connect_timeout_seconds=args.ssh_connect_timeout_seconds,
@@ -1394,6 +1504,7 @@ def config_from_args(args: argparse.Namespace) -> PublicationConfig:
         retrieval_retry_seconds=args.retrieval_retry_seconds,
         destroy_attempt_timeout_seconds=args.destroy_attempt_timeout_seconds,
         destroy_attempts=args.destroy_attempts,
+        destroy_retry_seconds=args.destroy_retry_seconds,
         ssh_user=args.ssh_user,
         ssh_identity=args.ssh_identity,
         remote_output_name=args.remote_output_name,
@@ -1416,7 +1527,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("publication run interrupted; teardown was attempted", file=sys.stderr)
         return 130
     except PublicationError as exc:
-        print(f"publication run failed at {exc.stage}", file=sys.stderr)
+        alert = (
+            "; inspect active Vast instances immediately"
+            if exc.stage in {"destroy", "instance_recovery"}
+            else ""
+        )
+        print(f"publication run failed at {exc.stage}{alert}", file=sys.stderr)
         return 1
     print(f"publication run {receipt['status']}; receipt: {path}")
     return 0

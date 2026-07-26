@@ -21,13 +21,17 @@ IMAGE = "nvidia/cuda@sha256:" + "c" * 64
 
 
 class FakeClock:
-    def __init__(self):
+    def __init__(self, *, interrupt_sleeps=0):
         self.value = 100.0
+        self.interrupt_sleeps = interrupt_sleeps
 
     def __call__(self):
         return self.value
 
     def advance(self, seconds):
+        if seconds >= 1.0 and self.interrupt_sleeps > 0:
+            self.interrupt_sleeps -= 1
+            raise KeyboardInterrupt()
         self.value += seconds
 
 
@@ -40,15 +44,21 @@ class FakeExecutor:
         interrupt_create=False,
         never_ready=False,
         retrieve_failures=0,
+        destroy_false_success=False,
+        recovery_visibility_failures=0,
     ):
         self.clock = clock
         self.interrupt_stage = interrupt_stage
         self.interrupt_create = interrupt_create
         self.never_ready = never_ready
         self.retrieve_failures = retrieve_failures
+        self.destroy_false_success = destroy_false_success
+        self.recovery_visibility_failures = recovery_visibility_failures
         self.retrieval_reads = 0
+        self.instance_list_reads = 0
         self.calls = []
         self.label = None
+        self.instance_present = False
 
     @staticmethod
     def _result(argv, returncode=0, payload=None):
@@ -113,21 +123,24 @@ class FakeExecutor:
 
         if argv[:4] == ("vastai", "--raw", "create", "instance"):
             self.label = argv[argv.index("--label") + 1]
+            self.instance_present = True
             if self.interrupt_create:
                 raise KeyboardInterrupt()
             return self._result(argv, payload={"success": True, "new_contract": 4321})
 
         if argv[:4] == ("vastai", "--raw", "show", "instances"):
-            return self._result(
-                argv,
-                payload=[
-                    {
-                        "id": 4321,
-                        "label": self.label,
-                        "extra_env": [["KEY", "provider secret"]],
-                    }
-                ],
-            )
+            self.instance_list_reads += 1
+            instances = []
+            if (
+                self.instance_present
+                and self.instance_list_reads > self.recovery_visibility_failures
+            ):
+                instances.append({
+                    "id": 4321,
+                    "label": self.label,
+                    "extra_env": [["KEY", "provider secret"]],
+                })
+            return self._result(argv, payload=instances)
 
         if argv[:4] == ("vastai", "--raw", "show", "instance"):
             if self.never_ready:
@@ -150,7 +163,15 @@ class FakeExecutor:
             )
 
         if argv[:4] == ("vastai", "--raw", "destroy", "instance"):
-            return self._result(argv, payload={"success": True})
+            if self.destroy_false_success:
+                return subprocess.CompletedProcess(
+                    argv,
+                    0,
+                    "Are you sure you want to destroy this instance? [y/N] Aborted.\n",
+                    "provider secret",
+                )
+            self.instance_present = False
+            return self._result(argv)
 
         if argv[0] == "ssh":
             remote = argv[-1]
@@ -208,12 +229,15 @@ def _fixture(tmp_path, *, dry_run=False, confirm=True):
         min_reliability=0.98,
         disk_gb=50.0,
         min_cuda=12.4,
+        instance_recovery_timeout_seconds=3.0,
+        instance_recovery_poll_seconds=1.0,
         ssh_ready_timeout_seconds=30.0,
         ssh_poll_seconds=1.0,
         retrieval_reserve_seconds=30.0,
         retrieval_retry_seconds=1.0,
         destroy_attempt_timeout_seconds=5.0,
         destroy_attempts=2,
+        destroy_retry_seconds=1.0,
         dry_run=dry_run,
         confirm_spend=confirm,
     )
@@ -268,7 +292,8 @@ def test_successful_lifecycle_selects_cheapest_valid_offer_and_destroys_exact_id
     assert create[create.index("--image") + 1] == IMAGE
     assert {"--ssh", "--direct", "--cancel-unavail"} <= set(create)
     destroy = [command for command in commands if command[2:4] == ("destroy", "instance")]
-    assert destroy == [("vastai", "--raw", "destroy", "instance", "4321")]
+    assert destroy == [("vastai", "--raw", "destroy", "instance", "4321", "--yes")]
+    assert commands[-1] == ("vastai", "--raw", "show", "instances")
     assert all("--api-key" not in command and "--api_key" not in command for command in commands)
 
     scp_commands = [command for command in commands if command[0] == "scp"]
@@ -284,6 +309,15 @@ def test_successful_lifecycle_selects_cheapest_valid_offer_and_destroys_exact_id
     assert receipt["offer"]["id"] == 12
     assert receipt["instance"]["id"] == 4321
     assert receipt["teardown"]["succeeded"] is True
+    assert receipt["teardown"]["attempts"] == [{
+        "attempt": 1,
+        "target_instance_id": 4321,
+        "destroy_returncode": 0,
+        "verification": {"completed": True, "target_present": False},
+        "success": True,
+    }]
+    assert receipt["constraints"]["teardown_reserve_seconds"] == 21.0
+    assert receipt["constraints"]["instance_recovery_timeout_seconds"] == 3.0
     assert receipt["output"]["sha256"] == hashlib.sha256(b"publication output\n").hexdigest()
     assert receipt["inputs"]["session_script"]["contract"]["container_digest"] == IMAGE
     assert receipt["cost_ceiling"]["selected_maximum_projected_usd"] <= 1.0
@@ -301,7 +335,7 @@ def test_keyboard_interrupt_during_execution_still_retrieves_and_destroys(tmp_pa
         _runner(config, executor, clock).run()
 
     commands = [call[0] for call in executor.calls]
-    assert ("vastai", "--raw", "destroy", "instance", "4321") in commands
+    assert ("vastai", "--raw", "destroy", "instance", "4321", "--yes") in commands
     assert config.output.exists(), "best-effort retrieval should precede teardown"
     receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
     assert receipt["status"] == "interrupted"
@@ -319,11 +353,69 @@ def test_interrupt_during_ambiguous_create_recovers_label_and_destroys(tmp_path)
 
     commands = [call[0] for call in executor.calls]
     assert ("vastai", "--raw", "show", "instances") in commands
-    assert ("vastai", "--raw", "destroy", "instance", "4321") in commands
+    assert ("vastai", "--raw", "destroy", "instance", "4321", "--yes") in commands
     receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
     assert receipt["instance"]["id"] == 4321
     assert receipt["status"] == "interrupted"
     assert receipt["teardown"]["succeeded"] is True
+
+
+def test_ambiguous_create_retries_until_delayed_instance_is_visible(tmp_path):
+    config = _fixture(tmp_path)
+    clock = FakeClock(interrupt_sleeps=1)
+    executor = FakeExecutor(
+        clock,
+        interrupt_create=True,
+        recovery_visibility_failures=2,
+    )
+
+    with pytest.raises(KeyboardInterrupt):
+        _runner(config, executor, clock).run()
+
+    commands = [call[0] for call in executor.calls]
+    instance_lists = [
+        command for command in commands if command[2:4] == ("show", "instances")
+    ]
+    assert len(instance_lists) == 4
+    assert (
+        "vastai",
+        "--raw",
+        "destroy",
+        "instance",
+        "4321",
+        "--yes",
+    ) in commands
+    receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
+    assert receipt["instance"]["id"] == 4321
+    assert receipt["teardown"]["succeeded"] is True
+
+
+def test_ambiguous_create_without_visible_id_is_reported_as_recovery_failure(tmp_path):
+    config = _fixture(tmp_path)
+    clock = FakeClock()
+    executor = FakeExecutor(
+        clock,
+        interrupt_create=True,
+        recovery_visibility_failures=100,
+    )
+
+    with pytest.raises(PublicationError) as caught:
+        _runner(config, executor, clock).run()
+
+    assert caught.value.stage == "instance_recovery"
+    commands = [call[0] for call in executor.calls]
+    assert len([
+        command for command in commands if command[2:4] == ("show", "instances")
+    ]) >= 2
+    assert not any(command[2:4] == ("destroy", "instance") for command in commands)
+    assert executor.instance_present is True
+    receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
+    assert receipt["status"] == "failed"
+    assert receipt["error"] == {
+        "stage": "instance_recovery",
+        "type": "PublicationError",
+    }
+    assert receipt["teardown"]["attempted"] is False
 
 
 def test_retrieval_failure_records_failure_and_still_destroys(tmp_path):
@@ -336,7 +428,7 @@ def test_retrieval_failure_records_failure_and_still_destroys(tmp_path):
 
     assert caught.value.stage == "retrieve"
     commands = [call[0] for call in executor.calls]
-    assert commands[-1] == ("vastai", "--raw", "destroy", "instance", "4321")
+    assert commands[-1] == ("vastai", "--raw", "show", "instances")
     receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
     assert receipt["status"] == "failed"
     assert receipt["error"] == {"stage": "retrieve", "type": "PublicationError"}
@@ -356,6 +448,63 @@ def test_transient_retrieval_failure_is_retried_before_teardown(tmp_path):
     assert receipt["status"] == "succeeded"
     assert receipt["teardown"]["succeeded"] is True
     assert config.output.read_bytes() == b"publication output\n"
+
+
+def test_destroy_false_success_is_retried_while_exact_instance_remains(tmp_path):
+    config = _fixture(tmp_path)
+    clock = FakeClock()
+    executor = FakeExecutor(clock, destroy_false_success=True)
+
+    with pytest.raises(PublicationError) as caught:
+        _runner(config, executor, clock).run()
+
+    assert caught.value.stage == "destroy"
+    commands = [call[0] for call in executor.calls]
+    destroy = [command for command in commands if command[2:4] == ("destroy", "instance")]
+    assert destroy == [
+        ("vastai", "--raw", "destroy", "instance", "4321", "--yes"),
+        ("vastai", "--raw", "destroy", "instance", "4321", "--yes"),
+    ]
+    receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
+    assert receipt["status"] == "failed"
+    assert receipt["teardown"]["succeeded"] is False
+    assert all(
+        attempt["destroy_returncode"] == 0
+        and attempt["verification"] == {
+            "completed": True,
+            "target_present": True,
+        }
+        and attempt["success"] is False
+        for attempt in receipt["teardown"]["attempts"]
+    )
+    assert "Aborted." not in config.receipt.read_text(encoding="utf-8")
+
+
+def test_unconfirmed_teardown_is_primary_even_after_execution_interrupt(tmp_path):
+    config = _fixture(tmp_path)
+    clock = FakeClock()
+    executor = FakeExecutor(
+        clock,
+        interrupt_stage="execute",
+        destroy_false_success=True,
+    )
+
+    with pytest.raises(PublicationError) as caught:
+        _runner(config, executor, clock).run()
+
+    assert caught.value.stage == "destroy"
+    receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
+    assert receipt["status"] == "failed"
+    assert receipt["error"] == {
+        "type": "PublicationError",
+        "stage": "destroy",
+        "preceding_error": {
+            "type": "KeyboardInterrupt",
+            "stage": "execute",
+        },
+    }
+    assert receipt["teardown"]["attempted"] is True
+    assert receipt["teardown"]["succeeded"] is False
 
 
 def test_adapter_image_mismatch_refuses_before_any_command(tmp_path):
@@ -399,7 +548,7 @@ def test_ssh_readiness_wait_is_bounded_and_tears_down(tmp_path):
     commands = [call[0] for call in executor.calls]
     show_calls = [command for command in commands if command[2:4] == ("show", "instance")]
     assert 1 <= len(show_calls) <= 4
-    assert commands[-1] == ("vastai", "--raw", "destroy", "instance", "4321")
+    assert commands[-1] == ("vastai", "--raw", "show", "instances")
     receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
     assert receipt["status"] == "failed"
     assert receipt["error"]["stage"] == "ssh_wait"

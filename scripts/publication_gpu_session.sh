@@ -413,26 +413,40 @@ cmp "$EXTENSION" "$EVIDENCE_EXTENSION" \
   || die "retained extension differs from the compiled extension"
 export GBSKERNELS_EXT_DIR="$BINDINGS_BUILD"
 
-CURRENT_STAGE="PTX and cubin extraction"
+CURRENT_STAGE="embedded device-code audit"
 say "$CURRENT_STAGE"
+SASS_DUMP="$EVIDENCE_ROOT/device/embedded.sass"
 (
   cd "$EVIDENCE_ROOT/device"
   "$CUOBJDUMP" --list-ptx "$EXTENSION" > ptx-list.txt
   "$CUOBJDUMP" --list-elf "$EXTENSION" > elf-list.txt
   "$CUOBJDUMP" --extract-ptx all "$EXTENSION" > extract-ptx.log 2>&1
-  "$CUOBJDUMP" --extract-elf all "$EXTENSION" > extract-elf.log 2>&1
+  "$CUOBJDUMP" --dump-sass "$EXTENSION" > "$SASS_DUMP"
 )
+"$BOOTSTRAP_PYTHON" - "$EVIDENCE_ROOT/device/elf-list.txt" "$SASS_DUMP" <<'PY'
+from pathlib import Path
+import sys
+
+elf_list = Path(sys.argv[1]).read_text(encoding="utf-8")
+sass = Path(sys.argv[2]).read_text(encoding="utf-8")
+if not any(
+    line.lstrip().startswith("ELF file")
+    and line.rstrip().endswith((".cubin", ".fatbin"))
+    for line in elf_list.splitlines()
+):
+    raise SystemExit("cuobjdump listed no embedded cubin/fatbin")
+if "Fatbin elf code:" not in sass or "Function :" not in sass:
+    raise SystemExit("cuobjdump produced no recognizable embedded SASS")
+PY
 mapfile -d '' -t PTX_FILES < <(
   find "$EVIDENCE_ROOT/device" -maxdepth 1 -type f -name '*.ptx' -print0 | sort -z
 )
-mapfile -d '' -t CUBIN_FILES < <(
-  find "$EVIDENCE_ROOT/device" -maxdepth 1 -type f \
-    \( -name '*.cubin' -o -name '*.fatbin' \) -print0 | sort -z
-)
-[ "${#PTX_FILES[@]}" -ge 1 ] || die "cuobjdump extracted no PTX"
-[ "${#CUBIN_FILES[@]}" -ge 1 ] || die "cuobjdump extracted no cubin/fatbin"
-for device_file in "${PTX_FILES[@]}" "${CUBIN_FILES[@]}"; do
-  [ -s "$device_file" ] || die "empty device-code extraction: $device_file"
+DEVICE_CODE_FILES=("$SASS_DUMP")
+for ptx_file in "${PTX_FILES[@]}"; do
+  DEVICE_CODE_FILES+=("$ptx_file")
+done
+for device_file in "${DEVICE_CODE_FILES[@]}"; do
+  [ -s "$device_file" ] || die "empty device-code evidence: $device_file"
 done
 
 CURRENT_STAGE="wheel build from separate archive extraction"
@@ -527,6 +541,7 @@ CAPTURE_ARGS=(
   --cmake-cache "$BINDINGS_BUILD/CMakeCache.txt"
   --build-product "$CORE_BUILD/bench_kernels"
   --build-product "$EVIDENCE_ROOT/environment/pip-freeze.txt"
+  --build-product "$EVIDENCE_ROOT/device/elf-list.txt"
   --extension "$EVIDENCE_EXTENSION"
   --wheel "$WHEEL"
   --nvcc "$NVCC"
@@ -538,7 +553,7 @@ CAPTURE_ARGS=(
 for executable in "${GATE_BINARIES[@]}"; do
   CAPTURE_ARGS+=(--build-product "$executable")
 done
-for device_file in "${PTX_FILES[@]}" "${CUBIN_FILES[@]}"; do
+for device_file in "${DEVICE_CODE_FILES[@]}"; do
   CAPTURE_ARGS+=(--device-code "$device_file")
 done
 "$PYTHON" "$SOURCE_ROOT/scripts/capture_build_provenance.py" "${CAPTURE_ARGS[@]}"
@@ -803,7 +818,11 @@ if not files:
     raise SystemExit("evidence inventory is empty")
 required_paths = {
     "build_provenance.json",
+    "device/elf-list.txt",
+    "device/embedded.sass",
+    "device/extract-ptx.log",
     "device/nvidia-smi.txt",
+    "device/ptx-list.txt",
     "environment/dpkg-query.txt",
     "environment/pip-freeze.txt",
     "environment/uv-lock-constraints.txt",

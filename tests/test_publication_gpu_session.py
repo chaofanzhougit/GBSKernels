@@ -118,7 +118,13 @@ def test_publication_session_is_out_of_source_and_hashes_final_evidence():
     assert '-S "$SOURCE_ROOT/bindings" -B "$BINDINGS_BUILD"' in source
     assert "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" in source
     assert "--extract-ptx all" in source
-    assert "--extract-elf all" in source
+    assert "--extract-elf all" not in source
+    assert "--dump-sass" in source
+    assert "embedded.sass" in source
+    assert "cuobjdump listed no embedded cubin/fatbin" in source
+    assert "cuobjdump produced no recognizable embedded SASS" in source
+    assert 'die "cuobjdump extracted no PTX"' not in source
+    assert 'die "cuobjdump extracted no cubin/fatbin"' not in source
     assert "capture_build_provenance.py" in source
     assert "source_tree_inventory(root)" in source
     assert 'nvidia-smi -q >"$EVIDENCE_ROOT/device/nvidia-smi.txt"' in source
