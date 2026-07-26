@@ -26,7 +26,7 @@ audit reconstructs the realized design as follows:
 | Rounded band weights | Exact counts `(9342, 13898, 19981, 27671) / 70892` determine the four band weights. |
 | End-to-end certified event log-ratios | The saved halfwidth is a kernel-derived arithmetic proxy. State construction, determinant normalization, and logarithms were not end-to-end certified, and the historical GPU/container/extension identity was not recorded. |
 | Replacement after a refusal | The archived checkpoints contain 2,000 selected events and zero refusals. The audit refuses to form the stratified estimate if any selected event is refused or missing; it does not substitute another event. |
-| Block bootstrap and full normalizer covariance | Neither artifact exists. The audit reports a finite-population event standard error and the published per-band across-group standard deviations as a separate diagonal sensitivity scale; it reports no confidence interval or significance statistic. |
+| Block bootstrap and full normalizer covariance | Neither artifact exists. The audit reports a design-based event sensitivity from the finite-population formula and the published per-band across-group standard deviations as a separate diagonal sensitivity scale; it reports no confidence interval or significance statistic. |
 | Reconstruction-marginal physical conclusion | No reconstruction layer was run. The result is conditional on the two frozen point models and is not an absolute-fit or quantum-advantage verdict. |
 
 The exact selection, checkpoint, normalizer, histogram, source-data, and

@@ -2,7 +2,8 @@
 
 This is the empirical half of the certificate audit
 (docs/dd_certificate_proof.md section 6): it stresses the corrected DD
-lower-bound and residual arithmetic against an independent 50-digit mpmath reference and asserts the
+lower-bound and residual arithmetic against an independently evaluated,
+50-digit mpmath reference that is recorded as binary64, and asserts the
 enclosure invariant |value - reference| <= bound with ZERO violations.
 
 Two backends, one harness:
