@@ -164,6 +164,42 @@ any throughput result is considered publishable. Device-only variants such as
 the warp-specialized permanent are covered by the on-device gates; profiler
 diagnostics collected before those gates remain provisional until they pass.
 
+## Publication evidence workflow (prospective)
+
+The repository also provides a stricter publication-session harness. It is
+separate from the v0.2.1 evidence described above: no GPU result from this new
+harness is being claimed here, and its artifacts become evidence only after an
+actual run completes all fail-closed checks.
+
+The on-box driver consumes a release archive and a separate immutable extraction,
+checks both SHA-256 identities before and after the run, and requires the full Git
+commit, Git tree, and digest-pinned container identity. Builds, virtual
+environment, wheel, CUDA extension, logs, and evidence are created outside the
+source tree. The resulting manifest binds the release source to compiler
+commands, tool versions, PTX/cubin, the loaded extension, the built wheel, device
+metadata, dependency resolution, and every retained artifact.
+
+After the 24 device gates, the registered science profile is configured to run:
+
+- an independent python-flint/Arb enclosure campaign with 312 dense small cases
+  and one structured quarter-identity case at each `k = 25,...,32`; the latter
+  probes the production recursion and certificate at those depths, but is not
+  general dense large-`k` validation; and
+- a frozen same-input torontonian benchmark through 20 modes, comparing the
+  GBSKernels double-double GPU path with The Walrus and Piquasso recursive CPU
+  implementations. Numerical agreement and heterogeneous-device timing are
+  reported separately.
+
+The Vast.ai launcher adds a generated archive adapter, digest-pinned image,
+deterministic offer validation, dry-run and explicit-spend modes, cost/lifetime
+ceilings, bounded SSH handling, create-only retrieval, receipts, and exact-ID
+teardown on normal, failure, and handled-signal paths. See the
+[`scripts/` workflow](scripts/README.md),
+[`bench/` protocol](bench/README.md),
+[`envs/` dependencies](envs/README.md), and
+[`Jiuzhang Arb campaign`](examples/jiuzhang/README.md#publication-arb-enclosure-campaign-prospective)
+for the precise scope and caveats.
+
 ## Performance
 
 The library is batched-first: throughput comes from evaluating thousands of
@@ -213,7 +249,7 @@ These are correctness-first kernels with a deliberately narrow scope:
 ```
 gbskernels/     batched-first Python API (the public surface)
 cpu_ref/        independent CPU reference implementations (double + double-double)
-highprec_ref/   arbitrary-precision reference (mpmath)
+highprec_ref/   arbitrary-precision references (mpmath; publication-only Arb)
 core/           CUDA C++: subset-enumeration utilities, the kernels, on-device gates
 bindings/       nanobind extension exposing the GPU backend to Python
 sampling/       boson-sampling orchestration and the conditional GBS sampler

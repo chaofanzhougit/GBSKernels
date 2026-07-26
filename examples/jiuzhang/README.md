@@ -39,6 +39,42 @@ The staged files and their provenance are listed in
 [`validation_data/README.md`](validation_data/README.md); third-party licensing
 scope is recorded in [`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md).
 
+## Publication Arb enclosure campaign (prospective)
+
+`arb_enclosure_campaign.py` defines a new, independent validation of the
+certified double-double torontonian interval. It is distinct from the mpmath
+adversarial-enclosure gate included in the public v0.2.1 validation, and no GPU
+result from the Arb campaign is claimed here yet.
+
+The registered small-case matrix is exactly 312 cases: `k = 2,...,14`, six
+families, and four deterministic instances per `(k, family)` cell. The families
+are random SPD, near-refusal at scales 0.9, 0.99, and 0.999, cancellation, and
+the physical Jiuzhang squeezed/squashed construction. The physical family uses
+the small hash-bound validation inputs described above. Each exact binary64
+matrix is retained in a compressed corpus and SHA-256-bound to its result.
+
+For these small dense cases, python-flint/Arb independently evaluates every
+subset determinant after converting each binary64 entry exactly. The campaign
+then compares exact rational endpoints: `proved` means the complete Arb interval
+is contained in the candidate's returned `[value - bound, value + bound]`;
+partial overlap is `inconclusive`, disjoint intervals are `violation`, and an
+invalid or non-finite certificate is `refused`.
+
+The publication profile adds eight depth tests, one at each `k = 25,...,32`.
+Each is the structured `2k x 2k` quarter-identity matrix, assembled from
+independent `0.25 I_2` mode blocks. The production GPU candidate still executes
+the recursive torontonian call, while the Arb reference uses the exact block
+factorization (the torontonian is `(1/3)^k`). These cases test recursion depth and
+the returned enclosure at large `k`; they are explicitly not validation over
+general dense, correlated, or physical large-`k` matrices.
+
+The archive-bound session is configured to accept the campaign only if all 320
+cases are `proved`, with no inconclusive, violation, or refusal. This is a future
+acceptance criterion, not a statement that the criterion has already been met.
+The JSON artifact records the Arb/FLINT versions, oracle and campaign source
+hashes, exact endpoints, timings, source-archive/build-manifest provenance, and
+the hash and inventory of the create-only matrix corpus.
+
 ## State construction
 
 `q7_construction.py` implements the paired-source construction of
@@ -95,6 +131,8 @@ the missing historical environment.
   nuisance/predictive propagation required before a claim can be released.
 - `jiuzhang_frontier.py` and `dd_validate.py` regenerate corrected fp64 and
   double-double frontier artifacts under `results/jiuzhang/`.
+- `arb_enclosure_campaign.py` defines the prospective 312-case dense small-matrix
+  plus eight-case structured large-`k` Arb enclosure campaign described above.
 - `make_precision_wall.py` requires explicit corrected `--fp64-artifact` and
   `--dd-artifact` inputs and refuses the superseded v0.1 artifacts.
 - `q7_construction.py` provides the fixed point models used by the v2 workflow.

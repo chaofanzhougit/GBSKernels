@@ -28,3 +28,88 @@ bash scripts/launch_session.sh -p PORT USER@HOST 89 IMAGE@sha256:DIGEST validate
 ```
 
 Replace `PORT` and `USER@HOST` with the SSH endpoint for the rented host.
+
+## Publication-evidence workflow (prospective)
+
+The following tools define a new, source-to-binary-bound publication workflow.
+They do not replace or retroactively strengthen the v0.2.1 evidence above, and
+no GPU run or passing publication artifact from this workflow is claimed in the
+repository at present.
+
+- **`capture_build_provenance.py`** creates a strict manifest for an immutable
+  archive extraction. It verifies the release-archive and source-tree hashes and
+  records the full Git commit/tree, digest-pinned container, normalized compiler
+  commands and caches, compiler/tool queries, PTX and cubin/fatbin, gate
+  binaries, wheel, and the exact compiled extension. It re-hashes the source and
+  archive after capture and refuses outputs inside the source tree or an existing
+  output path.
+- **`publication_gpu_session.sh`** runs on an already-provisioned CUDA host. It
+  requires a `.git`-free archive extraction, the separate release archive, their
+  expected hashes, Git and container identities, and a new external output
+  directory. It derives exact registry constraints from the archive's `uv.lock`,
+  installs the publication-only direct pins, builds the core and binding out of
+  source with auditable floating-point flags, builds and installs the wheel from
+  a second archive extraction, and verifies that Python loaded the recorded
+  extension. The 24 device gates run before either science campaign.
+- **`render_vast_publication_adapter.py`** bridges the Vast runner's deliberately
+  small three-positional remote interface to the on-box driver's explicit flags.
+  The renderer reproduces the supplied commit with `git archive`, verifies that
+  its contents match the release archive, and derives the canonical source-tree
+  hash directly from the safely inspected archive. An optional
+  `--source-tree-sha256` is only an additional caller-supplied cross-check. The
+  generated, create-only adapter binds the archive, tree, and driver hashes, Git
+  objects, and container digest; verifies the uploaded archive; extracts it into
+  a fresh directory; invokes the archive's driver; and packages the evidence and
+  bootstrap/session logs for retrieval.
+- **`vast_publication.py`** uses the official `vastai` CLI. It searches only
+  on-demand offers and revalidates that the selected offer is verified,
+  rentable, not already rented, and exactly one GPU, while enforcing the GPU,
+  CUDA, reliability, disk, direct-port, hourly-cost, total-cost, and lifetime
+  constraints. The image must be pinned by digest. A live run requires
+  `--confirm-spend`; `--dry-run` performs local validation and writes a plan
+  receipt without provisioning. Preflight requires the adapter's archive and
+  container declarations to equal the uploaded archive and launched image.
+  Upload, SSH readiness, and execution are bounded; a separate reserved window
+  retries retrieval before the teardown reserve begins. Outputs and receipts are
+  create-only, early remote failures still return a log bundle, an ambiguous
+  creation is recovered only from a unique run label, and teardown targets the
+  exact instance ID with recorded retries on normal, failure, and handled-signal
+  paths.
+
+The registered on-box profile is fail-closed. It is configured to accept only a
+24-gate pass, 320 Arb-contained enclosures, and complete matched timing and
+agreement rows for GBSKernels DD on GPU plus The Walrus and Piquasso on CPU at
+`4,8,12,16,20` modes. That acceptance rule describes what a future run must
+produce, not a result already obtained. The eight Arb cases at `k = 25,...,32`
+are factorized quarter-identity matrices, not a general dense large-`k` sample.
+
+Generate the adapter only after the release archive, Git objects, and container
+digest are final. The renderer derives the source-tree hash; pass
+`--source-tree-sha256` only when independently cross-checking it. All named
+outputs below must be new paths:
+
+```bash
+python scripts/render_vast_publication_adapter.py \
+  --archive RELEASE_ARCHIVE.tar.gz \
+  --git-commit FULL_GIT_COMMIT \
+  --git-tree FULL_GIT_TREE \
+  --container-digest IMAGE@sha256:DIGEST \
+  --repository . \
+  --output /new/path/publication-vast-adapter.sh
+
+python scripts/vast_publication.py \
+  --archive RELEASE_ARCHIVE.tar.gz \
+  --checksum RELEASE_ARCHIVE.tar.gz.sha256 \
+  --session-script /new/path/publication-vast-adapter.sh \
+  --image IMAGE@sha256:DIGEST \
+  --output /new/path/planned-output.tar.gz \
+  --receipt /new/path/dry-run-receipt.json \
+  --dry-run
+```
+
+For a paid run, choose fresh output and receipt paths, retain the same immutable
+inputs, add `--confirm-spend`, and set explicit `--max-hourly-usd`,
+`--max-total-usd`, and `--max-instance-seconds` limits. Review
+[`envs/publication-requirements.txt`](../envs/publication-requirements.txt) and
+[`envs/README.md`](../envs/README.md) before selecting the image. `--help` on
+each tool is the authoritative option list.
