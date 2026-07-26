@@ -42,16 +42,13 @@ is exploratory, not a retrospective confirmatory result. See the
 
 ## Installation
 
-The CPU package needs only `numpy` + `mpmath`. PyPI publication of v0.2.1 is
-pending; until it is live, install the exact wheel attached to the
-[GitHub release](https://github.com/chaofanzhougit/GBSKernels/releases/tag/v0.2.1).
-Once publication completes, the equivalent pinned PyPI requirement is
-`gbskernels==0.2.1`.
-The CUDA extension is a separate, optional source build (see
+The CPU package is available from
+[PyPI](https://pypi.org/project/gbskernels/0.2.1/) and needs only `numpy` +
+`mpmath`. The CUDA extension is a separate, optional source build (see
 [`bindings/README.md`](bindings/README.md)):
 
 ```bash
-python -m pip install https://github.com/chaofanzhougit/GBSKernels/releases/download/v0.2.1/gbskernels-0.2.1-py3-none-any.whl
+python -m pip install gbskernels==0.2.1
 ```
 
 ## Quick start
