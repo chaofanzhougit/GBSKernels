@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import shlex
 import subprocess
@@ -104,6 +105,36 @@ def test_publication_session_gate_set_and_scientific_workload_are_frozen():
     assert "--source-tree-sha256" in source
     assert '"case_count": 320' in source
     assert 'engines != {"gbskernels_dd", "walrus", "piquasso"}' in source
+
+
+def test_arb_wrapper_resolves_local_campaign_helpers_after_wheel_preload(tmp_path):
+    source = SCRIPT.read_text(encoding="utf-8")
+    blocks = re.findall(r"<<'PY'\n(?P<body>.*?)\nPY(?:\n|\Z)", source, re.DOTALL)
+    wrapper = next(block for block in blocks if "did not preload gbskernels" in block)
+    site_packages = tmp_path / "site-packages"
+    package = site_packages / "gbskernels"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("", encoding="ascii")
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = str(site_packages)
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-",
+            str(ROOT / "examples/jiuzhang/arb_enclosure_campaign.py"),
+            "--help",
+        ],
+        input=wrapper,
+        text=True,
+        capture_output=True,
+        env=environment,
+        cwd=tmp_path,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert "Rigorous Arb validation" in completed.stdout
 
 
 def test_publication_session_is_out_of_source_and_hashes_final_evidence():

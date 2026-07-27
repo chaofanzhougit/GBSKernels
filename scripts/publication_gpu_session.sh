@@ -603,6 +603,7 @@ import gbskernels
 
 if "site-packages" not in str(Path(gbskernels.__file__).resolve()):
     raise SystemExit("Arb campaign did not preload gbskernels from the wheel")
+sys.path.insert(0, str(script.parent))
 sys.argv = [str(script), *arguments]
 runpy.run_path(str(script), run_name="__main__")
 PY
