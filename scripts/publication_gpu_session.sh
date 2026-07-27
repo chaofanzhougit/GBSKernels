@@ -651,6 +651,7 @@ PY
 from pathlib import Path
 import hashlib
 import json
+import math
 import sys
 
 root = Path(sys.argv[1]).resolve()
@@ -739,6 +740,8 @@ if (
     raise SystemExit("Arb campaign provenance does not match the session contract")
 
 baseline = load_strict(root / "science/torontonian_matched_baselines.json")
+if baseline.get("schema_version") != 3:
+    raise SystemExit("matched baseline schema version is not the registered version")
 engines = {row.get("name") for row in baseline.get("engines", [])}
 if engines != {"gbskernels_dd", "walrus", "piquasso"}:
     raise SystemExit(f"matched baseline engine set is incomplete: {engines}")
@@ -782,6 +785,20 @@ if any(
     for row in agreement_rows
 ):
     raise SystemExit("matched implementations did not agree within the registered tolerance")
+for row in agreement_rows:
+    bounds = row.get("reported_abs_error_bounds")
+    if not isinstance(bounds, dict) or set(bounds) != engines:
+        raise SystemExit("matched implementation error-bound record is incomplete")
+    dd_bound = bounds.get("gbskernels_dd")
+    if (
+        isinstance(dd_bound, bool)
+        or not isinstance(dd_bound, (int, float))
+        or not math.isfinite(float(dd_bound))
+        or float(dd_bound) < 0.0
+    ):
+        raise SystemExit("matched GBSKernels DD error bound is invalid")
+    if bounds.get("walrus") is not None or bounds.get("piquasso") is not None:
+        raise SystemExit("recursive baselines unexpectedly reported error bounds")
 
 retained_extensions = sorted((root / "binary").glob("gbskernels_ext*.so"))
 if len(retained_extensions) != 1:

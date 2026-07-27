@@ -13,6 +13,8 @@ from scripts.vast_publication import (
     PublicationConfig,
     PublicationError,
     VastPublicationRunner,
+    _upload_finalize_command,
+    _validate_config,
     build_offer_query,
 )
 
@@ -43,6 +45,8 @@ class FakeExecutor:
         interrupt_stage=None,
         interrupt_create=False,
         never_ready=False,
+        upload_failures=0,
+        finalize_failures=0,
         retrieve_failures=0,
         destroy_false_success=False,
         recovery_visibility_failures=0,
@@ -51,9 +55,16 @@ class FakeExecutor:
         self.interrupt_stage = interrupt_stage
         self.interrupt_create = interrupt_create
         self.never_ready = never_ready
+        self.upload_failures = upload_failures
+        self.finalize_failures = finalize_failures
         self.retrieve_failures = retrieve_failures
         self.destroy_false_success = destroy_false_success
         self.recovery_visibility_failures = recovery_visibility_failures
+        self.upload_writes = 0
+        self.finalize_writes = 0
+        self.upload_sources = []
+        self.upload_destinations = []
+        self.upload_sha256 = []
         self.retrieval_reads = 0
         self.instance_list_reads = 0
         self.calls = []
@@ -175,7 +186,14 @@ class FakeExecutor:
 
         if argv[0] == "ssh":
             remote = argv[-1]
-            if "publication-session.sh" in remote and self.interrupt_stage == "execute":
+            if "promote_upload()" in remote:
+                self.finalize_writes += 1
+                if self.finalize_writes <= self.finalize_failures:
+                    return self._result(argv, returncode=1)
+            if (
+                "bash publication-session.sh source.archive source.sha256" in remote
+                and self.interrupt_stage == "execute"
+            ):
                 raise KeyboardInterrupt()
             return self._result(argv)
 
@@ -189,6 +207,15 @@ class FakeExecutor:
                 ):
                     return self._result(argv, returncode=1)
                 Path(destination).write_bytes(b"publication output\n")
+            else:
+                self.upload_writes += 1
+                self.upload_sources.append(source)
+                self.upload_destinations.append(destination)
+                self.upload_sha256.append(
+                    hashlib.sha256(Path(source).read_bytes()).hexdigest()
+                )
+                if self.upload_writes <= self.upload_failures:
+                    return self._result(argv, returncode=1)
             return self._result(argv)
 
         raise AssertionError(f"unexpected command: {argv}")
@@ -233,6 +260,8 @@ def _fixture(tmp_path, *, dry_run=False, confirm=True):
         instance_recovery_poll_seconds=1.0,
         ssh_ready_timeout_seconds=30.0,
         ssh_poll_seconds=1.0,
+        upload_attempts=3,
+        upload_retry_seconds=1.0,
         retrieval_reserve_seconds=30.0,
         retrieval_retry_seconds=1.0,
         destroy_attempt_timeout_seconds=5.0,
@@ -318,6 +347,8 @@ def test_successful_lifecycle_selects_cheapest_valid_offer_and_destroys_exact_id
     }]
     assert receipt["constraints"]["teardown_reserve_seconds"] == 21.0
     assert receipt["constraints"]["instance_recovery_timeout_seconds"] == 3.0
+    assert receipt["constraints"]["upload_attempts"] == 3
+    assert receipt["constraints"]["upload_retry_seconds"] == 1.0
     assert receipt["output"]["sha256"] == hashlib.sha256(b"publication output\n").hexdigest()
     assert receipt["inputs"]["session_script"]["contract"]["container_digest"] == IMAGE
     assert receipt["cost_ceiling"]["selected_maximum_projected_usd"] <= 1.0
@@ -448,6 +479,164 @@ def test_transient_retrieval_failure_is_retried_before_teardown(tmp_path):
     assert receipt["status"] == "succeeded"
     assert receipt["teardown"]["succeeded"] is True
     assert config.output.read_bytes() == b"publication output\n"
+
+
+def test_transient_upload_failure_is_retried_before_execution(tmp_path):
+    config = _fixture(tmp_path)
+    clock = FakeClock()
+    executor = FakeExecutor(clock, upload_failures=1)
+
+    receipt, _ = _runner(config, executor, clock).run()
+
+    commands = [call[0] for call in executor.calls]
+    upload_commands = [
+        command
+        for command in commands
+        if command[0] == "scp" and not command[-2].startswith("root@")
+    ]
+    assert executor.upload_writes == 4
+    assert upload_commands[0] == upload_commands[1]
+    assert receipt["status"] == "succeeded"
+    assert receipt["teardown"]["succeeded"] is True
+
+
+def test_exhausted_upload_retries_skip_execution_and_still_destroy(tmp_path):
+    config = replace(_fixture(tmp_path), upload_attempts=2)
+    clock = FakeClock()
+    executor = FakeExecutor(clock, upload_failures=100)
+
+    with pytest.raises(PublicationError) as caught:
+        _runner(config, executor, clock).run()
+
+    assert caught.value.stage == "upload"
+    commands = [call[0] for call in executor.calls]
+    assert executor.upload_writes == 2
+    assert not any(
+        command[0] == "ssh" and "publication-session.sh" in command[-1]
+        for command in commands
+    )
+    assert (
+        "vastai",
+        "--raw",
+        "destroy",
+        "instance",
+        "4321",
+        "--yes",
+    ) in commands
+    receipt = json.loads(config.receipt.read_text(encoding="utf-8"))
+    assert receipt["status"] == "failed"
+    assert receipt["error"] == {"stage": "upload", "type": "PublicationError"}
+    assert receipt["teardown"]["succeeded"] is True
+    assert receipt["output"] is None
+
+
+def test_inputs_are_snapshotted_before_the_first_provider_command(tmp_path):
+    config = _fixture(tmp_path)
+    expected_hashes = [
+        hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in (config.archive, config.checksum, config.session_script)
+    ]
+    clock = FakeClock()
+    fake = FakeExecutor(clock)
+    mutated = False
+
+    def mutate_sources_then_execute(argv, timeout):
+        nonlocal mutated
+        if not mutated:
+            assert tuple(argv)[:4] == ("vastai", "--raw", "search", "offers")
+            config.archive.write_bytes(b"mutated archive\n")
+            config.checksum.write_text(f"{'0' * 64}  changed\n", encoding="ascii")
+            config.session_script.write_text("#!/bin/sh\nexit 99\n", encoding="ascii")
+            mutated = True
+        return fake(argv, timeout)
+
+    receipt, _ = _runner(config, mutate_sources_then_execute, clock).run()
+
+    original_paths = {
+        str(path.expanduser().resolve())
+        for path in (config.archive, config.checksum, config.session_script)
+    }
+    assert fake.upload_sha256 == expected_hashes
+    assert not original_paths.intersection(fake.upload_sources)
+    assert [destination.rsplit("/", 1)[-1] for destination in fake.upload_destinations] == [
+        ".source.archive.partial",
+        ".source.sha256.partial",
+        ".publication-session.sh.partial",
+    ]
+    assert receipt["inputs"]["archive"]["sha256"] == expected_hashes[0]
+    assert receipt["inputs"]["checksum"]["sha256"] == expected_hashes[1]
+    assert receipt["inputs"]["session_script"]["sha256"] == expected_hashes[2]
+    assert receipt["status"] == "succeeded"
+
+
+def test_remote_upload_promotion_retries_after_ambiguous_completion(tmp_path):
+    config = _fixture(tmp_path)
+    clock = FakeClock()
+    executor = FakeExecutor(clock, finalize_failures=1)
+
+    receipt, _ = _runner(config, executor, clock).run()
+
+    finalize_commands = [
+        command
+        for command, _ in executor.calls
+        if command[0] == "ssh" and "promote_upload()" in command[-1]
+    ]
+    assert executor.finalize_writes == 2
+    assert finalize_commands[0] == finalize_commands[1]
+    assert receipt["status"] == "succeeded"
+    assert receipt["teardown"]["succeeded"] is True
+
+
+def test_remote_upload_promotion_completes_from_partial_state(tmp_path):
+    config = _fixture(tmp_path)
+    inputs = _validate_config(config)
+    remote = tmp_path / "remote"
+    remote.mkdir()
+
+    (remote / "source.archive").write_bytes(config.archive.read_bytes())
+    (remote / ".source.sha256.partial").write_bytes(config.checksum.read_bytes())
+    (remote / ".publication-session.sh.partial").write_bytes(
+        config.session_script.read_bytes()
+    )
+    command = _upload_finalize_command(str(remote), inputs)
+
+    subprocess.run(["bash", "-lc", command], check=True)
+    subprocess.run(["bash", "-lc", command], check=True)
+
+    for final, source in (
+        ("source.archive", config.archive),
+        ("source.sha256", config.checksum),
+        ("publication-session.sh", config.session_script),
+    ):
+        assert (remote / final).read_bytes() == source.read_bytes()
+    assert not list(remote.glob(".*.partial"))
+
+
+def test_remote_upload_promotion_rejects_a_mismatched_partial(tmp_path):
+    config = _fixture(tmp_path)
+    inputs = _validate_config(config)
+    remote = tmp_path / "remote"
+    remote.mkdir()
+    for partial, source in (
+        (".source.archive.partial", config.archive),
+        (".source.sha256.partial", config.checksum),
+        (".publication-session.sh.partial", config.session_script),
+    ):
+        (remote / partial).write_bytes(source.read_bytes())
+    (remote / ".publication-session.sh.partial").write_bytes(b"corrupt\n")
+    command = _upload_finalize_command(str(remote), inputs)
+
+    completed = subprocess.run(["bash", "-lc", command], check=False)
+
+    assert completed.returncode != 0
+    assert not (remote / "publication-session.sh").exists()
+    (remote / ".publication-session.sh.partial").write_bytes(
+        config.session_script.read_bytes()
+    )
+    subprocess.run(["bash", "-lc", command], check=True)
+    assert (remote / "publication-session.sh").read_bytes() == (
+        config.session_script.read_bytes()
+    )
 
 
 def test_destroy_false_success_is_retried_while_exact_instance_remains(tmp_path):

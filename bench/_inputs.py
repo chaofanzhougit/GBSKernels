@@ -164,10 +164,11 @@ def physical_torontonian(n_modes: int, seed: int, scale: float = 0.1) -> np.ndar
 # --- loss / mixed-state inputs ---------------------------------------------
 # A pure squeezed + interferometer state passed through a uniform loss channel
 # (transmission eta < 1) becomes MIXED: its Husimi covariance has det(Q) > 1, and the
-# matrices the kernels consume (the A-matrix block for the (loop) hafnian, O = I - Q^-1
-# for the torontonian) are structurally different from the pure case -- the regime a
-# real lossy GBS experiment produces. This is the third input regime alongside
-# "physical" (pure, well-conditioned) and "adversarial" (tunable cancellation).
+# matrices the kernels consume (the A-matrix block for the (loop) hafnian and
+# the real-quadrature O_x = I - Sigma_x^-1 for the torontonian) are structurally
+# different from the pure case -- the regime a real lossy GBS experiment
+# produces. This is the third input regime alongside "physical" (pure,
+# well-conditioned) and "adversarial" (tunable cancellation).
 
 def _qmat(cov: np.ndarray, hbar: float = 2.0) -> np.ndarray:
     """Husimi Q covariance from an xxpp Wigner covariance (matches sampling.gbs._qmat)."""
@@ -221,11 +222,21 @@ def loss_loop_hafnian(n: int, seed: int, eta: float = 0.6) -> np.ndarray:
 
 
 def loss_torontonian(n_modes: int, seed: int, eta: float = 0.6) -> np.ndarray:
-    """``O = I - Q^-1`` (2n x 2n, real) of a lossy/mixed Gaussian state -- the threshold-
-    detector matrix a real lossy GBS experiment produces."""
-    Q = _qmat(_lossy_cov(n_modes, seed, eta))
-    O = np.eye(2 * n_modes) - np.linalg.inv(Q)
-    return np.ascontiguousarray(np.real(O)).astype(np.complex128)  # physical real domain
+    """Real-xxpp torontonian matrix of a lossy/mixed Gaussian state.
+
+    With the vacuum-I convention used by ``_lossy_cov``, the real Husimi
+    covariance is ``Sigma_x = (cov + I) / 2`` and the threshold matrix is
+    ``O_x = I - Sigma_x^-1``.  This is the real-basis construction implemented
+    by ``sampling.gbs.threshold_O_xxpp``; it is not the entrywise real part of
+    the generally complex matrix ``I - Q^-1``.
+    """
+    cov = _lossy_cov(n_modes, seed, eta)
+    identity = np.eye(2 * n_modes, dtype=np.float64)
+    sigma_x = (np.asarray(cov, dtype=np.float64) + identity) / 2.0
+    sigma_x = np.ascontiguousarray((sigma_x + sigma_x.T) / 2.0)
+    O_x = identity - np.linalg.inv(sigma_x)
+    O_x = np.ascontiguousarray((O_x + O_x.T) / 2.0)
+    return O_x.astype(np.complex128)
 
 
 def haar_unitary(m: int, seed: int) -> np.ndarray:

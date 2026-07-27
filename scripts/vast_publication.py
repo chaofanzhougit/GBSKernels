@@ -53,6 +53,9 @@ SAFE_SSH_HOST_RE = re.compile(r"\A[A-Za-z0-9](?:[A-Za-z0-9.-]{0,251}[A-Za-z0-9])
 REMOTE_ARCHIVE = "source.archive"
 REMOTE_CHECKSUM = "source.sha256"
 REMOTE_SESSION = "publication-session.sh"
+REMOTE_ARCHIVE_PARTIAL = ".source.archive.partial"
+REMOTE_CHECKSUM_PARTIAL = ".source.sha256.partial"
+REMOTE_SESSION_PARTIAL = ".publication-session.sh.partial"
 REMOTE_RESERVED_NAMES = frozenset({
     REMOTE_ARCHIVE,
     REMOTE_CHECKSUM,
@@ -112,6 +115,8 @@ class PublicationConfig:
     ssh_poll_seconds: float = 10.0
     ssh_connect_timeout_seconds: float = 15.0
     transfer_timeout_seconds: float = 15.0 * 60.0
+    upload_attempts: int = 3
+    upload_retry_seconds: float = 5.0
     retrieval_reserve_seconds: float = 10.0 * 60.0
     retrieval_attempts: int = 3
     retrieval_retry_seconds: float = 5.0
@@ -137,6 +142,13 @@ class InputRecord:
     session_sha256: str
     session_size: int
     adapter_contract: "AdapterContract"
+
+
+@dataclass(frozen=True)
+class InputSnapshots:
+    archive: Path
+    checksum: Path
+    session_script: Path
 
 
 @dataclass(frozen=True)
@@ -200,6 +212,88 @@ def _regular_file(path: Path, label: str) -> Path:
     if not candidate.is_file():
         raise PublicationError("preflight", f"{label} must be a regular non-symlink file")
     return candidate
+
+
+def _snapshot_inputs(
+    config: PublicationConfig,
+    inputs: InputRecord,
+    directory: Path,
+) -> InputSnapshots:
+    try:
+        directory.mkdir(mode=0o700)
+    except OSError as exc:
+        raise PublicationError(
+            "snapshot", "input snapshot directory could not be created"
+        ) from exc
+
+    records = (
+        (config.archive, directory / REMOTE_ARCHIVE, inputs.archive_sha256),
+        (config.checksum, directory / REMOTE_CHECKSUM, inputs.checksum_sha256),
+        (config.session_script, directory / REMOTE_SESSION, inputs.session_sha256),
+    )
+    for source, destination, expected_hash in records:
+        try:
+            canonical_source = _regular_file(source, "snapshot input")
+            with (
+                canonical_source.open("rb") as input_handle,
+                destination.open("xb") as output_handle,
+            ):
+                shutil.copyfileobj(input_handle, output_handle, length=1024 * 1024)
+                output_handle.flush()
+                os.fsync(output_handle.fileno())
+            destination.chmod(0o400)
+        except PublicationError:
+            raise
+        except OSError as exc:
+            raise PublicationError("snapshot", "input snapshot could not be created") from exc
+        if sha256_file(destination, stage="snapshot") != expected_hash:
+            raise PublicationError("snapshot", "input changed while its snapshot was created")
+
+    return InputSnapshots(
+        archive=directory / REMOTE_ARCHIVE,
+        checksum=directory / REMOTE_CHECKSUM,
+        session_script=directory / REMOTE_SESSION,
+    )
+
+
+def _upload_finalize_command(remote_dir: str, inputs: InputRecord) -> str:
+    verify_function = " ".join((
+        "verify_upload() {",
+        "local expected=$1 path=$2 actual;",
+        "[ -f \"$path\" ] && [ ! -L \"$path\" ] || return 1;",
+        "actual=$(sha256sum -- \"$path\" | awk '{print $1}');",
+        "[ \"$actual\" = \"$expected\" ];",
+        "}",
+    ))
+    promote_function = " ".join((
+        "promote_upload() {",
+        "local expected=$1 partial=$2 final=$3;",
+        "if [ -e \"$final\" ]; then",
+        "verify_upload \"$expected\" \"$final\" || return 1;",
+        "if [ -e \"$partial\" ]; then",
+        "verify_upload \"$expected\" \"$partial\" || return 1;",
+        "rm -- \"$partial\";",
+        "fi;",
+        "return 0;",
+        "fi;",
+        "verify_upload \"$expected\" \"$partial\" || return 1;",
+        "mv -- \"$partial\" \"$final\";",
+        "verify_upload \"$expected\" \"$final\";",
+        "}",
+    ))
+    promotions = (
+        (inputs.archive_sha256, REMOTE_ARCHIVE_PARTIAL, REMOTE_ARCHIVE),
+        (inputs.checksum_sha256, REMOTE_CHECKSUM_PARTIAL, REMOTE_CHECKSUM),
+        (inputs.session_sha256, REMOTE_SESSION_PARTIAL, REMOTE_SESSION),
+    )
+    commands = [
+        "set -Eeuo pipefail",
+        f"cd {shlex.quote(remote_dir)}",
+        verify_function,
+        promote_function,
+        *(shlex.join(("promote_upload", *promotion)) for promotion in promotions),
+    ]
+    return "; ".join(commands)
 
 
 def _adapter_contract(path: Path) -> AdapterContract:
@@ -331,6 +425,7 @@ def _validate_config(config: PublicationConfig) -> InputRecord:
         "SSH poll interval": config.ssh_poll_seconds,
         "SSH connection timeout": config.ssh_connect_timeout_seconds,
         "transfer timeout": config.transfer_timeout_seconds,
+        "upload retry interval": config.upload_retry_seconds,
         "retrieval reserve": config.retrieval_reserve_seconds,
         "retrieval retry interval": config.retrieval_retry_seconds,
         "destroy timeout": config.destroy_attempt_timeout_seconds,
@@ -344,6 +439,7 @@ def _validate_config(config: PublicationConfig) -> InputRecord:
     if (
         config.min_direct_ports < 1
         or config.offer_limit < 1
+        or config.upload_attempts < 1
         or config.retrieval_attempts < 1
         or config.destroy_attempts < 1
     ):
@@ -850,6 +946,35 @@ class VastPublicationRunner:
             raise PublicationError(stage, "paid work deadline exhausted")
         return remaining
 
+    def _run_upload_command(
+        self,
+        argv: Sequence[str],
+        work_deadline: float,
+    ) -> None:
+        last_error: PublicationError | None = None
+        for attempt in range(1, self.config.upload_attempts + 1):
+            try:
+                self._run_command(
+                    argv,
+                    timeout=min(
+                        self._remaining(work_deadline, "upload"),
+                        self.config.transfer_timeout_seconds,
+                    ),
+                    stage="upload",
+                )
+                return
+            except PublicationError as exc:
+                last_error = exc
+                if attempt == self.config.upload_attempts:
+                    break
+                remaining = work_deadline - self.monotonic()
+                if remaining <= 0.0:
+                    break
+                self.sleep(min(self.config.upload_retry_seconds, remaining))
+        if last_error is not None:
+            raise last_error
+        raise PublicationError("upload", "upload exhausted without an attempt")
+
     def _upload(
         self,
         endpoint: Endpoint,
@@ -857,47 +982,42 @@ class VastPublicationRunner:
         remote_dir: str,
         work_deadline: float,
         inputs: InputRecord,
+        snapshots: InputSnapshots,
     ) -> None:
-        if sha256_file(self.config.archive, stage="upload") != inputs.archive_sha256:
-            raise PublicationError("upload", "archive changed after preflight")
-        if sha256_file(self.config.checksum, stage="upload") != inputs.checksum_sha256:
-            raise PublicationError("upload", "checksum changed after preflight")
-        if sha256_file(self.config.session_script, stage="upload") != inputs.session_sha256:
-            raise PublicationError("upload", "session script changed after preflight")
-
-        self._run_command(
+        self._run_upload_command(
             self._ssh_argv(
                 endpoint,
                 known_hosts,
                 shlex.join(("mkdir", "-p", "--", remote_dir)),
             ),
-            timeout=min(
-                self._remaining(work_deadline, "upload"),
-                self.config.transfer_timeout_seconds,
-            ),
-            stage="upload",
+            work_deadline,
         )
         target = f"{self.config.ssh_user}@{endpoint.host}"
         uploads = (
-            (self.config.archive, REMOTE_ARCHIVE),
-            (self.config.checksum, REMOTE_CHECKSUM),
-            (self.config.session_script, REMOTE_SESSION),
+            (snapshots.archive, REMOTE_ARCHIVE_PARTIAL, inputs.archive_sha256),
+            (snapshots.checksum, REMOTE_CHECKSUM_PARTIAL, inputs.checksum_sha256),
+            (snapshots.session_script, REMOTE_SESSION_PARTIAL, inputs.session_sha256),
         )
-        for source, remote_name in uploads:
-            canonical_source = source.expanduser().resolve()
-            self._run_command(
+        for source, remote_name, expected_hash in uploads:
+            if sha256_file(source, stage="upload") != expected_hash:
+                raise PublicationError("upload", "input snapshot changed before upload")
+            self._run_upload_command(
                 self._scp_argv(
                     endpoint,
                     known_hosts,
-                    str(canonical_source),
+                    str(source),
                     f"{target}:{remote_dir}/{remote_name}",
                 ),
-                timeout=min(
-                    self._remaining(work_deadline, "upload"),
-                    self.config.transfer_timeout_seconds,
-                ),
-                stage="upload",
+                work_deadline,
             )
+        self._run_upload_command(
+            self._ssh_argv(
+                endpoint,
+                known_hosts,
+                f"bash -lc {shlex.quote(_upload_finalize_command(remote_dir, inputs))}",
+            ),
+            work_deadline,
+        )
 
     def _execute_remote(
         self,
@@ -1161,6 +1281,8 @@ class VastPublicationRunner:
                 "instance_recovery_poll_seconds": (
                     self.config.instance_recovery_poll_seconds
                 ),
+                "upload_attempts": self.config.upload_attempts,
+                "upload_retry_seconds": self.config.upload_retry_seconds,
                 "retrieval_reserve_seconds": self.config.retrieval_reserve_seconds,
                 "retrieval_attempts": self.config.retrieval_attempts,
                 "retrieval_retry_seconds": self.config.retrieval_retry_seconds,
@@ -1235,8 +1357,14 @@ class VastPublicationRunner:
         work_deadline: float | None = None
         retrieval_deadline: float | None = None
 
-        with tempfile.TemporaryDirectory(prefix="gbskernels-vast-ssh-") as temporary:
-            known_hosts = Path(temporary) / "known_hosts"
+        with tempfile.TemporaryDirectory(prefix="gbskernels-vast-") as temporary:
+            temporary_root = Path(temporary)
+            snapshots = _snapshot_inputs(
+                self.config,
+                inputs,
+                temporary_root / "input-snapshots",
+            )
+            known_hosts = temporary_root / "known_hosts"
             try:
                 self.stage = "search"
                 phase = self.monotonic()
@@ -1302,6 +1430,7 @@ class VastPublicationRunner:
                     remote_dir,
                     work_deadline,
                     inputs,
+                    snapshots,
                 )
                 upload_completed = True
                 timings["upload_seconds"] = self.monotonic() - phase
@@ -1459,6 +1588,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--ssh-poll-seconds", type=float, default=10.0)
     parser.add_argument("--ssh-connect-timeout-seconds", type=float, default=15.0)
     parser.add_argument("--transfer-timeout-seconds", type=float, default=900.0)
+    parser.add_argument("--upload-attempts", type=int, default=3)
+    parser.add_argument("--upload-retry-seconds", type=float, default=5.0)
     parser.add_argument("--retrieval-reserve-seconds", type=float, default=600.0)
     parser.add_argument("--retrieval-attempts", type=int, default=3)
     parser.add_argument("--retrieval-retry-seconds", type=float, default=5.0)
@@ -1499,6 +1630,8 @@ def config_from_args(args: argparse.Namespace) -> PublicationConfig:
         ssh_poll_seconds=args.ssh_poll_seconds,
         ssh_connect_timeout_seconds=args.ssh_connect_timeout_seconds,
         transfer_timeout_seconds=args.transfer_timeout_seconds,
+        upload_attempts=args.upload_attempts,
+        upload_retry_seconds=args.upload_retry_seconds,
         retrieval_reserve_seconds=args.retrieval_reserve_seconds,
         retrieval_attempts=args.retrieval_attempts,
         retrieval_retry_seconds=args.retrieval_retry_seconds,

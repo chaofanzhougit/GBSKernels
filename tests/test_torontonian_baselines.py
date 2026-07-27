@@ -12,6 +12,7 @@ import pytest
 
 from bench.torontonian_baselines import (
     Baseline,
+    EvaluationResult,
     freeze_workload,
     run,
     xxpp_to_xpxp,
@@ -76,6 +77,24 @@ def _baselines(seen=None):
     )
 
 
+def _bounded_baselines():
+    alpha, beta = _baselines()
+    return (
+        Baseline(
+            name=alpha.name,
+            package=alpha.package,
+            package_version=alpha.package_version,
+            implementation=alpha.implementation,
+            input_order=alpha.input_order,
+            evaluate=lambda matrix: EvaluationResult(
+                _sum_evaluator(matrix), reported_abs_error_bound=0.125
+            ),
+            prepare=alpha.prepare,
+        ),
+        beta,
+    )
+
+
 def test_xxpp_to_xpxp_is_simultaneous_pair_permutation():
     matrix = np.arange(36, dtype=np.float64).reshape(6, 6)
     indices = [0, 3, 1, 4, 2, 5]
@@ -131,7 +150,7 @@ def test_run_writes_strict_separated_matched_artifact(tmp_path):
     parsed = json.loads(path.read_text(encoding="utf-8"))
     assert parsed == artifact
     assert parsed["kind"] == "torontonian_matched_implementations"
-    assert parsed["schema_version"] == 2
+    assert parsed["schema_version"] == 3
     assert {engine["package_version"] for engine in parsed["engines"]} == {
         "1.2.3",
         "4.5.6",
@@ -164,8 +183,63 @@ def test_run_writes_strict_separated_matched_artifact(tmp_path):
         for row in agreement["rows"]
         for pair in row["pairwise"]
     )
+    assert all(
+        row["reported_abs_error_bounds"] == {"alpha": None, "beta": None}
+        for row in agreement["rows"]
+    )
     assert "NaN" not in path.read_text(encoding="utf-8")
     assert "Infinity" not in path.read_text(encoding="utf-8")
+
+
+def test_implementation_reported_bounds_are_retained_but_not_called_an_oracle(tmp_path):
+    artifact, _ = run(
+        modes=[1],
+        matrices_per_size=1,
+        repeats=1,
+        warmups=0,
+        regime="loss",
+        baselines=_bounded_baselines(),
+        out_path=tmp_path / "bounded.json",
+        clock=_TickClock(),
+        provenance_factory=dict,
+        matrix_generator=_small_spd_batch,
+    )
+
+    agreement = artifact["numerical_agreement"]
+    assert agreement["rows"][0]["reported_abs_error_bounds"] == {
+        "alpha": 0.125,
+        "beta": None,
+    }
+    assert "not an independent oracle" in agreement[
+        "reported_error_bound_interpretation"
+    ]
+
+
+def test_invalid_implementation_reported_bound_is_rejected(tmp_path):
+    baseline = Baseline(
+        name="bad-bound",
+        package="bad-bound-package",
+        package_version="0",
+        implementation="bad_bound.tor",
+        input_order="xxpp",
+        evaluate=lambda matrix: EvaluationResult(
+            _sum_evaluator(matrix), reported_abs_error_bound=float("inf")
+        ),
+        prepare=lambda matrix: np.array(matrix, copy=True),
+    )
+    with pytest.raises(ValueError, match="invalid absolute error bound"):
+        run(
+            modes=[1],
+            matrices_per_size=1,
+            repeats=1,
+            warmups=0,
+            regime="loss",
+            baselines=[baseline],
+            out_path=tmp_path / "must-not-exist.json",
+            clock=_TickClock(),
+            provenance_factory=dict,
+            matrix_generator=_small_spd_batch,
+        )
 
 
 def test_randomized_timing_order_is_reproducible(tmp_path):

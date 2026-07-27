@@ -70,22 +70,29 @@ repository at present.
   `--confirm-spend`; `--dry-run` performs local validation and writes a plan
   receipt without provisioning. Preflight requires the adapter's archive and
   container declarations to equal the uploaded archive and launched image.
-  Upload, SSH readiness, and execution are bounded; a separate reserved window
-  retries retrieval before the teardown reserve begins. Outputs and receipts are
-  create-only, and early remote failures still return a log bundle. An ambiguous
-  creation is polled for a bounded interval and recovered only from one unique
-  run-label match; failure to recover an ID is reported as a dedicated lifecycle
-  error. Teardown targets the exact instance ID non-interactively, with delayed,
+  Before any provider command, the three upload inputs are copied into verified
+  private snapshots. Upload, SSH readiness, and execution are bounded; failed
+  uploads use partial remote names and are retried, then all three SHA-256 values
+  are verified before atomic, idempotent promotion to their execution names. A
+  separate reserved window retries retrieval before the teardown reserve begins.
+  Outputs and receipts are create-only, and early remote failures still return a
+  log bundle. An ambiguous creation is polled for a bounded interval and
+  recovered only from one unique run-label match; failure to recover an ID is
+  reported as a dedicated lifecycle error. Teardown targets the exact instance
+  ID non-interactively, with delayed,
   recorded retries and a strict active-instance-list absence check on normal,
   failure, and handled-signal paths. Unconfirmed teardown is always the primary
   operator-facing error, while the preceding execution error remains in the
   receipt.
 
 The registered on-box profile is fail-closed. It is configured to accept only a
-24-gate pass, 320 Arb-contained enclosures, and complete matched timing and
-agreement rows for GBSKernels DD on GPU plus The Walrus and Piquasso on CPU at
-`4,8,12,16,20` modes. That acceptance rule describes what a future run must
-produce, not a result already obtained. The eight Arb cases at `k = 25,...,32`
+24-gate pass, 320 Arb-contained enclosures, and complete matched timing,
+pairwise-agreement, and implementation-reported DD-bound rows for GBSKernels on
+GPU plus The Walrus and Piquasso on CPU at `4,8,12,16,20` modes. The matched
+corpus uses the real quadrature-basis loss construction
+`O_x = I - ((cov + I)/2)^-1`; pairwise agreement and DD-reported bounds are not
+independent accuracy oracles. That acceptance rule describes what a future run
+must produce, not a result already obtained. The eight Arb cases at `k = 25,...,32`
 are factorized quarter-identity matrices, not a general dense large-`k` sample.
 
 Generate the adapter only after the release archive, Git objects, and container

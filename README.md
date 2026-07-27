@@ -188,8 +188,9 @@ After the 24 device gates, the registered science profile is configured to run:
   general dense large-`k` validation; and
 - a frozen same-input torontonian benchmark through 20 modes, comparing the
   GBSKernels double-double GPU path with The Walrus and Piquasso recursive CPU
-  implementations. Numerical agreement and heterogeneous-device timing are
-  reported separately.
+  implementations on physical real-quadrature lossy-state matrices. Pairwise
+  agreement, GBSKernels-reported DD radii, and heterogeneous-device timing are
+  reported separately; only the Arb campaign supplies an independent oracle.
 
 The Vast.ai launcher adds a generated archive adapter, digest-pinned image,
 deterministic offer validation, dry-run and explicit-spend modes, cost/lifetime

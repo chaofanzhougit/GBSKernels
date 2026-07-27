@@ -12,7 +12,9 @@ therefore applies the corresponding row/column permutation before timing.  The
 permutation is deterministic, its output is hashed, and preprocessing is
 explicitly excluded from both engines' timings.  Numerical agreement is
 reported separately from performance; neither baseline is treated as a
-ground-truth accuracy oracle.
+ground-truth accuracy oracle.  The GBSKernels path's implementation-reported
+absolute-error radius is retained per case but is not relabeled as independent
+reference evidence.
 
 Example::
 
@@ -52,6 +54,14 @@ _SHA256 = re.compile(r"\A[0-9a-f]{64}\Z")
 Evaluator = Callable[[np.ndarray], Any]
 Preprocessor = Callable[[np.ndarray], np.ndarray]
 MatrixGenerator = Callable[[str, int, int, str, int], np.ndarray]
+
+
+@dataclass(frozen=True)
+class EvaluationResult:
+    """One implementation result with an optional implementation-reported radius."""
+
+    value: Any
+    reported_abs_error_bound: float | None = None
 
 
 @dataclass(frozen=True)
@@ -153,12 +163,15 @@ def load_gbskernels_dd_candidate(
     if require_gpu and gbskernels.gpu_backend_kind() != "gpu":
         raise RuntimeError("the matched publication benchmark requires the GPU backend")
 
-    def evaluate(matrix: np.ndarray) -> float:
+    def evaluate(matrix: np.ndarray) -> EvaluationResult:
         modes = matrix.shape[0] // 2
-        value, _ = gbskernels.tor_single(
+        value, diagnostics = gbskernels.tor_single(
             matrix, groups=min(modes, 13), dd=True
         )
-        return float(value)
+        return EvaluationResult(
+            value=float(value),
+            reported_abs_error_bound=float(diagnostics["abs_error_bound"]),
+        )
 
     return Baseline(
         name="gbskernels_dd",
@@ -287,6 +300,20 @@ def _finite_complex(value: Any, *, context: str) -> complex:
     return scalar
 
 
+def _evaluation_result(value: Any, *, context: str) -> EvaluationResult:
+    if isinstance(value, EvaluationResult):
+        scalar = _finite_complex(value.value, context=context)
+        bound = value.reported_abs_error_bound
+        if bound is not None:
+            bound = float(bound)
+            if not math.isfinite(bound) or bound < 0.0:
+                raise ValueError(
+                    f"{context} returned an invalid absolute error bound"
+                )
+        return EvaluationResult(scalar, bound)
+    return EvaluationResult(_finite_complex(value, context=context))
+
+
 def _complex_record(value: complex) -> dict[str, float]:
     return {"real": float(value.real), "imag": float(value.imag)}
 
@@ -406,10 +433,10 @@ def run(
         for mode_count in modes:
             for _ in range(warmups):
                 for case in cases_by_mode[mode_count]:
-                    _finite_complex(
+                    _evaluation_result(
                         baseline.evaluate(prepared[baseline.name][case.matrix_id]),
                         context=baseline.name,
-                    )
+                    ).value
 
     tasks = [
         (baseline.name, int(mode_count), repeat)
@@ -428,10 +455,10 @@ def run(
         start = clock()
         for case in cell_cases:
             values.append(
-                _finite_complex(
+                _evaluation_result(
                     baseline.evaluate(prepared[engine_name][case.matrix_id]),
                     context=engine_name,
-                )
+                ).value
             )
         elapsed = float(clock() - start)
         if not math.isfinite(elapsed) or elapsed <= 0.0:
@@ -483,13 +510,14 @@ def run(
     # the performance rows above.
     value_rows: list[dict[str, Any]] = []
     for case in cases:
-        values = {
-            baseline.name: _finite_complex(
+        evaluations = {
+            baseline.name: _evaluation_result(
                 baseline.evaluate(prepared[baseline.name][case.matrix_id]),
                 context=baseline.name,
             )
             for baseline in engines
         }
+        values = {name: result.value for name, result in evaluations.items()}
         comparisons = []
         for left_index, left in enumerate(engines):
             for right in engines[left_index + 1 :]:
@@ -517,6 +545,10 @@ def run(
                 "modes": case.modes,
                 "values": {
                     name: _complex_record(value) for name, value in values.items()
+                },
+                "reported_abs_error_bounds": {
+                    name: result.reported_abs_error_bound
+                    for name, result in evaluations.items()
                 },
                 "pairwise": comparisons,
             }
@@ -556,7 +588,7 @@ def run(
             raise RuntimeError("GBS_BUILD_MANIFEST_SHA256 must be 64 lowercase hex")
 
     artifact: dict[str, Any] = {
-        "schema_version": 2,
+        "schema_version": 3,
         "kind": "torontonian_matched_implementations",
         "created_utc": now.astimezone(timezone.utc).isoformat(),
         **provenance,
@@ -609,6 +641,10 @@ def run(
             "interpretation": (
                 "Pairwise implementation agreement only; neither baseline is a "
                 "ground-truth reference, and agreement does not alter performance rows."
+            ),
+            "reported_error_bound_interpretation": (
+                "Absolute error bounds are implementation-reported diagnostics, not an "
+                "independent oracle. Null means that the implementation reports no bound."
             ),
             "rows": value_rows,
         },

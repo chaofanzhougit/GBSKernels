@@ -105,6 +105,9 @@ def test_publication_session_gate_set_and_scientific_workload_are_frozen():
     assert "--source-tree-sha256" in source
     assert '"case_count": 320' in source
     assert 'engines != {"gbskernels_dd", "walrus", "piquasso"}' in source
+    assert 'baseline.get("schema_version") != 3' in source
+    assert 'bounds.get("gbskernels_dd")' in source
+    assert "matched GBSKernels DD error bound is invalid" in source
 
 
 def test_arb_wrapper_resolves_local_campaign_helpers_after_wheel_preload(tmp_path):

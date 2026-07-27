@@ -20,12 +20,57 @@ def test_loss_families_are_valid_mixed_state_inputs():
     O = _inputs.loss_torontonian(3, seed=1)
     assert A.shape == (6, 6) and np.allclose(A, A.T)          # complex symmetric
     assert L.shape == (6, 6) and np.allclose(L - np.diag(np.diag(L)), (L - np.diag(np.diag(L))).T)
-    assert O.shape == (6, 6) and np.allclose(O.imag, 0)        # real threshold matrix
+    assert O.shape == (6, 6) and np.all(O.imag == 0)           # real threshold matrix
     # a lossy/mixed state is genuinely mixed: det(Q) > 1 (a pure state would be closer
     # to the lower bound), and distinct from the pure construction.
     Q = _inputs._qmat(_inputs._lossy_cov(3, seed=1, eta=0.6))
     assert np.linalg.det(Q).real > 1.0
     assert not np.allclose(_inputs._lossy_cov(3, 1, eta=0.6), _inputs._lossy_cov(3, 1, eta=1.0))
+
+
+def test_loss_torontonian_is_exactly_symmetric_real_spd_domain():
+    modes = 5
+    O = _inputs.loss_torontonian(modes, seed=19)
+
+    assert O.dtype == np.complex128
+    assert O.flags.c_contiguous
+    assert O.shape == (2 * modes, 2 * modes)
+    assert np.all(np.isfinite(O))
+    assert np.all(O.imag == 0.0)
+    assert np.array_equal(O, O.T)
+    assert np.linalg.eigvalsh(np.eye(2 * modes) - O.real)[0] > 0.0
+
+
+def test_loss_torontonian_matches_public_real_xxpp_helper_exactly():
+    from sampling.gbs import threshold_O_xxpp
+
+    modes = 5
+    seed = 19
+    eta = 0.6
+    expected, _ = threshold_O_xxpp(
+        _inputs._lossy_cov(modes, seed, eta), hbar=2.0
+    )
+    observed = _inputs.loss_torontonian(modes, seed, eta)
+
+    assert np.array_equal(observed.real, expected)
+    assert np.all(observed.imag == 0.0)
+
+
+def test_loss_torontonian_is_not_legacy_complex_basis_real_cast():
+    import highprec_ref as hp
+
+    modes = 3
+    seed = 7
+    cov = _inputs._lossy_cov(modes, seed, eta=0.6)
+    complex_basis = np.eye(2 * modes) - np.linalg.inv(_inputs._qmat(cov))
+    legacy = np.ascontiguousarray(complex_basis.real)
+    corrected = _inputs.loss_torontonian(modes, seed, eta=0.6).real
+
+    assert np.max(np.abs(complex_basis.imag)) > 0.1
+    assert np.linalg.norm(corrected - legacy) / np.linalg.norm(corrected) > 0.5
+    corrected_tor = float(hp.torontonian_mp(corrected, dps=60))
+    legacy_tor = float(hp.torontonian_mp(legacy, dps=60))
+    assert abs(corrected_tor - legacy_tor) / abs(corrected_tor) > 0.5
 
 
 def test_loss_kernels_match_mpmath():

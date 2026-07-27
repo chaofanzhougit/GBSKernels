@@ -36,18 +36,22 @@ so an asynchronous early return cannot fake a fast time. Static evidence such as
 of the comparison contract. It embeds every canonical little-endian binary64
 matrix in the JSON artifact, with per-matrix and whole-workload hashes, and
 records package versions, implementation entry points, execution devices,
-precision tiers, raw randomized repeats, and median/IQR summaries. GBSKernels
-and The Walrus consume the frozen xxpp matrices; Piquasso requires a deterministic
-xxpp-to-xpxp row/column permutation, whose output is hashed and whose preparation
-is outside the timed region. Pairwise numerical agreement is reported separately
-and is not treated as a high-precision oracle or used to discard timing rows.
+precision tiers, raw randomized repeats, and median/IQR summaries. The registered
+loss corpus is built in the physical real quadrature basis as
+`O_x = I - ((cov + I)/2)^-1`. GBSKernels and The Walrus consume the frozen
+xxpp matrices; Piquasso requires a deterministic xxpp-to-xpxp row/column
+permutation, whose output is hashed and whose preparation is outside the timed
+region. Pairwise numerical agreement and each GBSKernels DD-reported
+absolute-error radius are recorded separately. Neither is treated as an
+independent high-precision oracle or used to discard timing rows.
 
-The registered publication profile is a heterogeneous comparison: certified
-double-double GBSKernels runs on GPU, while The Walrus and Piquasso run in CPU
-fp64. It therefore measures the stated end-to-end implementations on the same
-mathematical inputs; it does not isolate hardware, algorithm, and precision into
-a single causal speedup. No result from this new profile is claimed until the
-archive-bound GPU session has run and its final manifest has been validated.
+The registered publication profile is a heterogeneous comparison: double-word
+GBSKernels with an implementation-reported radius runs on GPU, while The Walrus
+and Piquasso run in CPU fp64. It therefore measures the stated end-to-end
+implementations on the same mathematical inputs; it does not isolate hardware,
+algorithm, and precision into a single causal speedup. No result from this new
+profile is claimed until the archive-bound GPU session has run and its final
+manifest has been validated.
 
 ```bash
 python -m bench.accuracy_permanent --sizes 2-12 --seeds 8   # the accuracy boundary
