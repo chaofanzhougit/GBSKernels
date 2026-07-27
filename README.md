@@ -188,9 +188,15 @@ After the 24 device gates, the registered science profile is configured to run:
   general dense large-`k` validation; and
 - a frozen same-input torontonian benchmark through 20 modes, comparing the
   GBSKernels double-double GPU path with The Walrus and Piquasso recursive CPU
-  implementations on physical real-quadrature lossy-state matrices. Pairwise
-  agreement, GBSKernels-reported DD radii, and heterogeneous-device timing are
-  reported separately; only the Arb campaign supplies an independent oracle.
+  implementations on 15 physical real-quadrature lossy-state matrices. The
+  prospective schema-v4 artifact gives every exact frozen binary64 matrix an
+  independent dense python-flint/Arb interval, evaluated outside the timed
+  region, and checks whether the GBSKernels-reported DD radius contains that
+  interval. The Walrus and Piquasso fp64 values carry no claimed error bounds.
+  Pairwise tolerance flags are descriptive only: they neither accept nor reject
+  the artifact nor filter timing rows. Because the timings compare GPU DD with
+  CPU fp64 implementations, they do not establish a causal hardware or
+  algorithmic speedup.
 
 The Vast.ai launcher adds a generated archive adapter, digest-pinned image,
 deterministic offer validation, dry-run and explicit-spend modes, cost/lifetime

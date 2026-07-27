@@ -12,7 +12,7 @@ throughput ([`docs/DESIGN.md`](../docs/DESIGN.md) §9; the protocol is
 | `throughput.py`, `throughput_gpu.py` | Batched evaluations/sec: `throughput.py` is the CPU baseline (accuracy-normalized, versus The Walrus); `throughput_gpu.py` (with `core/bench_kernels.cu`) is the kernel-only GPU measurement. |
 | `throughput_end_to_end.py` | Public-API GPU throughput including host↔device transfers, versus the CPU backend. The GPU-vs-CPU checksum is a gate: a physical-regime disagreement fails the run. |
 | `walrus_baseline.py` | A same-instance The Walrus per-evaluation baseline on the same inputs. |
-| `torontonian_baselines.py` | The prospective publication comparison: one frozen real xxpp corpus is evaluated by the public GBSKernels double-double GPU call and the recursive The Walrus and Piquasso CPU calls at 4, 8, 12, 16, and 20 modes. |
+| `torontonian_baselines.py` | The prospective schema-v4 publication comparison: one frozen real xxpp corpus is evaluated by the public GBSKernels double-double GPU call and the recursive The Walrus and Piquasso CPU calls at 4, 8, 12, 16, and 20 modes, with independent Arb intervals computed outside timing. |
 | `crossover.py`, `plot_crossover.py` | A batch-size sweep producing the GPU-vs-CPU-vs-Walrus crossover, each series tagged with the accuracy it achieved. |
 | `sampler_throughput.py` | End-to-end GBS samples/sec for the conditional sampler. |
 | `tightness.py` | The distribution of certified-bound tightness across ensembles, physical versus adversarial. |
@@ -41,9 +41,14 @@ loss corpus is built in the physical real quadrature basis as
 `O_x = I - ((cov + I)/2)^-1`. GBSKernels and The Walrus consume the frozen
 xxpp matrices; Piquasso requires a deterministic xxpp-to-xpxp row/column
 permutation, whose output is hashed and whose preparation is outside the timed
-region. Pairwise numerical agreement and each GBSKernels DD-reported
-absolute-error radius are recorded separately. Neither is treated as an
-independent high-precision oracle or used to discard timing rows.
+region. Under the prospective schema-v4 publication profile, an independent
+dense python-flint/Arb calculation encloses the value of each of the exact 15
+frozen binary64 matrices through 20 modes. Oracle evaluation is outside every
+timed region. Each GBSKernels DD-reported absolute-error radius is checked for
+containment of the corresponding Arb interval; The Walrus and Piquasso fp64
+values have no claimed error bounds. Pairwise tolerance flags remain descriptive
+comparisons only. They are never artifact-acceptance criteria and never filter
+or discard timing rows.
 
 The registered publication profile is a heterogeneous comparison: double-word
 GBSKernels with an implementation-reported radius runs on GPU, while The Walrus
@@ -57,7 +62,8 @@ manifest has been validated.
 python -m bench.accuracy_permanent --sizes 2-12 --seeds 8   # the accuracy boundary
 python -m bench.throughput --func perm --sizes 4,6,8,10      # CPU throughput baseline
 python -m bench.torontonian_baselines --modes 4,8,12,16,20 \
-  --include-gbskernels-dd --out /new/path/torontonian-baselines.json
+  --include-gbskernels-dd --arb-oracle-max-modes 20 \
+  --out /new/path/torontonian-baselines.json
 ```
 
 GPU throughput runs only in a scripted GPU session (`scripts/`); nothing in this

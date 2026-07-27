@@ -86,14 +86,20 @@ repository at present.
   receipt.
 
 The registered on-box profile is fail-closed. It is configured to accept only a
-24-gate pass, 320 Arb-contained enclosures, and complete matched timing,
-pairwise-agreement, and implementation-reported DD-bound rows for GBSKernels on
-GPU plus The Walrus and Piquasso on CPU at `4,8,12,16,20` modes. The matched
-corpus uses the real quadrature-basis loss construction
-`O_x = I - ((cov + I)/2)^-1`; pairwise agreement and DD-reported bounds are not
-independent accuracy oracles. That acceptance rule describes what a future run
-must produce, not a result already obtained. The eight Arb cases at `k = 25,...,32`
-are factorized quarter-identity matrices, not a general dense large-`k` sample.
+24-gate pass, 320 Arb-contained enclosures, and a complete schema-v4 matched
+artifact for GBSKernels on GPU plus The Walrus and Piquasso on CPU at
+`4,8,12,16,20` modes. The matched corpus uses the real quadrature-basis loss
+construction `O_x = I - ((cov + I)/2)^-1`. Each of its exact 15 frozen binary64
+matrices receives an independent dense python-flint/Arb interval outside the
+timed regions, and every GBSKernels DD-reported radius must contain the
+corresponding interval. The Walrus and Piquasso fp64 values have no claimed
+bounds. Pairwise tolerance flags are descriptive only: they are neither
+acceptance criteria nor filters for timing rows. The heterogeneous GPU-DD versus
+CPU-fp64 measurements do not isolate hardware, algorithm, or precision and
+therefore cannot establish a causal speedup. This acceptance rule describes
+what a future run must produce, not a result already obtained. The eight Arb
+cases at `k = 25,...,32` are factorized quarter-identity matrices, not a general
+dense large-`k` sample.
 
 Generate the adapter only after the release archive, Git objects, and container
 digest are final. The renderer derives the source-tree hash; pass

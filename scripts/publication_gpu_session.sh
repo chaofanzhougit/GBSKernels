@@ -620,6 +620,11 @@ say "$CURRENT_STAGE"
     --repeats 7 \
     --regime loss \
     --seed 20260726 \
+    --agreement-atol 0 \
+    --agreement-rtol 1e-8 \
+    --arb-oracle-max-modes 20 \
+    --arb-target-bits 80 \
+    --arb-max-precision-bits 2048 \
     --include-gbskernels-dd \
     --require-provenance \
     --out "$EVIDENCE_ROOT/science/torontonian_matched_baselines.json"
@@ -649,6 +654,7 @@ PY
   "$EXPECTED_ARCHIVE_SHA256" "$GBS_BUILD_MANIFEST_SHA256" \
   "$GIT_COMMIT" "$GIT_TREE" "$CONTAINER_DIGEST" <<'PY'
 from pathlib import Path
+from fractions import Fraction
 import hashlib
 import json
 import math
@@ -740,11 +746,14 @@ if (
     raise SystemExit("Arb campaign provenance does not match the session contract")
 
 baseline = load_strict(root / "science/torontonian_matched_baselines.json")
-if baseline.get("schema_version") != 3:
+if baseline.get("schema_version") != 4:
     raise SystemExit("matched baseline schema version is not the registered version")
-engines = {row.get("name") for row in baseline.get("engines", [])}
+baseline_engine_rows = baseline.get("engines", [])
+engines = {row.get("name") for row in baseline_engine_rows}
 if engines != {"gbskernels_dd", "walrus", "piquasso"}:
     raise SystemExit(f"matched baseline engine set is incomplete: {engines}")
+if len(baseline_engine_rows) != len(engines):
+    raise SystemExit("matched baseline engine records are duplicated")
 if baseline.get("commit") != commit or baseline.get("container_digest") != container:
     raise SystemExit("matched baseline provenance does not match the session contract")
 if baseline.get("source_archive_sha256") != archive_sha256:
@@ -759,13 +768,18 @@ expected_parameters = {
     "warmups": 2,
     "regime": "loss",
     "seed": 20260726,
+    "agreement_atol": 0.0,
+    "agreement_rtol": 1e-8,
+    "arb_oracle_max_modes": 20,
+    "arb_target_bits": 80,
+    "arb_max_precision_bits": 2048,
 }
 for key, expected in expected_parameters.items():
     if parameters.get(key) != expected:
         raise SystemExit(
             f"matched baseline {key}={parameters.get(key)!r}, expected {expected!r}"
         )
-engine_rows = {row.get("name"): row for row in baseline.get("engines", [])}
+engine_rows = {row.get("name"): row for row in baseline_engine_rows}
 if engine_rows.get("gbskernels_dd", {}).get("execution_device") != "gpu":
     raise SystemExit("matched GBSKernels engine did not record GPU execution")
 if any(
@@ -779,26 +793,292 @@ if len(performance.get("summary", [])) != 15 or len(performance.get("raw", [])) 
 agreement_rows = baseline.get("numerical_agreement", {}).get("rows", [])
 if len(agreement_rows) != 15:
     raise SystemExit("matched baseline agreement row count is incomplete")
-if any(
-    len(row.get("pairwise", [])) != 3
-    or not all(pair.get("within_tolerance") is True for pair in row["pairwise"])
-    for row in agreement_rows
-):
-    raise SystemExit("matched implementations did not agree within the registered tolerance")
+
+def finite_number(value, label, *, nonnegative=False):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise SystemExit(f"{label} is not a JSON number")
+    try:
+        result = float(value)
+    except (OverflowError, ValueError):
+        raise SystemExit(f"{label} is not finite") from None
+    if not math.isfinite(result) or (nonnegative and result < 0.0):
+        raise SystemExit(f"{label} is not finite and nonnegative")
+    return result
+
+def complex_record(value, label):
+    if not isinstance(value, dict) or set(value) != {"real", "imag"}:
+        raise SystemExit(f"{label} is not a complex-number record")
+    return complex(
+        finite_number(value["real"], f"{label}.real"),
+        finite_number(value["imag"], f"{label}.imag"),
+    )
+
+def dyadic_fraction(value, label):
+    if not isinstance(value, dict) or set(value) != {"mantissa", "exponent"}:
+        raise SystemExit(f"{label} is not a dyadic endpoint")
+    mantissa_text = value["mantissa"]
+    exponent = value["exponent"]
+    if not isinstance(mantissa_text, str):
+        raise SystemExit(f"{label} mantissa is not a decimal string")
+    if isinstance(exponent, bool) or not isinstance(exponent, int):
+        raise SystemExit(f"{label} exponent is not an integer")
+    try:
+        mantissa = int(mantissa_text)
+    except ValueError:
+        raise SystemExit(f"{label} mantissa is not an integer") from None
+    if str(mantissa) != mantissa_text:
+        raise SystemExit(f"{label} mantissa is not canonical")
+    if exponent >= 0:
+        return Fraction(mantissa << exponent, 1)
+    return Fraction(mantissa, 1 << -exponent)
+
+def rational_fraction(value, label):
+    if not isinstance(value, dict) or set(value) != {"numerator", "denominator"}:
+        raise SystemExit(f"{label} is not a rational record")
+    numerator_text = value["numerator"]
+    denominator_text = value["denominator"]
+    if not isinstance(numerator_text, str) or not isinstance(denominator_text, str):
+        raise SystemExit(f"{label} rational components are not decimal strings")
+    try:
+        numerator = int(numerator_text)
+        denominator = int(denominator_text)
+    except ValueError:
+        raise SystemExit(f"{label} rational components are not integers") from None
+    if denominator <= 0:
+        raise SystemExit(f"{label} denominator is not positive")
+    result = Fraction(numerator, denominator)
+    if (
+        str(result.numerator) != numerator_text
+        or str(result.denominator) != denominator_text
+    ):
+        raise SystemExit(f"{label} rational record is not canonical")
+    return result
+
+input_rows = baseline.get("inputs", {}).get("matrices", [])
+if not isinstance(input_rows, list) or len(input_rows) != 15:
+    raise SystemExit("matched baseline frozen input row count is incomplete")
+inputs_by_id = {}
+for row in input_rows:
+    matrix_id = row.get("matrix_id") if isinstance(row, dict) else None
+    matrix_hash = row.get("sha256") if isinstance(row, dict) else None
+    if not isinstance(matrix_id, str) or not matrix_id or matrix_id in inputs_by_id:
+        raise SystemExit("matched baseline frozen input identifiers are invalid")
+    if (
+        not isinstance(matrix_hash, str)
+        or len(matrix_hash) != 64
+        or any(character not in "0123456789abcdef" for character in matrix_hash)
+    ):
+        raise SystemExit(f"matched baseline frozen input hash is invalid: {matrix_id}")
+    inputs_by_id[matrix_id] = row
+
+expected_pairs = {
+    frozenset(("gbskernels_dd", "walrus")),
+    frozenset(("gbskernels_dd", "piquasso")),
+    frozenset(("walrus", "piquasso")),
+}
+agreement_by_id = {}
 for row in agreement_rows:
+    matrix_id = row.get("matrix_id") if isinstance(row, dict) else None
+    if matrix_id not in inputs_by_id or matrix_id in agreement_by_id:
+        raise SystemExit("matched baseline agreement identifiers are invalid")
+    input_row = inputs_by_id[matrix_id]
+    if row.get("modes") != input_row.get("modes"):
+        raise SystemExit(f"matched baseline agreement modes disagree for {matrix_id}")
+    values_payload = row.get("values")
+    if not isinstance(values_payload, dict) or set(values_payload) != engines:
+        raise SystemExit("matched implementation value record is incomplete")
+    values = {
+        name: complex_record(payload, f"{matrix_id}.{name}")
+        for name, payload in values_payload.items()
+    }
     bounds = row.get("reported_abs_error_bounds")
     if not isinstance(bounds, dict) or set(bounds) != engines:
         raise SystemExit("matched implementation error-bound record is incomplete")
-    dd_bound = bounds.get("gbskernels_dd")
-    if (
-        isinstance(dd_bound, bool)
-        or not isinstance(dd_bound, (int, float))
-        or not math.isfinite(float(dd_bound))
-        or float(dd_bound) < 0.0
-    ):
-        raise SystemExit("matched GBSKernels DD error bound is invalid")
+    finite_number(
+        bounds.get("gbskernels_dd"),
+        "matched GBSKernels DD error bound",
+        nonnegative=True,
+    )
     if bounds.get("walrus") is not None or bounds.get("piquasso") is not None:
         raise SystemExit("recursive baselines unexpectedly reported error bounds")
+    pairs = row.get("pairwise")
+    if not isinstance(pairs, list) or len(pairs) != 3:
+        raise SystemExit("matched baseline pairwise record is incomplete")
+    observed_pairs = []
+    for pair in pairs:
+        left = pair.get("left") if isinstance(pair, dict) else None
+        right = pair.get("right") if isinstance(pair, dict) else None
+        pair_key = frozenset((left, right))
+        if left not in engines or right not in engines or left == right:
+            raise SystemExit("matched baseline pairwise engine names are invalid")
+        observed_pairs.append(pair_key)
+        absolute = finite_number(
+            pair.get("absolute_difference"),
+            f"{matrix_id} pairwise absolute difference",
+            nonnegative=True,
+        )
+        relative = finite_number(
+            pair.get("relative_difference"),
+            f"{matrix_id} pairwise relative difference",
+            nonnegative=True,
+        )
+        expected_absolute = abs(values[left] - values[right])
+        expected_relative = expected_absolute / max(
+            abs(values[left]), abs(values[right]), 1e-300
+        )
+        if absolute != expected_absolute or relative != expected_relative:
+            raise SystemExit(f"matched baseline pairwise difference is invalid: {matrix_id}")
+        within = pair.get("within_tolerance")
+        if not isinstance(within, bool):
+            raise SystemExit(f"matched baseline tolerance flag is not Boolean: {matrix_id}")
+        expected_within = bool(
+            expected_absolute
+            <= parameters["agreement_atol"]
+            + parameters["agreement_rtol"]
+            * max(abs(values[left]), abs(values[right]))
+        )
+        if within is not expected_within:
+            raise SystemExit(f"matched baseline tolerance flag is invalid: {matrix_id}")
+    if len(set(observed_pairs)) != 3 or set(observed_pairs) != expected_pairs:
+        raise SystemExit(f"matched baseline engine-pair set is invalid: {matrix_id}")
+    agreement_by_id[matrix_id] = row
+if set(agreement_by_id) != set(inputs_by_id):
+    raise SystemExit("matched baseline agreement rows do not cover the frozen inputs")
+
+oracle = baseline.get("independent_arb_oracle")
+if not isinstance(oracle, dict) or oracle.get("enabled") is not True:
+    raise SystemExit("matched baseline independent Arb oracle is not enabled")
+expected_oracle_settings = {
+    "max_modes": 20,
+    "target_bits": 80,
+    "max_precision_bits": 2048,
+}
+for key, expected in expected_oracle_settings.items():
+    if oracle.get(key) != expected:
+        raise SystemExit(
+            f"matched baseline Arb oracle {key}={oracle.get(key)!r}, expected {expected!r}"
+        )
+expected_oracle_summary = {
+    "case_count": 15,
+    "reported_bounds_checked": 15,
+    "reported_bounds_containing_reference": 15,
+    "reported_bounds_by_engine": {
+        "gbskernels_dd": {"checked": 15, "containing_reference": 15},
+        "walrus": {"checked": 0, "containing_reference": 0},
+        "piquasso": {"checked": 0, "containing_reference": 0},
+    },
+}
+oracle_summary = oracle.get("summary", {})
+if not isinstance(oracle_summary, dict) or set(oracle_summary) != set(expected_oracle_summary):
+    raise SystemExit("matched baseline Arb oracle summary fields are invalid")
+for key, expected in expected_oracle_summary.items():
+    if oracle_summary.get(key) != expected:
+        raise SystemExit(
+            f"matched baseline Arb oracle {key}={oracle_summary.get(key)!r}, "
+            f"expected {expected!r}"
+        )
+oracle_rows = oracle.get("rows")
+if not isinstance(oracle_rows, list) or len(oracle_rows) != 15:
+    raise SystemExit("matched baseline Arb oracle row count is incomplete")
+oracle_ids = set()
+for row in oracle_rows:
+    matrix_id = row.get("matrix_id") if isinstance(row, dict) else None
+    if matrix_id not in inputs_by_id or matrix_id in oracle_ids:
+        raise SystemExit("matched baseline Arb oracle identifiers are invalid")
+    oracle_ids.add(matrix_id)
+    input_row = inputs_by_id[matrix_id]
+    if (
+        row.get("modes") != input_row.get("modes")
+        or row.get("matrix_sha256") != input_row.get("sha256")
+    ):
+        raise SystemExit(f"matched baseline Arb oracle input binding mismatch: {matrix_id}")
+    finite_number(
+        row.get("reference_seconds"),
+        f"{matrix_id} Arb oracle reference seconds",
+        nonnegative=True,
+    )
+    interval = row.get("arb_interval")
+    modes = input_row.get("modes")
+    if (
+        not isinstance(interval, dict)
+        or interval.get("schema") != "gbskernels.torontonian-arb-interval.v1"
+        or interval.get("n_modes") != modes
+        or interval.get("subset_count") != 1 << modes
+        or interval.get("method") != "dense-subset-determinants"
+        or interval.get("target_bits") != 80
+    ):
+        raise SystemExit(f"matched baseline Arb interval metadata is invalid: {matrix_id}")
+    precision_bits = interval.get("precision_bits")
+    if (
+        isinstance(precision_bits, bool)
+        or not isinstance(precision_bits, int)
+        or not 128 <= precision_bits <= 2048
+    ):
+        raise SystemExit(f"matched baseline Arb interval precision is invalid: {matrix_id}")
+    lower = dyadic_fraction(interval.get("lower"), f"{matrix_id} Arb lower")
+    upper = dyadic_fraction(interval.get("upper"), f"{matrix_id} Arb upper")
+    determinant_lower = dyadic_fraction(
+        interval.get("minimum_determinant_lower"),
+        f"{matrix_id} Arb minimum determinant lower",
+    )
+    if lower > upper or determinant_lower <= 0:
+        raise SystemExit(f"matched baseline Arb interval is invalid: {matrix_id}")
+    oracle_engines = row.get("engines")
+    if not isinstance(oracle_engines, dict) or set(oracle_engines) != engines:
+        raise SystemExit(f"matched baseline Arb engine records are incomplete: {matrix_id}")
+    agreement = agreement_by_id[matrix_id]
+    for name in engines:
+        engine_oracle = oracle_engines[name]
+        if not isinstance(engine_oracle, dict):
+            raise SystemExit(f"matched baseline Arb engine record is invalid: {matrix_id}")
+        center = complex_record(
+            agreement["values"][name], f"{matrix_id}.{name}"
+        )
+        if center.imag != 0.0:
+            raise SystemExit(f"matched baseline Arb engine center is not real: {matrix_id}")
+        center_exact = Fraction.from_float(center.real)
+        expected_error_lower = max(
+            lower - center_exact,
+            center_exact - upper,
+            Fraction(0),
+        )
+        expected_error_upper = max(
+            abs(center_exact - lower), abs(center_exact - upper)
+        )
+        if (
+            rational_fraction(
+                engine_oracle.get("center_error_lower"),
+                f"{matrix_id}.{name} center-error lower",
+            )
+            != expected_error_lower
+            or rational_fraction(
+                engine_oracle.get("center_error_upper"),
+                f"{matrix_id}.{name} center-error upper",
+            )
+            != expected_error_upper
+        ):
+            raise SystemExit(f"matched baseline Arb center error is invalid: {matrix_id}")
+        contains = engine_oracle.get("reported_bound_contains_reference")
+        if name == "gbskernels_dd":
+            bound = finite_number(
+                agreement["reported_abs_error_bounds"][name],
+                f"{matrix_id} GBSKernels DD error bound",
+                nonnegative=True,
+            )
+            radius = Fraction.from_float(bound)
+            exact_contains = bool(
+                center_exact - radius <= lower and upper <= center_exact + radius
+            )
+            if contains is not True or not exact_contains:
+                raise SystemExit(
+                    f"matched GBSKernels DD bound does not contain Arb: {matrix_id}"
+                )
+        elif contains is not None:
+            raise SystemExit(
+                f"matched recursive baseline unexpectedly reports Arb containment: {matrix_id}"
+            )
+if oracle_ids != set(inputs_by_id):
+    raise SystemExit("matched baseline Arb rows do not cover the frozen inputs")
 
 retained_extensions = sorted((root / "binary").glob("gbskernels_ext*.so"))
 if len(retained_extensions) != 1:

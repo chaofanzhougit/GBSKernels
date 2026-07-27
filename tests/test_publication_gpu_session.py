@@ -105,9 +105,28 @@ def test_publication_session_gate_set_and_scientific_workload_are_frozen():
     assert "--source-tree-sha256" in source
     assert '"case_count": 320' in source
     assert 'engines != {"gbskernels_dd", "walrus", "piquasso"}' in source
-    assert 'baseline.get("schema_version") != 3' in source
+    assert 'baseline.get("schema_version") != 4' in source
+    assert "--agreement-atol 0" in source
+    assert "--agreement-rtol 1e-8" in source
+    assert "--arb-oracle-max-modes 20" in source
+    assert "--arb-target-bits 80" in source
+    assert "--arb-max-precision-bits 2048" in source
     assert 'bounds.get("gbskernels_dd")' in source
-    assert "matched GBSKernels DD error bound is invalid" in source
+    assert '"matched GBSKernels DD error bound"' in source
+    assert "from fractions import Fraction" in source
+    assert "expected_pairs = {" in source
+    assert "expected_within = bool(" in source
+    assert "within is not expected_within" in source
+    assert "matched implementations did not agree within" not in source
+    assert 'baseline.get("independent_arb_oracle")' in source
+    assert '"reported_bounds_containing_reference": 15' in source
+    assert '"gbskernels_dd": {"checked": 15, "containing_reference": 15}' in source
+    assert '"walrus": {"checked": 0, "containing_reference": 0}' in source
+    assert '"piquasso": {"checked": 0, "containing_reference": 0}' in source
+    assert "set(oracle_summary) != set(expected_oracle_summary)" in source
+    assert 'interval.get("method") != "dense-subset-determinants"' in source
+    assert "center_exact - radius <= lower and upper <= center_exact + radius" in source
+    assert "elif contains is not None" in source
 
 
 def test_arb_wrapper_resolves_local_campaign_helpers_after_wheel_preload(tmp_path):

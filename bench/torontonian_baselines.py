@@ -10,10 +10,12 @@ generator or on a future version of this repository.
 Piquasso's native torontonian entry point consumes xpxp ordering.  Its adapter
 therefore applies the corresponding row/column permutation before timing.  The
 permutation is deterministic, its output is hashed, and preprocessing is
-explicitly excluded from both engines' timings.  Numerical agreement is
-reported separately from performance; neither baseline is treated as a
-ground-truth accuracy oracle.  The GBSKernels path's implementation-reported
-absolute-error radius is retained per case but is not relabeled as independent
+explicitly excluded from all engines' timings.  Numerical agreement is
+reported separately from performance.  When requested, a dense python-flint/Arb
+pass independently encloses the result for the exact frozen binary64 matrices;
+that pass and all accuracy comparisons are outside every timed region.  The
+GBSKernels path's implementation-reported absolute-error radius is retained per
+case and checked against the independent interval rather than relabeled as
 reference evidence.
 
 Example::
@@ -37,6 +39,7 @@ import struct
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from fractions import Fraction
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
@@ -318,6 +321,129 @@ def _complex_record(value: complex) -> dict[str, float]:
     return {"real": float(value.real), "imag": float(value.imag)}
 
 
+def _fraction_record(value: Fraction) -> dict[str, str]:
+    return {"numerator": str(value.numerator), "denominator": str(value.denominator)}
+
+
+def _arb_oracle_artifact(
+    cases: Sequence[FrozenMatrix],
+    evaluations: Mapping[str, Mapping[str, EvaluationResult]],
+    *,
+    max_modes: int,
+    target_bits: int,
+    max_precision_bits: int,
+    clock: Callable[[], float],
+) -> dict[str, Any]:
+    """Evaluate exact frozen inputs with the independent dense Arb oracle."""
+
+    if max_modes == 0:
+        return {
+            "enabled": False,
+            "interpretation": (
+                "No independent oracle was requested; implementation agreement and "
+                "reported bounds do not establish accuracy."
+            ),
+            "rows": [],
+        }
+
+    from highprec_ref.torontonian_arb import torontonian_arb
+
+    rows: list[dict[str, Any]] = []
+    reported_bounds_by_engine = {
+        name: {"checked": 0, "containing_reference": 0}
+        for name in next(iter(evaluations.values())).keys()
+    }
+    for case in cases:
+        if case.modes > max_modes:
+            continue
+        started = clock()
+        reference = torontonian_arb(
+            case.matrix,
+            target_bits=target_bits,
+            max_precision_bits=max_precision_bits,
+        )
+        elapsed = float(clock() - started)
+        if not math.isfinite(elapsed) or elapsed < 0.0:
+            raise ValueError(f"oracle clock produced invalid elapsed time {elapsed!r}")
+
+        reference_lower = reference.lower.to_fraction()
+        reference_upper = reference.upper.to_fraction()
+        engine_records: dict[str, Any] = {}
+        for name, result in evaluations[case.matrix_id].items():
+            value = complex(result.value)
+            if value.imag != 0.0:
+                raise ValueError(f"{name} returned a non-real value for an Arb oracle case")
+            center = Fraction.from_float(float(value.real))
+            error_lower = max(
+                reference_lower - center,
+                center - reference_upper,
+                Fraction(0),
+            )
+            error_upper = max(
+                abs(center - reference_lower),
+                abs(center - reference_upper),
+            )
+            bound_contains_reference: bool | None = None
+            if result.reported_abs_error_bound is not None:
+                reported_bounds_by_engine[name]["checked"] += 1
+                radius = Fraction.from_float(result.reported_abs_error_bound)
+                bound_contains_reference = bool(
+                    center - radius <= reference_lower
+                    and reference_upper <= center + radius
+                )
+                if bound_contains_reference:
+                    reported_bounds_by_engine[name]["containing_reference"] += 1
+            engine_records[name] = {
+                "center_error_lower": _fraction_record(error_lower),
+                "center_error_upper": _fraction_record(error_upper),
+                "reported_bound_contains_reference": bound_contains_reference,
+            }
+        rows.append(
+            {
+                "matrix_id": case.matrix_id,
+                "modes": case.modes,
+                "matrix_sha256": case.sha256,
+                "reference_seconds": elapsed,
+                "arb_interval": reference.to_dict(),
+                "engines": engine_records,
+            }
+        )
+
+    if not rows:
+        raise ValueError(
+            "Arb oracle maximum modes did not select any frozen benchmark matrix"
+        )
+
+    checked_total = sum(
+        record["checked"] for record in reported_bounds_by_engine.values()
+    )
+    containing_total = sum(
+        record["containing_reference"]
+        for record in reported_bounds_by_engine.values()
+    )
+
+    return {
+        "enabled": True,
+        "interpretation": (
+            "Independent Arb intervals for the exact frozen binary64 matrices; "
+            "oracle evaluation and all comparisons are outside timed regions."
+        ),
+        "method": "dense subset determinants with exact binary64-to-rational input",
+        "library": "python-flint/Arb",
+        "python_flint_version": version("python-flint"),
+        "max_modes": max_modes,
+        "target_bits": target_bits,
+        "max_precision_bits": max_precision_bits,
+        "summary": {
+            "case_count": len(rows),
+            "reported_bounds_checked": checked_total,
+            "reported_bounds_containing_reference": containing_total,
+            "reported_bounds_by_engine": reported_bounds_by_engine,
+        },
+        "rows": rows,
+    }
+
+
 def _prepared_workloads(
     baselines: Sequence[Baseline], cases: Sequence[FrozenMatrix]
 ) -> tuple[dict[str, dict[str, np.ndarray]], dict[str, dict[str, str]]]:
@@ -398,10 +524,14 @@ def run(
     seed: int = 20260726,
     baselines: Sequence[Baseline] | None = None,
     out_path: Path | None = None,
-    agreement_atol: float = 1e-12,
-    agreement_rtol: float = 1e-10,
+    agreement_atol: float = 0.0,
+    agreement_rtol: float = 1e-8,
+    arb_oracle_max_modes: int = 0,
+    arb_target_bits: int = 80,
+    arb_max_precision_bits: int = 2048,
     require_provenance: bool = False,
     clock: Callable[[], float] = time.perf_counter,
+    oracle_clock: Callable[[], float] = time.perf_counter,
     provenance_factory: Callable[[], Mapping[str, Any]] = _provenance.provenance,
     now_factory: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
     matrix_generator: MatrixGenerator = _inputs.bench_batch,
@@ -412,8 +542,19 @@ def run(
         raise ValueError("repeats must be positive")
     if warmups < 0:
         raise ValueError("warmups must be non-negative")
-    if agreement_atol < 0.0 or agreement_rtol < 0.0:
-        raise ValueError("agreement tolerances must be non-negative")
+    if not (
+        math.isfinite(agreement_atol)
+        and math.isfinite(agreement_rtol)
+        and agreement_atol >= 0.0
+        and agreement_rtol >= 0.0
+    ):
+        raise ValueError("agreement tolerances must be finite and non-negative")
+    if arb_oracle_max_modes < 0:
+        raise ValueError("Arb oracle maximum modes must be non-negative")
+    if arb_target_bits < 0:
+        raise ValueError("Arb oracle target bits must be non-negative")
+    if arb_max_precision_bits < 128:
+        raise ValueError("Arb oracle maximum precision must be at least 128 bits")
 
     engines = tuple(baselines) if baselines is not None else load_default_baselines()
     _validate_baselines(engines)
@@ -507,8 +648,10 @@ def run(
 
     # This pass is deliberately outside every timed region.  It is an
     # implementation-agreement diagnostic, not an accuracy oracle or a filter on
-    # the performance rows above.
+    # the performance rows above.  The optional independent oracle consumes the
+    # retained values from this untimed pass.
     value_rows: list[dict[str, Any]] = []
+    evaluations_by_case: dict[str, Mapping[str, EvaluationResult]] = {}
     for case in cases:
         evaluations = {
             baseline.name: _evaluation_result(
@@ -517,6 +660,7 @@ def run(
             )
             for baseline in engines
         }
+        evaluations_by_case[case.matrix_id] = evaluations
         values = {name: result.value for name, result in evaluations.items()}
         comparisons = []
         for left_index, left in enumerate(engines):
@@ -554,6 +698,15 @@ def run(
             }
         )
 
+    arb_oracle = _arb_oracle_artifact(
+        cases,
+        evaluations_by_case,
+        max_modes=arb_oracle_max_modes,
+        target_bits=arb_target_bits,
+        max_precision_bits=arb_max_precision_bits,
+        clock=oracle_clock,
+    )
+
     for baseline in engines:
         for case in cases:
             observed = _matrix_sha256(prepared[baseline.name][case.matrix_id])
@@ -588,7 +741,7 @@ def run(
             raise RuntimeError("GBS_BUILD_MANIFEST_SHA256 must be 64 lowercase hex")
 
     artifact: dict[str, Any] = {
-        "schema_version": 3,
+        "schema_version": 4,
         "kind": "torontonian_matched_implementations",
         "created_utc": now.astimezone(timezone.utc).isoformat(),
         **provenance,
@@ -604,6 +757,9 @@ def run(
             "randomized_timing_order_seed": order_seed,
             "agreement_atol": agreement_atol,
             "agreement_rtol": agreement_rtol,
+            "arb_oracle_max_modes": arb_oracle_max_modes,
+            "arb_target_bits": arb_target_bits,
+            "arb_max_precision_bits": arb_max_precision_bits,
         },
         "engines": [
             {
@@ -640,7 +796,8 @@ def run(
         "numerical_agreement": {
             "interpretation": (
                 "Pairwise implementation agreement only; neither baseline is a "
-                "ground-truth reference, and agreement does not alter performance rows."
+                "ground-truth reference. The tolerance flag is descriptive, is not an "
+                "acceptance filter, and does not alter performance rows."
             ),
             "reported_error_bound_interpretation": (
                 "Absolute error bounds are implementation-reported diagnostics, not an "
@@ -648,6 +805,7 @@ def run(
             ),
             "rows": value_rows,
         },
+        "independent_arb_oracle": arb_oracle,
     }
 
     destination = Path(out_path) if out_path is not None else (
@@ -685,8 +843,11 @@ def main() -> None:
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--regime", choices=_inputs.BENCH_REGIMES, default="loss")
     parser.add_argument("--seed", type=int, default=20260726)
-    parser.add_argument("--agreement-atol", type=float, default=1e-12)
-    parser.add_argument("--agreement-rtol", type=float, default=1e-10)
+    parser.add_argument("--agreement-atol", type=float, default=0.0)
+    parser.add_argument("--agreement-rtol", type=float, default=1e-8)
+    parser.add_argument("--arb-oracle-max-modes", type=int, default=0)
+    parser.add_argument("--arb-target-bits", type=int, default=80)
+    parser.add_argument("--arb-max-precision-bits", type=int, default=2048)
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument(
         "--include-gbskernels-dd",
@@ -715,6 +876,9 @@ def main() -> None:
         out_path=args.out,
         agreement_atol=args.agreement_atol,
         agreement_rtol=args.agreement_rtol,
+        arb_oracle_max_modes=args.arb_oracle_max_modes,
+        arb_target_bits=args.arb_target_bits,
+        arb_max_precision_bits=args.arb_max_precision_bits,
         require_provenance=args.require_provenance,
     )
     print(f"# matched torontonian implementations -> {path}")
