@@ -51,6 +51,8 @@ dev = [
     "hypothesis>=6.100",
     "scipy>=1.11",
     "thewalrus>=0.21",
+    # Independent Arb oracle + publication-campaign tests.
+    "python-flint==0.9.0",
     # GPU-binding host-shim build + validation (tests/test_gpu_bindings.py)
     "nanobind>=2.0",
     "cmake>=3.18",
