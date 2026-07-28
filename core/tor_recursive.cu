@@ -635,9 +635,17 @@ __global__ void tor_recursive_single_ddcert_kernel(const double* __restrict__ O,
       const double recip_residual =
           dd_mul_sub_residual_absu(c, sroot, dd_from(1.0));
       double e_c = ru_div(ru_add(recip_residual, ru_mul(cm, tS)), s_lo);
+      // Charge the sloppy DW+DW addition (dd.cuh dd_add) against the OPERAND
+      // magnitudes, not the post-add result.  Its represented-value error is
+      // bounded by ~u_DD*(|total_before| + |c|); a result-scaled charge
+      // u_DD*md_hi(total_after) under-bounds it when a single step cancels the
+      // running sum by more than ~16x (quick_two_sum's |s|>=|e| precondition can
+      // fail there).  The Cholesky dot chain above is already charged by its
+      // operand sum S_c for the same reason; this keeps the leaf sum consistent.
+      const double m_prev = md_hi(total);
       total = dd_add(total, ((n - count) & 1) ? dd_neg(c) : c);
       e_tot = ru_add(e_tot, ru_add(e_c,
-          ru_add(ru_mul(TORS_U_DD, md_hi(total)), TORS_DD_UFL)));
+          ru_add(ru_mul(TORS_U_DD, ru_add(m_prev, cm)), TORS_DD_UFL)));
       if (lvl == 0) break;
       --lvl;
       continue;

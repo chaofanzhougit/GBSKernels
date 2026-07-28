@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gbskernels"
-version = "0.2.1"
+version = "0.2.2"
 description = "GPU-native, batched library of photonic sampling matrix functions (hafnian, loop hafnian, permanent, torontonian)."
 readme = "README.md"
 authors = [{ name = "Chaofan Zhou", email = "chaofanzhou97@gmail.com" }]

@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "GBSKernels: a GPU-native, batched library of photonic sampling matrix functions"
-version: 0.2.1
+version: 0.2.2
 date-released: 2026-07-24
 license: Apache-2.0
 repository-code: "https://github.com/chaofanzhougit/GBSKernels"

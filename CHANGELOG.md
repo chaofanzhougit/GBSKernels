@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.2] - 2026-07-28
+
+### Correctness
+
+- Charge the recursive-torontonian double-double leaf accumulation against the
+  operand magnitudes instead of the post-addition result. The signed `dd_add`
+  is the sloppy double-word addition, whose represented-value error scales with
+  the operand magnitudes; the previous `u_DD * md_hi(total)` charge could
+  under-bound it whenever a single accumulation step cancels the running sum by
+  more than ~16x (`quick_two_sum`'s `|s| >= |e|` precondition can fail there).
+  The returned value is unchanged (centers stay bit-identical); only the
+  returned enclosure radius grows, and only at deeply-cancelling steps. The
+  Cholesky dot chain already charged its operand sum, so this makes the leaf
+  sum consistent with it.
+
 ## [0.2.1] - 2026-07-24
 
 ### Correctness

@@ -32,23 +32,26 @@ one of several independent test oracles.
 > separately; see the [device evidence](results/README.md#v020-device-validation).
 > This is pre-1.0 software and the public API may change.
 
-Version 0.2.1 is a correctness patch that adds subnormal-aware certified bounds
-and fail-closed certificate handling, makes the single-large real torontonian
-input contract explicit, removes inversion roundoff skew from the xxpp
-construction, records whether artifacts came from modified tracked sources,
-and packages the corrected historical Jiuzhang fixed-sample audit. That audit
-is exploratory, not a retrospective confirmatory result. See the
-[changelog](CHANGELOG.md) for the release scope.
+Version 0.2.2 is a correctness follow-up: it charges the recursive-torontonian
+double-double leaf accumulation against the operand magnitudes rather than the
+post-addition result, so the returned enclosure radius stays sound under deep
+single-step cancellation (returned values are unchanged). Version 0.2.1 added
+subnormal-aware certified bounds and fail-closed certificate handling, made the
+single-large real torontonian input contract explicit, removed inversion
+roundoff skew from the xxpp construction, recorded whether artifacts came from
+modified tracked sources, and packaged the corrected historical Jiuzhang
+fixed-sample audit (exploratory, not a retrospective confirmatory result). See
+the [changelog](CHANGELOG.md) for the release scope.
 
 ## Installation
 
 The CPU package is available from
-[PyPI](https://pypi.org/project/gbskernels/0.2.1/) and needs only `numpy` +
+[PyPI](https://pypi.org/project/gbskernels/0.2.2/) and needs only `numpy` +
 `mpmath`. The CUDA extension is a separate, optional source build (see
 [`bindings/README.md`](bindings/README.md)):
 
 ```bash
-python -m pip install gbskernels==0.2.1
+python -m pip install gbskernels==0.2.2
 ```
 
 ## Quick start
